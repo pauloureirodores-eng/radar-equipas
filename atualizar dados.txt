@@ -1,0 +1,6 @@
+atualizar dados
+
+cd C:\Users\pdores\Desktop\website
+git add .
+git commit -m "update dados"
+git push
