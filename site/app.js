@@ -13,6 +13,87 @@ const MARKET_GROUPS = {
 const RADAR_AXES = ['Resultados', 'Ataque', 'Defesa', 'Ritmo'];
 
 let DATA = null;
+const TABLE_SORT_STATE = {};
+
+function parseSortableNumber(raw) {
+  const text = String(raw ?? '').trim();
+  if (!text || text === '—') return null;
+  const cleaned = text
+    .replace(/\s+/g, '')
+    .replace('%', '')
+    .replace('pp', '')
+    .replace(',', '.');
+  const n = Number(cleaned);
+  return Number.isFinite(n) ? n : null;
+}
+
+function getCellSortValue(cell) {
+  const text = cell?.textContent?.trim() ?? '';
+  const num = parseSortableNumber(text);
+  return num != null ? num : text.toLowerCase();
+}
+
+function updateSortIndicators(table, colIdx, direction) {
+  const headers = Array.from(table.querySelectorAll('thead th'));
+  headers.forEach((th, idx) => {
+    if (!th.dataset.labelBase) th.dataset.labelBase = th.textContent.trim().replace(/\s+[▲▼]$/, '');
+    th.classList.add('sortable');
+    if (idx === colIdx) {
+      th.textContent = `${th.dataset.labelBase} ${direction === 'asc' ? '▲' : '▼'}`;
+    } else {
+      th.textContent = th.dataset.labelBase;
+    }
+  });
+}
+
+function sortTableRows(tableId, colIdx, direction) {
+  const table = byId(tableId);
+  if (!table) return;
+  const tbody = table.querySelector('tbody');
+  if (!tbody) return;
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  if (!rows.length) return;
+
+  const dir = direction === 'asc' ? 1 : -1;
+  rows.sort((a, b) => {
+    const av = getCellSortValue(a.children[colIdx]);
+    const bv = getCellSortValue(b.children[colIdx]);
+
+    const aNum = typeof av === 'number';
+    const bNum = typeof bv === 'number';
+    if (aNum && bNum) return (av - bv) * dir;
+    if (aNum && !bNum) return -1 * dir;
+    if (!aNum && bNum) return 1 * dir;
+    return String(av).localeCompare(String(bv), 'pt', { numeric: true }) * dir;
+  });
+
+  rows.forEach((r) => tbody.appendChild(r));
+  TABLE_SORT_STATE[tableId] = { colIdx, direction };
+  updateSortIndicators(table, colIdx, direction);
+}
+
+function enableTableSorting(tableId) {
+  const table = byId(tableId);
+  if (!table || table.dataset.sortingBound === '1') return;
+  const headers = Array.from(table.querySelectorAll('thead th'));
+  headers.forEach((th, idx) => {
+    th.classList.add('sortable');
+    if (!th.dataset.labelBase) th.dataset.labelBase = th.textContent.trim().replace(/\s+[▲▼]$/, '');
+    th.addEventListener('click', () => {
+      const current = TABLE_SORT_STATE[tableId];
+      const direction = current && current.colIdx === idx && current.direction === 'asc' ? 'desc' : 'asc';
+      sortTableRows(tableId, idx, direction);
+    });
+  });
+  table.dataset.sortingBound = '1';
+}
+
+function applyExistingSort(tableId) {
+  const current = TABLE_SORT_STATE[tableId];
+  if (current) {
+    sortTableRows(tableId, current.colIdx, current.direction);
+  }
+}
 
 function setActiveTab(tabId) {
   document.querySelectorAll('.tab').forEach((b) => b.classList.toggle('active', b.dataset.tab === tabId));
@@ -59,6 +140,7 @@ function renderLeagueCards(data, selectedLeague) {
 function renderRanking(league) {
   const rows = (DATA.rankings[league] || []).map((r, i) => `<tr><td>${i + 1}</td><td>${r.team}</td><td>${fmtNum(r.ppg)}</td><td>${fmtPct(r.wins)}</td><td>${fmtNum(r.gf)}</td><td>${fmtNum(r.ga)}</td><td>${fmtNum(r.gd)}</td><td>${fmtPct(r.btts)}</td><td>${fmtPct(r.over25)}</td></tr>`).join('');
   byId('rankingTable').querySelector('tbody').innerHTML = rows || '<tr><td colspan="9">Sem dados</td></tr>';
+  applyExistingSort('rankingTable');
 }
 
 function renderMarkets(league) {
@@ -110,6 +192,7 @@ function renderScanner() {
   rows = rows.sort((a, b) => Number(b.edge_vs_liga ?? -999) - Number(a.edge_vs_liga ?? -999));
 
   byId('scannerTable').querySelector('tbody').innerHTML = rows.slice(0, 120).map((r) => `<tr><td>${r.team}</td><td>${r.market}</td><td>${r.jogos}</td><td>${r.hit_rate != null ? fmtPct(r.hit_rate) : '—'}</td><td>${r.edge_vs_liga != null ? `${fmtNum(r.edge_vs_liga * 100, 1)} pp` : '—'}</td><td>${r.roi_unid_por_aposta != null ? fmtNum(r.roi_unid_por_aposta, 3) : '—'}</td><td>${r.value_estimado != null ? `${fmtNum(r.value_estimado * 100, 1)}%` : '—'}</td></tr>`).join('') || '<tr><td colspan="7">Sem dados para os filtros escolhidos.</td></tr>';
+  applyExistingSort('scannerTable');
 }
 
 function getResumoRow(league, team, scope) {
@@ -289,6 +372,7 @@ function renderConfrontoMarkets(league, home, away) {
     .slice(0, 20);
 
   byId('confrontoMarketTable').querySelector('tbody').innerHTML = merged.map((r) => `<tr><td>${r.market}</td><td>${fmtNum(r.homeEdge * 100, 1)} pp</td><td>${fmtNum(r.awayEdge * 100, 1)} pp</td><td>${fmtNum(r.avg * 100, 1)} pp</td></tr>`).join('') || '<tr><td colspan="4">Sem mercados convergentes para este confronto.</td></tr>';
+  applyExistingSort('confrontoMarketTable');
 }
 
 function renderRadarSection(league, home, away) {
@@ -467,6 +551,7 @@ function renderForma() {
     const trend = next ? (d > 0 ? 'A subir' : d < 0 ? 'A descer' : 'Estável') : '—';
     return `<tr><td>${r.date}</td><td>${fmtNum(r.value)}</td><td>${trend}</td></tr>`;
   }).join('') || '<tr><td colspan="3">Sem dados de forma para este filtro.</td></tr>';
+  applyExistingSort('formTable');
 }
 
 function populateForma(leagues) {
@@ -609,6 +694,7 @@ function renderPrejogo() {
     .slice(0, 15);
 
   byId('prejogoShortlistTable').querySelector('tbody').innerHTML = shortlist.map((r) => `<tr><td>${r.market}</td><td>${fmtNum(r.homeEdge * 100, 1)} pp</td><td>${fmtNum(r.awayEdge * 100, 1)} pp</td><td>${fmtNum(r.avg * 100, 1)} pp</td><td>${r.hitAvg != null ? fmtPct(r.hitAvg) : '—'}</td></tr>`).join('') || '<tr><td colspan="5">Sem shortlist para este jogo.</td></tr>';
+  applyExistingSort('prejogoShortlistTable');
 }
 
 function populatePrejogo(leagues) {
@@ -650,6 +736,8 @@ async function main() {
   populatePrejogo(leagues);
 
   document.querySelectorAll('.tab').forEach((btn) => btn.addEventListener('click', () => setActiveTab(btn.dataset.tab)));
+
+  ['rankingTable', 'scannerTable', 'confrontoMarketTable', 'formTable', 'prejogoShortlistTable'].forEach(enableTableSorting);
 }
 
 main().catch((err) => {
