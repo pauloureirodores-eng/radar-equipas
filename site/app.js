@@ -11,10 +11,13 @@ const MARKET_GROUPS = {
 };
 
 const RADAR_AXES = ['Resultados', 'Ataque', 'Defesa', 'Ritmo'];
+const FILTER_PRESET_KEY = 'radar_filters_preset_v1';
+const THEME_KEY = 'radar_theme_mode';
 
 let DATA = null;
 const TABLE_SORT_STATE = {};
 let PREJOGO_STATE = { league: null, home: null, away: null, probs: null, shortlist: [] };
+let UI_STATE = { quickSearch: '' };
 
 function parseSortableNumber(raw) {
   const text = String(raw ?? '').trim();
@@ -133,6 +136,51 @@ function avg(arr) {
   return valid.reduce((a, b) => a + b, 0) / valid.length;
 }
 
+function norm(v, min, max) {
+  if (!Number.isFinite(v) || max <= min) return 0;
+  return clamp((v - min) / (max - min), 0, 1);
+}
+
+function opportunityScore(row) {
+  const edge = toNum(row.edge_vs_liga);
+  const games = toNum(row.jogos) ?? 0;
+  const lo = toNum(row.wilson_lo);
+  const hi = toNum(row.wilson_hi);
+
+  const edgeFactor = edge == null ? 0 : norm(edge, -0.05, 0.2);
+  const sampleFactor = norm(games, 5, 28);
+  const width = (lo != null && hi != null) ? Math.max(0, hi - lo) : null;
+  const stabilityFactor = width == null ? 0.5 : norm(0.4 - width, 0, 0.4);
+  return Math.round((edgeFactor * 0.5 + sampleFactor * 0.25 + stabilityFactor * 0.25) * 100);
+}
+
+function scoreBadge(score) {
+  if (score >= 75) return '<span class="badge good">Alta</span>';
+  if (score >= 55) return '<span class="badge">Média</span>';
+  return '<span class="badge warn">Baixa</span>';
+}
+
+function toLisbonString(isoTs) {
+  if (!isoTs) return '—';
+  const dt = new Date(isoTs);
+  if (Number.isNaN(dt.getTime())) return '—';
+  return dt.toLocaleString('pt-PT', {
+    timeZone: 'Europe/Lisbon',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+function matchesQuickSearch(...parts) {
+  const q = UI_STATE.quickSearch.trim().toLowerCase();
+  if (!q) return true;
+  const blob = parts.filter(Boolean).join(' ').toLowerCase();
+  return blob.includes(q);
+}
+
 function renderSummaryChips(data) {
   const leagues = data.overview.length;
   const teams = Object.values(data.rankings).reduce((acc, arr) => acc + arr.length, 0);
@@ -163,6 +211,7 @@ function renderRanking(league) {
 function renderMarkets(league) {
   const rows = DATA.marketRows
     .filter((r) => r.league === league && r.scope === 'Total' && r.hit_rate != null)
+    .filter((r) => matchesQuickSearch(r.team, r.market))
     .sort((a, b) => Number(b.value_estimado ?? -999) - Number(a.value_estimado ?? -999))
     .slice(0, 10);
 
@@ -175,6 +224,7 @@ function renderMarkets(league) {
 function renderLay(league) {
   const rows = DATA.layRows
     .filter((r) => r.league === league)
+    .filter((r) => matchesQuickSearch(r.team, r.cenario_lay, r.descricao))
     .sort((a, b) => Number(b.lay_score ?? -999) - Number(a.lay_score ?? -999))
     .slice(0, 10);
 
@@ -206,10 +256,16 @@ function renderScanner() {
   const group = byId('scanGroup').value;
   const minGames = Number(byId('scanMinGames').value || 1);
 
-  let rows = DATA.marketRows.filter((r) => (league === 'Todas' || r.league === league) && r.scope === scope && Number(r.jogos || 0) >= minGames && marketInGroup(r.market, group));
-  rows = rows.sort((a, b) => Number(b.edge_vs_liga ?? -999) - Number(a.edge_vs_liga ?? -999));
+  let rows = DATA.marketRows.filter((r) => (league === 'Todas' || r.league === league)
+    && r.scope === scope
+    && Number(r.jogos || 0) >= minGames
+    && marketInGroup(r.market, group)
+    && matchesQuickSearch(r.team, r.market));
+  rows = rows
+    .map((r) => ({ ...r, opportunityScore: opportunityScore(r) }))
+    .sort((a, b) => Number(b.opportunityScore ?? -999) - Number(a.opportunityScore ?? -999));
 
-  byId('scannerTable').querySelector('tbody').innerHTML = rows.slice(0, 120).map((r) => `<tr><td>${r.team}</td><td>${r.market}</td><td>${r.jogos}</td><td>${r.hit_rate != null ? fmtPct(r.hit_rate) : '—'}</td><td>${renderCiCell(r)}</td><td>${r.edge_vs_liga != null ? `${fmtNum(r.edge_vs_liga * 100, 1)} pp` : '—'}</td><td>${r.roi_unid_por_aposta != null ? fmtNum(r.roi_unid_por_aposta, 3) : '—'}</td><td>${r.value_estimado != null ? `${fmtNum(r.value_estimado * 100, 1)}%` : '—'}</td></tr>`).join('') || '<tr><td colspan="8">Sem dados para os filtros escolhidos.</td></tr>';
+  byId('scannerTable').querySelector('tbody').innerHTML = rows.slice(0, 120).map((r) => `<tr><td>${r.team}</td><td>${r.market}</td><td>${r.jogos}</td><td>${r.hit_rate != null ? fmtPct(r.hit_rate) : '—'}</td><td>${renderCiCell(r)}</td><td>${r.opportunityScore}<br>${scoreBadge(r.opportunityScore)}</td><td>${r.edge_vs_liga != null ? `${fmtNum(r.edge_vs_liga * 100, 1)} pp` : '—'}</td><td>${r.roi_unid_por_aposta != null ? fmtNum(r.roi_unid_por_aposta, 3) : '—'}</td><td>${r.value_estimado != null ? `${fmtNum(r.value_estimado * 100, 1)}%` : '—'}</td></tr>`).join('') || '<tr><td colspan="9">Sem dados para os filtros escolhidos.</td></tr>';
   applyExistingSort('scannerTable');
 }
 
@@ -419,6 +475,29 @@ function renderRadarSection(league, home, away) {
   byId('awayStrengths').innerHTML = `<div><strong>Pontos fortes:</strong> ${as.top.map((x) => x.label).join(', ') || '—'}</div><div><strong>Pontos fracos:</strong> ${as.low.map((x) => x.label).join(', ') || '—'}</div>`;
 }
 
+function regressionAlertForTeam(league, team, scopeLabel) {
+  const scope = scopeLabel === 'Casa' ? 'Casa' : 'Fora';
+  const venue = scopeLabel === 'Casa' ? 'H' : 'A';
+  const row = getResumoRow(league, team, scope);
+  if (!row) return null;
+
+  const series = getSeries(league, team, venue, 'roll5_points').filter((x) => Number.isFinite(x.value));
+  if (!series.length) return null;
+
+  const recent = series[series.length - 1].value;
+  const expected = Number(row.ppg) * 5;
+  if (!Number.isFinite(recent) || !Number.isFinite(expected)) return null;
+
+  const gap = recent - expected;
+  if (gap >= 1.2) {
+    return `${team}: rendimento recente acima do esperado (+${fmtNum(gap, 2)} pts/5j), possível regressão à média.`;
+  }
+  if (gap <= -1.2) {
+    return `${team}: rendimento recente abaixo do esperado (${fmtNum(gap, 2)} pts/5j), possível recuperação à média.`;
+  }
+  return null;
+}
+
 function matchupInsights(league, home, away) {
   const h = getResumoRow(league, home, 'Casa');
   const a = getResumoRow(league, away, 'Fora');
@@ -441,6 +520,11 @@ function matchupInsights(league, home, away) {
   if (Number(h.ppg) - Number(a.ppg) >= 0.45) {
     out.push('Diferença de desempenho no contexto casa/fora favorece a equipa da casa.');
   }
+
+  const regHome = regressionAlertForTeam(league, home, 'Casa');
+  const regAway = regressionAlertForTeam(league, away, 'Fora');
+  if (regHome) out.push(regHome);
+  if (regAway) out.push(regAway);
 
   return out.slice(0, 5);
 }
@@ -970,14 +1054,151 @@ function populatePrejogo(leagues) {
   refreshTeams();
 }
 
+function currentFiltersSnapshot() {
+  return {
+    globalLeague: byId('globalLeague')?.value ?? '',
+    globalTeam: byId('globalTeam')?.value ?? '',
+    globalContext: byId('globalContext')?.value ?? 'Total',
+    quickSearch: byId('quickSearch')?.value ?? '',
+    scanGroup: byId('scanGroup')?.value ?? 'resultados',
+    scanMinGames: byId('scanMinGames')?.value ?? '8',
+    formMetric: byId('formMetric')?.value ?? 'roll5_points',
+    pjRecentWeight: byId('pjRecentWeight')?.value ?? '35'
+  };
+}
+
+function applyFiltersSnapshot(snap) {
+  if (!snap) return;
+  if (snap.globalLeague && byId('globalLeague')) byId('globalLeague').value = snap.globalLeague;
+  if (snap.globalTeam && byId('globalTeam')) byId('globalTeam').value = snap.globalTeam;
+  if (snap.globalContext && byId('globalContext')) byId('globalContext').value = snap.globalContext;
+  if (typeof snap.quickSearch === 'string' && byId('quickSearch')) byId('quickSearch').value = snap.quickSearch;
+  if (snap.scanGroup && byId('scanGroup')) byId('scanGroup').value = snap.scanGroup;
+  if (snap.scanMinGames && byId('scanMinGames')) byId('scanMinGames').value = snap.scanMinGames;
+  if (snap.formMetric && byId('formMetric')) byId('formMetric').value = snap.formMetric;
+  if (snap.pjRecentWeight && byId('pjRecentWeight')) byId('pjRecentWeight').value = snap.pjRecentWeight;
+}
+
+function setSelectIfPresent(id, value, triggerChange = false) {
+  const sel = byId(id);
+  if (!sel) return;
+  if (!Array.from(sel.options).some((o) => o.value === value)) return;
+  const changed = sel.value !== value;
+  sel.value = value;
+  if (triggerChange && changed) sel.dispatchEvent(new Event('change'));
+}
+
+function syncGlobalFilters() {
+  const league = byId('globalLeague').value;
+  const team = byId('globalTeam').value;
+  const context = byId('globalContext').value;
+
+  renderGlobalTeamOptions(DATA.overview.map((x) => x.league), league);
+  setSelectIfPresent('globalTeam', team);
+
+  ['leagueSelect', 'scanLeague'].forEach((id) => setSelectIfPresent(id, league));
+  ['cfLeague', 'formLeague', 'pjLeague'].forEach((id) => setSelectIfPresent(id, league, true));
+  ['formTeam', 'cfHome', 'pjHome'].forEach((id) => setSelectIfPresent(id, team));
+
+  if (byId('scanScope')) byId('scanScope').value = context;
+  if (byId('formVenue') && (context === 'Casa' || context === 'Fora')) {
+    byId('formVenue').value = context === 'Casa' ? 'H' : 'A';
+  }
+
+  UI_STATE.quickSearch = byId('quickSearch').value.trim();
+  renderAll();
+}
+
+function renderAll() {
+  const league = byId('leagueSelect').value || DATA.overview?.[0]?.league;
+  if (league) renderOverview(league);
+  renderScanner();
+  renderConfronto();
+  renderForma();
+  renderPrejogo();
+}
+
+function applyTheme(theme) {
+  const mode = theme === 'dark' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', mode);
+  localStorage.setItem(THEME_KEY, mode);
+  const btn = byId('themeToggleBtn');
+  if (btn) btn.textContent = mode === 'dark' ? 'Modo claro' : 'Modo escuro';
+}
+
+function loadTheme() {
+  const saved = localStorage.getItem(THEME_KEY) || 'light';
+  applyTheme(saved);
+}
+
+function renderLastUpdate() {
+  const target = byId('lastUpdatedInfo');
+  if (!target) return;
+  const ts = DATA.meta?.generatedAt;
+  target.innerHTML = `<span>Timestamp</span><strong>${toLisbonString(ts)}</strong>`;
+}
+
+function renderChangelog() {
+  const el = byId('changelogList');
+  if (!el) return;
+  const entries = DATA.changelog || [];
+  el.innerHTML = entries.length
+    ? entries.slice(0, 8).map((c) => `<article class="item"><p class="title">${c.date || '—'} · ${c.title || 'Atualização semanal'}</p><p class="meta">${c.summary || 'Refresh automático de dados e métricas.'}</p></article>`).join('')
+    : '<p class="meta">Sem entradas de changelog ainda.</p>';
+}
+
+function renderGlobalTeamOptions(leagues, selectedLeague = null) {
+  const listLeagues = selectedLeague ? [selectedLeague] : leagues;
+  const allTeams = listLeagues.flatMap((lg) => (DATA.rankings[lg] || []).map((r) => r.team));
+  const unique = Array.from(new Set(allTeams)).sort((a, b) => a.localeCompare(b, 'pt'));
+  byId('globalTeam').innerHTML = unique.map((t) => `<option value="${t}">${t}</option>`).join('');
+}
+
+function exportPrejogoPdf() {
+  if (!PREJOGO_STATE?.league || !PREJOGO_STATE?.home || !PREJOGO_STATE?.away || !PREJOGO_STATE?.probs) return;
+  const now = new Date().toLocaleString('pt-PT', { timeZone: 'Europe/Lisbon' });
+  const rows = PREJOGO_STATE.shortlist.slice(0, 12).map((r) => `<tr><td>${r.market}</td><td>${fmtNum(r.avg * 100, 1)} pp</td><td>${r.hitAvg != null ? fmtPct(r.hitAvg) : '—'}</td></tr>`).join('');
+  const html = `
+    <!doctype html><html lang="pt"><head><meta charset="UTF-8"><title>Relatório Pré-jogo</title>
+    <style>
+      body{font-family:Arial,sans-serif;padding:24px;color:#111} h1,h2{margin:0 0 10px} .meta{color:#555;margin-bottom:16px}
+      .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+      .card{border:1px solid #ddd;border-radius:8px;padding:10px}
+      table{width:100%;border-collapse:collapse} th,td{border-bottom:1px solid #eee;padding:8px;text-align:left}
+    </style></head><body>
+      <h1>Relatório Pré-jogo</h1>
+      <p class="meta">${PREJOGO_STATE.home} vs ${PREJOGO_STATE.away} · ${PREJOGO_STATE.league} · gerado em ${now}</p>
+      <div class="grid">
+        <div class="card"><h2>1X2</h2><p>1: ${fmtPct(PREJOGO_STATE.probs.p1)} · X: ${fmtPct(PREJOGO_STATE.probs.px)} · 2: ${fmtPct(PREJOGO_STATE.probs.p2)}</p></div>
+        <div class="card"><h2>Totais</h2><p>Over 2.5: ${fmtPct(PREJOGO_STATE.probs.over25)} · BTTS: ${fmtPct(PREJOGO_STATE.probs.btts)}</p></div>
+      </div>
+      <h2>Shortlist de mercados</h2>
+      <table><thead><tr><th>Mercado</th><th>Edge médio</th><th>Hit médio</th></tr></thead><tbody>${rows || '<tr><td colspan="3">Sem shortlist.</td></tr>'}</tbody></table>
+      <script>window.onload=()=>window.print();</script>
+    </body></html>
+  `;
+  const w = window.open('', '_blank');
+  if (!w) return;
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+}
+
 async function main() {
   const res = await fetch('./data/site-data.json');
   DATA = await res.json();
 
+  loadTheme();
   renderSummaryChips(DATA);
   byId('sourceInfo').textContent = `Fontes usadas: ${(DATA.meta?.sourceFiles || []).join(', ')}`;
+  renderLastUpdate();
+  renderChangelog();
 
   const leagues = DATA.overview.map((x) => x.league);
+
+  byId('globalLeague').innerHTML = leagues.map((l) => `<option value="${l}">${l}</option>`).join('');
+  byId('globalLeague').value = leagues[0];
+  renderGlobalTeamOptions(leagues, leagues[0]);
 
   byId('leagueSelect').innerHTML = leagues.map((l) => `<option value="${l}">${l}</option>`).join('');
   byId('leagueSelect').addEventListener('change', (e) => renderOverview(e.target.value));
@@ -995,18 +1216,44 @@ async function main() {
 
   ['rankingTable', 'scannerTable', 'confrontoMarketTable', 'compareDeltaTable', 'formTable', 'prejogoShortlistTable', 'evKellyTable', 'h2hTable'].forEach(enableTableSorting);
 
+  ['globalLeague', 'globalTeam', 'globalContext'].forEach((id) => byId(id)?.addEventListener('change', syncGlobalFilters));
+  byId('quickSearch')?.addEventListener('input', () => {
+    UI_STATE.quickSearch = byId('quickSearch').value.trim();
+    renderAll();
+  });
+  byId('themeToggleBtn')?.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme') || 'light';
+    applyTheme(current === 'dark' ? 'light' : 'dark');
+  });
+  byId('savePresetBtn')?.addEventListener('click', () => {
+    localStorage.setItem(FILTER_PRESET_KEY, JSON.stringify(currentFiltersSnapshot()));
+  });
+  byId('loadPresetBtn')?.addEventListener('click', () => {
+    const raw = localStorage.getItem(FILTER_PRESET_KEY);
+    if (!raw) return;
+    try {
+      const snap = JSON.parse(raw);
+      applyFiltersSnapshot(snap);
+      syncGlobalFilters();
+    } catch {
+      console.warn('Preset inválido.');
+    }
+  });
+  byId('exportPrejogoPdfBtn')?.addEventListener('click', exportPrejogoPdf);
+
   byId('scannerExportBtn')?.addEventListener('click', () => {
     const league = byId('scanLeague').value;
     const scope = byId('scanScope').value;
     const group = byId('scanGroup').value;
     const minGames = Number(byId('scanMinGames').value || 1);
     const rows = DATA.marketRows
-      .filter((r) => (league === 'Todas' || r.league === league) && r.scope === scope && Number(r.jogos || 0) >= minGames && marketInGroup(r.market, group))
-      .sort((a, b) => Number(b.edge_vs_liga ?? -999) - Number(a.edge_vs_liga ?? -999));
+      .filter((r) => (league === 'Todas' || r.league === league) && r.scope === scope && Number(r.jogos || 0) >= minGames && marketInGroup(r.market, group) && matchesQuickSearch(r.team, r.market))
+      .map((r) => ({ ...r, opportunityScore: opportunityScore(r) }))
+      .sort((a, b) => Number(b.opportunityScore ?? -999) - Number(a.opportunityScore ?? -999));
     downloadCSV(
       `scanner_${league}_${scope}.csv`,
-      ['Liga', 'Equipa', 'Mercado', 'Jogos', 'HitRate', 'EdgeVsLiga', 'ROI', 'Value'],
-      rows.map((r) => [r.league, r.team, r.market, r.jogos, r.hit_rate, r.edge_vs_liga, r.roi_unid_por_aposta, r.value_estimado])
+      ['Liga', 'Equipa', 'Mercado', 'Jogos', 'HitRate', 'OpportunityScore', 'EdgeVsLiga', 'ROI', 'Value'],
+      rows.map((r) => [r.league, r.team, r.market, r.jogos, r.hit_rate, r.opportunityScore, r.edge_vs_liga, r.roi_unid_por_aposta, r.value_estimado])
     );
   });
 
@@ -1019,6 +1266,16 @@ async function main() {
       s.map((r) => [r.market, r.homeEdge, r.awayEdge, r.avg, r.hitAvg])
     );
   });
+
+  const savedPreset = localStorage.getItem(FILTER_PRESET_KEY);
+  if (savedPreset) {
+    try {
+      applyFiltersSnapshot(JSON.parse(savedPreset));
+    } catch {
+      console.warn('Preset guardado inválido.');
+    }
+  }
+  syncGlobalFilters();
 }
 
 main().catch((err) => {

@@ -1,7 +1,7 @@
 @echo off
 setlocal
 
-REM Executa sempre na pasta onde o .bat está
+REM Executa sempre na pasta onde o .bat esta
 cd /d "%~dp0"
 
 echo ============================================
@@ -17,7 +17,7 @@ if %errorlevel%==0 (
   set "PY=python"
 )
 
-echo [1/3] Validar dependencia tabulate...
+echo [1/4] Validar dependencia tabulate...
 %PY% -m pip show tabulate >nul 2>&1
 if not %errorlevel%==0 (
   echo tabulate nao encontrado. A instalar...
@@ -28,14 +28,21 @@ if not %errorlevel%==0 (
   )
 )
 
-echo [2/3] Recalcular outputs com analisar_equipas.py...
+echo [2/4] Recalcular outputs com analisar_equipas.py...
 %PY% analisar_equipas.py --csv-dir "." --outdir "output" --min-games 5 --lay
 if errorlevel 1 (
   echo ERRO: analisar_equipas.py falhou.
   exit /b 1
 )
 
-echo [3/3] Regenerar site/data/site-data.json...
+echo [3/4] Atualizar changelog semanal...
+%PY% scripts\update_changelog.py
+if errorlevel 1 (
+  echo ERRO: update_changelog.py falhou.
+  exit /b 1
+)
+
+echo [4/4] Regenerar site/data/site-data.json...
 %PY% scripts\build_site_data.py
 if errorlevel 1 (
   echo ERRO: build_site_data.py falhou.

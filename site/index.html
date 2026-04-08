@@ -28,8 +28,26 @@
     <button class="tab" data-tab="prejogo">Pré-jogo</button>
   </nav>
 
+  <section class="container global-bar">
+    <label>Liga global<select id="globalLeague"></select></label>
+    <label>Equipa global<select id="globalTeam"></select></label>
+    <label>Contexto global<select id="globalContext"><option value="Total">Total</option><option value="Casa">Casa</option><option value="Fora">Fora</option></select></label>
+    <label>Pesquisa rápida<input id="quickSearch" type="text" placeholder="equipa ou mercado..." /></label>
+    <button id="savePresetBtn" class="ghost-btn">Guardar preset</button>
+    <button id="loadPresetBtn" class="ghost-btn">Carregar preset</button>
+    <button id="themeToggleBtn" class="ghost-btn">Modo escuro</button>
+  </section>
+
   <main class="container">
     <section class="tab-panel active" id="panel-overview">
+      <section class="panel">
+        <div class="panel-head"><h2>Operação</h2></div>
+        <div class="kpi-grid">
+          <article class="kpi-card"><h3>Última atualização</h3><div id="lastUpdatedInfo" class="kpi-row"><span>Timestamp</span><strong>—</strong></div></article>
+          <article class="kpi-card"><h3>Estado</h3><div class="kpi-row"><span>Automação semanal</span><strong>Ativa</strong></div></article>
+        </div>
+      </section>
+
       <section class="panel feature">
         <div class="panel-head"><h2>Jogo da Semana</h2></div>
         <div id="matchOfWeekCard" class="kpi-grid"></div>
@@ -92,7 +110,7 @@
         <div class="table-wrap">
           <table id="scannerTable">
             <thead>
-              <tr><th>Equipa</th><th>Mercado</th><th>Jogos</th><th>Hit Rate</th><th>IC</th><th>Edge vs Liga</th><th>ROI</th><th>Value</th></tr>
+              <tr><th>Equipa</th><th>Mercado</th><th>Jogos</th><th>Hit Rate</th><th>IC</th><th>Oportunidade</th><th>Edge vs Liga</th><th>ROI</th><th>Value</th></tr>
             </thead>
             <tbody></tbody>
           </table>
@@ -244,7 +262,7 @@
       </section>
 
       <section class="panel">
-        <div class="panel-head"><h2>Histórico Direto (H2H)</h2></div>
+        <div class="panel-head"><h2>Histórico Direto (H2H)</h2><button id="exportPrejogoPdfBtn" class="ghost-btn">Export PDF</button></div>
         <div class="kpi-grid" id="h2hSummary"></div>
         <div class="table-wrap">
           <table id="h2hTable">
@@ -252,6 +270,11 @@
             <tbody></tbody>
           </table>
         </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Changelog semanal</h2></div>
+        <div id="changelogList" class="list"></div>
       </section>
     </section>
   </main>

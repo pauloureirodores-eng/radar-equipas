@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from datetime import datetime, timezone
 
 import pandas as pd
 
@@ -20,6 +21,7 @@ def main() -> None:
     base = Path(__file__).resolve().parents[1]
     out = base / "output"
     site_data_path = base / "site" / "data" / "site-data.json"
+    changelog_path = base / "site" / "data" / "changelog.json"
     site_data_path.parent.mkdir(parents=True, exist_ok=True)
 
     resumo = pd.read_csv(out / "resumo_equipas.csv")
@@ -175,8 +177,16 @@ def main() -> None:
     serie_rows = serie_last[[c for c in serie_cols if c in serie_last.columns]].copy()
     serie_rows["date"] = serie_rows["date"].dt.strftime("%Y-%m-%d")
 
+    changelog = []
+    if changelog_path.exists():
+        try:
+            changelog = json.loads(changelog_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            changelog = []
+
     payload = {
         "meta": {
+            "generatedAt": datetime.now(timezone.utc).isoformat(),
             "sourceFiles": sorted([p.name for p in base.glob("*.csv")]),
             "generatedFrom": [
                 "output/resumo_equipas.csv",
@@ -191,6 +201,7 @@ def main() -> None:
         "marketRows": records(market_rows),
         "layRows": records(lay_rows),
         "seriesRows": records(serie_rows),
+        "changelog": changelog,
     }
 
     site_data_path.write_text(

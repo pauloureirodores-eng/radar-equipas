@@ -1,5 +1,6 @@
 {
   "meta": {
+    "generatedAt": "2026-04-08T16:51:31.281059+00:00",
     "sourceFiles": [
       "D1.csv",
       "E0.csv",
@@ -247223,6 +247224,14 @@
       "roll5_over_2_5": 0.6,
       "roll5_btts": 0.6,
       "roll5_clean_sheet": 0.4
+    }
+  ],
+  "changelog": [
+    {
+      "date": "2026-04-08",
+      "title": "Atualização automática semanal",
+      "summary": "Dados e métricas recalculados a partir dos CSV mais recentes.",
+      "generatedAt": "2026-04-08T16:51:25.916426+00:00"
     }
   ]
 }
