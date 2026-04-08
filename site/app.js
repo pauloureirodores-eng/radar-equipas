@@ -10,12 +10,29 @@ const MARKET_GROUPS = {
   todos: []
 };
 
+const RADAR_AXES = ['Resultados', 'Ataque', 'Defesa', 'Ritmo'];
+
 let DATA = null;
 
 function setActiveTab(tabId) {
   document.querySelectorAll('.tab').forEach((b) => b.classList.toggle('active', b.dataset.tab === tabId));
   document.querySelectorAll('.tab-panel').forEach((p) => p.classList.remove('active'));
   byId(`panel-${tabId}`).classList.add('active');
+}
+
+function toNum(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+function clamp(v, min, max) {
+  return Math.max(min, Math.min(max, v));
+}
+
+function avg(arr) {
+  const valid = arr.filter((x) => Number.isFinite(x));
+  if (!valid.length) return null;
+  return valid.reduce((a, b) => a + b, 0) / valid.length;
 }
 
 function renderSummaryChips(data) {
@@ -99,6 +116,130 @@ function getResumoRow(league, team, scope) {
   return DATA.resumoRows.find((r) => r.league === league && r.team === team && r.scope === scope);
 }
 
+function getScopeRows(league, scope) {
+  return DATA.resumoRows.filter((r) => r.league === league && r.scope === scope);
+}
+
+function zScore(rows, col, val, invert = false) {
+  const values = rows.map((r) => Number(r[col])).filter((x) => Number.isFinite(x));
+  if (!values.length || !Number.isFinite(val)) return 0;
+  const mean = values.reduce((a, b) => a + b, 0) / values.length;
+  const variance = values.reduce((acc, x) => acc + ((x - mean) ** 2), 0) / values.length;
+  const std = Math.sqrt(variance);
+  if (!std) return 0;
+  const z = (val - mean) / std;
+  return invert ? -z : z;
+}
+
+function radarProfile(league, row, scope) {
+  const rows = getScopeRows(league, scope);
+  const results = avg([
+    zScore(rows, 'ppg', Number(row.ppg), false),
+    zScore(rows, 'vit%', Number(row['vit%']), false),
+    zScore(rows, 'der%', Number(row['der%']), true)
+  ]);
+  const attack = avg([
+    zScore(rows, 'golos_marcados', Number(row.golos_marcados), false),
+    zScore(rows, 'marca%', Number(row['marca%']), false),
+    zScore(rows, 'SOT', Number(row.SOT), false),
+    zScore(rows, 'conversion_rate', Number(row.conversion_rate), false)
+  ]);
+  const defense = avg([
+    zScore(rows, 'golos_sofridos', Number(row.golos_sofridos), true),
+    zScore(rows, 'CS%', Number(row['CS%']), false),
+    zScore(rows, 'SOT_sofridos', Number(row.SOT_sofridos), true)
+  ]);
+  const rhythm = avg([
+    zScore(rows, 'BTTS%', Number(row['BTTS%']), false),
+    zScore(rows, 'O2.5%', Number(row['O2.5%']), false)
+  ]);
+
+  return [results, attack, defense, rhythm].map((z) => clamp(50 + (z || 0) * 16, 8, 95));
+}
+
+function drawRadar(canvasId, titleId, teamName, values, color) {
+  const canvas = byId(canvasId);
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  const radius = Math.min(canvas.width, canvas.height) * 0.36;
+
+  byId(titleId).textContent = teamName;
+
+  ctx.strokeStyle = '#d9dddf';
+  ctx.lineWidth = 1;
+  for (let ring = 1; ring <= 4; ring += 1) {
+    ctx.beginPath();
+    for (let i = 0; i < RADAR_AXES.length; i += 1) {
+      const angle = -Math.PI / 2 + (i * 2 * Math.PI / RADAR_AXES.length);
+      const x = cx + Math.cos(angle) * radius * (ring / 4);
+      const y = cy + Math.sin(angle) * radius * (ring / 4);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = '#55606f';
+  ctx.font = '12px Segoe UI';
+  ctx.textAlign = 'center';
+  RADAR_AXES.forEach((axis, i) => {
+    const angle = -Math.PI / 2 + (i * 2 * Math.PI / RADAR_AXES.length);
+    const x = cx + Math.cos(angle) * (radius + 22);
+    const y = cy + Math.sin(angle) * (radius + 22);
+    ctx.fillText(axis, x, y);
+
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(angle) * radius, cy + Math.sin(angle) * radius);
+    ctx.strokeStyle = '#edf0f2';
+    ctx.stroke();
+  });
+
+  ctx.beginPath();
+  values.forEach((v, i) => {
+    const ratio = v / 100;
+    const angle = -Math.PI / 2 + (i * 2 * Math.PI / RADAR_AXES.length);
+    const x = cx + Math.cos(angle) * radius * ratio;
+    const y = cy + Math.sin(angle) * radius * ratio;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+  ctx.fillStyle = `${color}44`;
+  ctx.fill();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+function strengthsWeakness(row, league, scope) {
+  const rows = getScopeRows(league, scope);
+  const specs = [
+    ['ppg', 'Pontos por jogo', false],
+    ['vit%', 'Taxa de vitórias', false],
+    ['golos_marcados', 'Golos marcados', false],
+    ['golos_sofridos', 'Golos sofridos', true],
+    ['CS%', 'Clean sheet', false],
+    ['BTTS%', 'BTTS', false],
+    ['O2.5%', 'Over 2.5', false],
+    ['SOT', 'Remates à baliza', false],
+    ['SOT_sofridos', 'Remates à baliza sofridos', true],
+    ['conversion_rate', 'Conversão de remates', false]
+  ];
+
+  const scored = specs.map(([col, label, inv]) => ({
+    label,
+    z: zScore(rows, col, Number(row[col]), inv)
+  })).filter((x) => Number.isFinite(x.z));
+
+  scored.sort((a, b) => b.z - a.z);
+  const top = scored.slice(0, 2);
+  const low = scored.slice(-2).reverse();
+  return { top, low };
+}
+
 function renderConfrontoKpis(league, home, away) {
   const h = getResumoRow(league, home, 'Casa');
   const a = getResumoRow(league, away, 'Fora');
@@ -150,6 +291,54 @@ function renderConfrontoMarkets(league, home, away) {
   byId('confrontoMarketTable').querySelector('tbody').innerHTML = merged.map((r) => `<tr><td>${r.market}</td><td>${fmtNum(r.homeEdge * 100, 1)} pp</td><td>${fmtNum(r.awayEdge * 100, 1)} pp</td><td>${fmtNum(r.avg * 100, 1)} pp</td></tr>`).join('') || '<tr><td colspan="4">Sem mercados convergentes para este confronto.</td></tr>';
 }
 
+function renderRadarSection(league, home, away) {
+  const h = getResumoRow(league, home, 'Casa');
+  const a = getResumoRow(league, away, 'Fora');
+  if (!h || !a) return;
+
+  drawRadar('radarHome', 'radarHomeTitle', `${home} (Casa)`, radarProfile(league, h, 'Casa'), '#0e7490');
+  drawRadar('radarAway', 'radarAwayTitle', `${away} (Fora)`, radarProfile(league, a, 'Fora'), '#c2410c');
+
+  const hs = strengthsWeakness(h, league, 'Casa');
+  const as = strengthsWeakness(a, league, 'Fora');
+
+  byId('homeStrengths').innerHTML = `<div><strong>Pontos fortes:</strong> ${hs.top.map((x) => x.label).join(', ') || '—'}</div><div><strong>Pontos fracos:</strong> ${hs.low.map((x) => x.label).join(', ') || '—'}</div>`;
+  byId('awayStrengths').innerHTML = `<div><strong>Pontos fortes:</strong> ${as.top.map((x) => x.label).join(', ') || '—'}</div><div><strong>Pontos fracos:</strong> ${as.low.map((x) => x.label).join(', ') || '—'}</div>`;
+}
+
+function matchupInsights(league, home, away) {
+  const h = getResumoRow(league, home, 'Casa');
+  const a = getResumoRow(league, away, 'Fora');
+  if (!h || !a) return [];
+
+  const out = [];
+
+  if (Number(h.golos_marcados) >= 1.7 && Number(a.golos_sofridos) >= 1.4) {
+    out.push('Casa com ângulo ofensivo forte: ataque da casa acima da média e defesa visitante permissiva.');
+  }
+  if (Number(a.golos_marcados) >= 1.4 && Number(h.golos_sofridos) >= 1.3) {
+    out.push('Visitante com potencial de marcar: produção ofensiva consistente contra defesa da casa vulnerável.');
+  }
+  if (Number(h['O2.5%']) >= 0.6 && Number(a['O2.5%']) >= 0.55) {
+    out.push('Ritmo alto dos dois lados, jogo propenso a linhas de golos mais altas.');
+  }
+  if (Number(h['CS%']) >= 0.4 && Number(a['marca%']) <= 0.75) {
+    out.push('Boa hipótese de controlo defensivo da casa, com risco reduzido de sofrer.');
+  }
+  if (Number(h.ppg) - Number(a.ppg) >= 0.45) {
+    out.push('Diferença de desempenho no contexto casa/fora favorece a equipa da casa.');
+  }
+
+  return out.slice(0, 5);
+}
+
+function renderConfrontoInsights(league, home, away) {
+  const insights = matchupInsights(league, home, away);
+  byId('confrontoInsights').innerHTML = insights.length
+    ? insights.map((x) => `<li>${x}</li>`).join('')
+    : '<li>Sem sinais fortes para este matchup com os dados atuais.</li>';
+}
+
 function populateConfronto(leagues) {
   const leagueSel = byId('cfLeague');
   leagueSel.innerHTML = leagues.map((l) => `<option value="${l}">${l}</option>`).join('');
@@ -175,7 +364,9 @@ function renderConfronto() {
   const away = byId('cfAway').value;
   if (!league || !home || !away || home === away) return;
   renderConfrontoKpis(league, home, away);
+  renderRadarSection(league, home, away);
   renderConfrontoMarkets(league, home, away);
+  renderConfrontoInsights(league, home, away);
 }
 
 function getSeries(league, team, venue, metric) {
@@ -194,21 +385,21 @@ function renderForma() {
   const series = getSeries(league, team, venue, metric).filter((x) => Number.isFinite(x.value));
   const latest = series.length ? series[series.length - 1].value : null;
   const prev = series.length > 1 ? series[series.length - 2].value : null;
-  const avg = series.length ? series.reduce((a, x) => a + x.value, 0) / series.length : null;
+  const avgVal = series.length ? series.reduce((a, x) => a + x.value, 0) / series.length : null;
   const delta = (latest != null && prev != null) ? latest - prev : null;
 
   byId('formTrendCards').innerHTML = `
     <article class="kpi-card"><h3>Último valor</h3><div class="kpi-row"><span>${metric}</span><strong>${latest != null ? fmtNum(latest) : '—'}</strong></div></article>
     <article class="kpi-card"><h3>Tendência</h3><div class="kpi-row"><span>Último vs anterior</span><strong>${delta != null ? (delta >= 0 ? '+' : '') + fmtNum(delta) : '—'}</strong></div></article>
-    <article class="kpi-card"><h3>Média da série</h3><div class="kpi-row"><span>Média</span><strong>${avg != null ? fmtNum(avg) : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>Média da série</h3><div class="kpi-row"><span>Média</span><strong>${avgVal != null ? fmtNum(avgVal) : '—'}</strong></div></article>
     <article class="kpi-card"><h3>Amostra</h3><div class="kpi-row"><span>Registos</span><strong>${series.length}</strong></div></article>
   `;
 
   byId('formTable').querySelector('tbody').innerHTML = series.slice(-12).reverse().map((r, idx, arr) => {
     const next = arr[idx + 1];
     const d = next ? r.value - next.value : 0;
-    const tr = next ? (d > 0 ? 'A subir' : d < 0 ? 'A descer' : 'Estável') : '—';
-    return `<tr><td>${r.date}</td><td>${fmtNum(r.value)}</td><td>${tr}</td></tr>`;
+    const trend = next ? (d > 0 ? 'A subir' : d < 0 ? 'A descer' : 'Estável') : '—';
+    return `<tr><td>${r.date}</td><td>${fmtNum(r.value)}</td><td>${trend}</td></tr>`;
   }).join('') || '<tr><td colspan="3">Sem dados de forma para este filtro.</td></tr>';
 }
 
@@ -227,8 +418,8 @@ function populateForma(leagues) {
   refreshTeams();
 }
 
-function avgLeague(resumoRows, league, scope, col) {
-  const vals = resumoRows.filter((r) => r.league === league && r.scope === scope).map((r) => Number(r[col])).filter((x) => Number.isFinite(x));
+function avgLeague(league, scope, col) {
+  const vals = DATA.resumoRows.filter((r) => r.league === league && r.scope === scope).map((r) => Number(r[col])).filter((x) => Number.isFinite(x));
   if (!vals.length) return null;
   return vals.reduce((a, x) => a + x, 0) / vals.length;
 }
@@ -236,23 +427,27 @@ function avgLeague(resumoRows, league, scope, col) {
 function recentFormRate(league, team, venue, metric) {
   const s = getSeries(league, team, venue, metric).filter((x) => Number.isFinite(x.value));
   if (!s.length) return null;
-  return s.slice(-5).reduce((a, x) => a + x.value, 0) / Math.min(s.length, 5);
+  const last = s.slice(-5);
+  return last.reduce((a, x) => a + x.value, 0) / last.length;
 }
 
-function poissonProbs(lambdaHome, lambdaAway, maxGoals = 10) {
+function poissonPmfArray(lambda, maxGoals) {
   const pmf = (lam, k) => {
     if (lam <= 0) return k === 0 ? 1 : 0;
     let fact = 1;
-    for (let i = 2; i <= k; i++) fact *= i;
+    for (let i = 2; i <= k; i += 1) fact *= i;
     return Math.exp(-lam) * Math.pow(lam, k) / fact;
   };
+  return Array.from({ length: maxGoals + 1 }, (_, k) => pmf(lambda, k));
+}
 
-  const h = Array.from({ length: maxGoals + 1 }, (_, k) => pmf(lambdaHome, k));
-  const a = Array.from({ length: maxGoals + 1 }, (_, k) => pmf(lambdaAway, k));
+function poissonProbs(lambdaHome, lambdaAway, maxGoals = 10) {
+  const h = poissonPmfArray(lambdaHome, maxGoals);
+  const a = poissonPmfArray(lambdaAway, maxGoals);
 
-  let p1 = 0, px = 0, p2 = 0, over25 = 0, btts = 0;
-  for (let i = 0; i <= maxGoals; i++) {
-    for (let j = 0; j <= maxGoals; j++) {
+  let p1 = 0; let px = 0; let p2 = 0; let over25 = 0; let btts = 0;
+  for (let i = 0; i <= maxGoals; i += 1) {
+    for (let j = 0; j <= maxGoals; j += 1) {
       const p = h[i] * a[j];
       if (i > j) p1 += p;
       if (i === j) px += p;
@@ -261,8 +456,7 @@ function poissonProbs(lambdaHome, lambdaAway, maxGoals = 10) {
       if (i > 0 && j > 0) btts += p;
     }
   }
-
-  return { p1, px, p2, over25, btts };
+  return { p1, px, p2, over25, btts, pmfHome: h, pmfAway: a };
 }
 
 function computeExpectedGoals(league, homeTeam, awayTeam, weightRecent = 0.35) {
@@ -270,10 +464,10 @@ function computeExpectedGoals(league, homeTeam, awayTeam, weightRecent = 0.35) {
   const away = getResumoRow(league, awayTeam, 'Fora');
   if (!home || !away) return null;
 
-  const lgHomeGF = avgLeague(DATA.resumoRows, league, 'Casa', 'golos_marcados');
-  const lgHomeGA = avgLeague(DATA.resumoRows, league, 'Casa', 'golos_sofridos');
-  const lgAwayGF = avgLeague(DATA.resumoRows, league, 'Fora', 'golos_marcados');
-  const lgAwayGA = avgLeague(DATA.resumoRows, league, 'Fora', 'golos_sofridos');
+  const lgHomeGF = avgLeague(league, 'Casa', 'golos_marcados');
+  const lgHomeGA = avgLeague(league, 'Casa', 'golos_sofridos');
+  const lgAwayGF = avgLeague(league, 'Fora', 'golos_marcados');
+  const lgAwayGA = avgLeague(league, 'Fora', 'golos_sofridos');
   if (![lgHomeGF, lgHomeGA, lgAwayGF, lgAwayGA].every((x) => Number.isFinite(x) && x > 0)) return null;
 
   const seasonHome = lgHomeGF * (Number(home.golos_marcados) / lgHomeGF) * (Number(away.golos_sofridos) / lgAwayGA);
@@ -287,11 +481,34 @@ function computeExpectedGoals(league, homeTeam, awayTeam, weightRecent = 0.35) {
   const recentHome = (Number.isFinite(recentHomeFor) && Number.isFinite(recentAwayAgainst)) ? ((recentHomeFor + recentAwayAgainst) / 2) : seasonHome;
   const recentAway = (Number.isFinite(recentAwayFor) && Number.isFinite(recentHomeAgainst)) ? ((recentAwayFor + recentHomeAgainst) / 2) : seasonAway;
 
-  const wh = Math.max(0, Math.min(0.7, weightRecent));
-  const lambdaHome = (1 - wh) * seasonHome + wh * recentHome;
-  const lambdaAway = (1 - wh) * seasonAway + wh * recentAway;
+  const w = clamp(weightRecent, 0, 0.7);
+  const lambdaHome = (1 - w) * seasonHome + w * recentHome;
+  const lambdaAway = (1 - w) * seasonAway + w * recentAway;
 
   return { lambdaHome, lambdaAway };
+}
+
+function renderScoreHeatmap(pmfHome, pmfAway) {
+  const maxGoals = 5;
+  const cells = [];
+  let maxP = 0;
+
+  for (let h = 0; h <= maxGoals; h += 1) {
+    for (let a = 0; a <= maxGoals; a += 1) {
+      const p = (pmfHome[h] || 0) * (pmfAway[a] || 0);
+      maxP = Math.max(maxP, p);
+      cells.push({ h, a, p });
+    }
+  }
+
+  const sorted = cells.slice().sort((x, y) => y.p - x.p);
+  const top = new Set(sorted.slice(0, 6).map((x) => `${x.h}-${x.a}`));
+
+  byId('scoreHeatmap').innerHTML = cells.map((c) => {
+    const alpha = maxP > 0 ? (0.15 + 0.75 * (c.p / maxP)) : 0.15;
+    const border = top.has(`${c.h}-${c.a}`) ? '2px solid #0e7490' : '1px solid #e6ddd0';
+    return `<div class="heat-cell" style="background: rgba(14,116,144,${alpha.toFixed(3)}); border:${border}"><div class="score">${c.h} - ${c.a}</div><div class="prob">${(c.p * 100).toFixed(1)}%</div></div>`;
+  }).join('');
 }
 
 function renderPrejogo() {
@@ -306,6 +523,7 @@ function renderPrejogo() {
   if (!eg) {
     byId('prejogoProbCards').innerHTML = '<article class="kpi-card"><h3>Pré-jogo</h3><p class="meta">Sem dados suficientes para calcular EG.</p></article>';
     byId('prejogoShortlistTable').querySelector('tbody').innerHTML = '<tr><td colspan="5">Sem shortlist para este jogo.</td></tr>';
+    byId('scoreHeatmap').innerHTML = '<p class="meta">Sem dados de heatmap.</p>';
     return;
   }
 
@@ -317,6 +535,8 @@ function renderPrejogo() {
     <article class="kpi-card"><h3>Totais</h3><div class="kpi-row"><span>Over 2.5</span><strong>${fmtPct(probs.over25)}</strong></div><div class="kpi-row"><span>BTTS</span><strong>${fmtPct(probs.btts)}</strong></div></article>
     <article class="kpi-card"><h3>Configuração</h3><div class="kpi-row"><span>Peso forma</span><strong>${fmtPct(weight)}</strong></div><div class="kpi-row"><span>Liga</span><strong>${league}</strong></div></article>
   `;
+
+  renderScoreHeatmap(probs.pmfHome, probs.pmfAway);
 
   const shortlist = buildConfrontoMerged(league, home, away)
     .sort((a, b) => b.avg - a.avg)

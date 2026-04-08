@@ -13,7 +13,6 @@
   <header class="hero container">
     <p class="eyebrow">Análise de Futebol</p>
     <h1>Radar de Equipas e Mercados</h1>
-    <p class="lead">Versão web inspirada no teu dashboard Streamlit, com foco em ranking, scanner e confronto.</p>
     <div class="chips" id="summaryChips"></div>
   </header>
 
@@ -104,6 +103,22 @@
       </section>
 
       <section class="panel">
+        <div class="panel-head"><h2>Radar de Forças e Fraquezas</h2></div>
+        <div class="grid-2">
+          <div class="radar-block">
+            <h3 id="radarHomeTitle"></h3>
+            <canvas id="radarHome" width="380" height="320"></canvas>
+            <div class="mini-list" id="homeStrengths"></div>
+          </div>
+          <div class="radar-block">
+            <h3 id="radarAwayTitle"></h3>
+            <canvas id="radarAway" width="380" height="320"></canvas>
+            <div class="mini-list" id="awayStrengths"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
         <div class="panel-head"><h2>Mercados Convergentes</h2></div>
         <div class="table-wrap">
           <table id="confrontoMarketTable">
@@ -113,6 +128,11 @@
             <tbody></tbody>
           </table>
         </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Insights Automáticos do Matchup</h2></div>
+        <ul class="insights" id="confrontoInsights"></ul>
       </section>
     </section>
 
@@ -168,6 +188,11 @@
             <tbody></tbody>
           </table>
         </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Heatmap de Resultados (Poisson 0-5)</h2></div>
+        <div id="scoreHeatmap" class="heatmap-grid"></div>
       </section>
     </section>
   </main>
