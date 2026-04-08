@@ -28,26 +28,8 @@
     <button class="tab" data-tab="prejogo">Pré-jogo</button>
   </nav>
 
-  <section class="container global-bar">
-    <label>Liga global<select id="globalLeague"></select></label>
-    <label>Equipa global<select id="globalTeam"></select></label>
-    <label>Contexto global<select id="globalContext"><option value="Total">Total</option><option value="Casa">Casa</option><option value="Fora">Fora</option></select></label>
-    <label>Pesquisa rápida<input id="quickSearch" type="text" placeholder="equipa ou mercado..." /></label>
-    <button id="savePresetBtn" class="ghost-btn">Guardar preset</button>
-    <button id="loadPresetBtn" class="ghost-btn">Carregar preset</button>
-    <button id="themeToggleBtn" class="ghost-btn">Modo escuro</button>
-  </section>
-
   <main class="container">
     <section class="tab-panel active" id="panel-overview">
-      <section class="panel">
-        <div class="panel-head"><h2>Operação</h2></div>
-        <div class="kpi-grid">
-          <article class="kpi-card"><h3>Última atualização</h3><div id="lastUpdatedInfo" class="kpi-row"><span>Timestamp</span><strong>—</strong></div></article>
-          <article class="kpi-card"><h3>Estado</h3><div class="kpi-row"><span>Automação semanal</span><strong>Ativa</strong></div></article>
-        </div>
-      </section>
-
       <section class="panel feature">
         <div class="panel-head"><h2>Jogo da Semana</h2></div>
         <div id="matchOfWeekCard" class="kpi-grid"></div>
@@ -279,7 +261,6 @@
     </section>
   </main>
 
-  <footer class="container footer"><p id="sourceInfo"></p></footer>
   <script src="app.js" defer></script>
 </body>
 </html>

@@ -11,13 +11,10 @@ const MARKET_GROUPS = {
 };
 
 const RADAR_AXES = ['Resultados', 'Ataque', 'Defesa', 'Ritmo'];
-const FILTER_PRESET_KEY = 'radar_filters_preset_v1';
-const THEME_KEY = 'radar_theme_mode';
 
 let DATA = null;
 const TABLE_SORT_STATE = {};
 let PREJOGO_STATE = { league: null, home: null, away: null, probs: null, shortlist: [] };
-let UI_STATE = { quickSearch: '' };
 
 function parseSortableNumber(raw) {
   const text = String(raw ?? '').trim();
@@ -160,27 +157,6 @@ function scoreBadge(score) {
   return '<span class="badge warn">Baixa</span>';
 }
 
-function toLisbonString(isoTs) {
-  if (!isoTs) return '—';
-  const dt = new Date(isoTs);
-  if (Number.isNaN(dt.getTime())) return '—';
-  return dt.toLocaleString('pt-PT', {
-    timeZone: 'Europe/Lisbon',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-}
-
-function matchesQuickSearch(...parts) {
-  const q = UI_STATE.quickSearch.trim().toLowerCase();
-  if (!q) return true;
-  const blob = parts.filter(Boolean).join(' ').toLowerCase();
-  return blob.includes(q);
-}
-
 function renderSummaryChips(data) {
   const leagues = data.overview.length;
   const teams = Object.values(data.rankings).reduce((acc, arr) => acc + arr.length, 0);
@@ -211,7 +187,6 @@ function renderRanking(league) {
 function renderMarkets(league) {
   const rows = DATA.marketRows
     .filter((r) => r.league === league && r.scope === 'Total' && r.hit_rate != null)
-    .filter((r) => matchesQuickSearch(r.team, r.market))
     .sort((a, b) => Number(b.value_estimado ?? -999) - Number(a.value_estimado ?? -999))
     .slice(0, 10);
 
@@ -224,7 +199,6 @@ function renderMarkets(league) {
 function renderLay(league) {
   const rows = DATA.layRows
     .filter((r) => r.league === league)
-    .filter((r) => matchesQuickSearch(r.team, r.cenario_lay, r.descricao))
     .sort((a, b) => Number(b.lay_score ?? -999) - Number(a.lay_score ?? -999))
     .slice(0, 10);
 
@@ -259,8 +233,7 @@ function renderScanner() {
   let rows = DATA.marketRows.filter((r) => (league === 'Todas' || r.league === league)
     && r.scope === scope
     && Number(r.jogos || 0) >= minGames
-    && marketInGroup(r.market, group)
-    && matchesQuickSearch(r.team, r.market));
+    && marketInGroup(r.market, group));
   rows = rows
     .map((r) => ({ ...r, opportunityScore: opportunityScore(r) }))
     .sort((a, b) => Number(b.opportunityScore ?? -999) - Number(a.opportunityScore ?? -999));
@@ -1054,90 +1027,6 @@ function populatePrejogo(leagues) {
   refreshTeams();
 }
 
-function currentFiltersSnapshot() {
-  return {
-    globalLeague: byId('globalLeague')?.value ?? '',
-    globalTeam: byId('globalTeam')?.value ?? '',
-    globalContext: byId('globalContext')?.value ?? 'Total',
-    quickSearch: byId('quickSearch')?.value ?? '',
-    scanGroup: byId('scanGroup')?.value ?? 'resultados',
-    scanMinGames: byId('scanMinGames')?.value ?? '8',
-    formMetric: byId('formMetric')?.value ?? 'roll5_points',
-    pjRecentWeight: byId('pjRecentWeight')?.value ?? '35'
-  };
-}
-
-function applyFiltersSnapshot(snap) {
-  if (!snap) return;
-  if (snap.globalLeague && byId('globalLeague')) byId('globalLeague').value = snap.globalLeague;
-  if (snap.globalTeam && byId('globalTeam')) byId('globalTeam').value = snap.globalTeam;
-  if (snap.globalContext && byId('globalContext')) byId('globalContext').value = snap.globalContext;
-  if (typeof snap.quickSearch === 'string' && byId('quickSearch')) byId('quickSearch').value = snap.quickSearch;
-  if (snap.scanGroup && byId('scanGroup')) byId('scanGroup').value = snap.scanGroup;
-  if (snap.scanMinGames && byId('scanMinGames')) byId('scanMinGames').value = snap.scanMinGames;
-  if (snap.formMetric && byId('formMetric')) byId('formMetric').value = snap.formMetric;
-  if (snap.pjRecentWeight && byId('pjRecentWeight')) byId('pjRecentWeight').value = snap.pjRecentWeight;
-}
-
-function setSelectIfPresent(id, value, triggerChange = false) {
-  const sel = byId(id);
-  if (!sel) return;
-  if (!Array.from(sel.options).some((o) => o.value === value)) return;
-  const changed = sel.value !== value;
-  sel.value = value;
-  if (triggerChange && changed) sel.dispatchEvent(new Event('change'));
-}
-
-function syncGlobalFilters() {
-  const league = byId('globalLeague').value;
-  const team = byId('globalTeam').value;
-  const context = byId('globalContext').value;
-
-  renderGlobalTeamOptions(DATA.overview.map((x) => x.league), league);
-  setSelectIfPresent('globalTeam', team);
-
-  ['leagueSelect', 'scanLeague'].forEach((id) => setSelectIfPresent(id, league));
-  ['cfLeague', 'formLeague', 'pjLeague'].forEach((id) => setSelectIfPresent(id, league, true));
-  ['formTeam', 'cfHome', 'pjHome'].forEach((id) => setSelectIfPresent(id, team));
-
-  if (byId('scanScope')) byId('scanScope').value = context;
-  if (byId('formVenue') && (context === 'Casa' || context === 'Fora')) {
-    byId('formVenue').value = context === 'Casa' ? 'H' : 'A';
-  }
-
-  UI_STATE.quickSearch = byId('quickSearch').value.trim();
-  renderAll();
-}
-
-function renderAll() {
-  const league = byId('leagueSelect').value || DATA.overview?.[0]?.league;
-  if (league) renderOverview(league);
-  renderScanner();
-  renderConfronto();
-  renderForma();
-  renderPrejogo();
-}
-
-function applyTheme(theme) {
-  const mode = theme === 'dark' ? 'dark' : 'light';
-  document.documentElement.setAttribute('data-theme', mode);
-  localStorage.setItem(THEME_KEY, mode);
-  const btn = byId('themeToggleBtn');
-  if (btn) btn.textContent = mode === 'dark' ? 'Modo claro' : 'Modo escuro';
-}
-
-function loadTheme() {
-  const saved = localStorage.getItem(THEME_KEY) || 'light';
-  applyTheme(saved);
-}
-
-function renderLastUpdate() {
-  const target = byId('lastUpdatedInfo');
-  if (!target) return;
-  const ts = DATA.meta?.generatedAt;
-  target.innerHTML = `<span>Timestamp</span><strong>${toLisbonString(ts)}</strong>`;
-}
-
 function renderChangelog() {
   const el = byId('changelogList');
   if (!el) return;
@@ -1145,13 +1034,6 @@ function renderChangelog() {
   el.innerHTML = entries.length
     ? entries.slice(0, 8).map((c) => `<article class="item"><p class="title">${c.date || '—'} · ${c.title || 'Atualização semanal'}</p><p class="meta">${c.summary || 'Refresh automático de dados e métricas.'}</p></article>`).join('')
     : '<p class="meta">Sem entradas de changelog ainda.</p>';
-}
-
-function renderGlobalTeamOptions(leagues, selectedLeague = null) {
-  const listLeagues = selectedLeague ? [selectedLeague] : leagues;
-  const allTeams = listLeagues.flatMap((lg) => (DATA.rankings[lg] || []).map((r) => r.team));
-  const unique = Array.from(new Set(allTeams)).sort((a, b) => a.localeCompare(b, 'pt'));
-  byId('globalTeam').innerHTML = unique.map((t) => `<option value="${t}">${t}</option>`).join('');
 }
 
 function exportPrejogoPdf() {
@@ -1188,17 +1070,10 @@ async function main() {
   const res = await fetch('./data/site-data.json');
   DATA = await res.json();
 
-  loadTheme();
   renderSummaryChips(DATA);
-  byId('sourceInfo').textContent = `Fontes usadas: ${(DATA.meta?.sourceFiles || []).join(', ')}`;
-  renderLastUpdate();
   renderChangelog();
 
   const leagues = DATA.overview.map((x) => x.league);
-
-  byId('globalLeague').innerHTML = leagues.map((l) => `<option value="${l}">${l}</option>`).join('');
-  byId('globalLeague').value = leagues[0];
-  renderGlobalTeamOptions(leagues, leagues[0]);
 
   byId('leagueSelect').innerHTML = leagues.map((l) => `<option value="${l}">${l}</option>`).join('');
   byId('leagueSelect').addEventListener('change', (e) => renderOverview(e.target.value));
@@ -1215,30 +1090,6 @@ async function main() {
   document.querySelectorAll('.tab').forEach((btn) => btn.addEventListener('click', () => setActiveTab(btn.dataset.tab)));
 
   ['rankingTable', 'scannerTable', 'confrontoMarketTable', 'compareDeltaTable', 'formTable', 'prejogoShortlistTable', 'evKellyTable', 'h2hTable'].forEach(enableTableSorting);
-
-  ['globalLeague', 'globalTeam', 'globalContext'].forEach((id) => byId(id)?.addEventListener('change', syncGlobalFilters));
-  byId('quickSearch')?.addEventListener('input', () => {
-    UI_STATE.quickSearch = byId('quickSearch').value.trim();
-    renderAll();
-  });
-  byId('themeToggleBtn')?.addEventListener('click', () => {
-    const current = document.documentElement.getAttribute('data-theme') || 'light';
-    applyTheme(current === 'dark' ? 'light' : 'dark');
-  });
-  byId('savePresetBtn')?.addEventListener('click', () => {
-    localStorage.setItem(FILTER_PRESET_KEY, JSON.stringify(currentFiltersSnapshot()));
-  });
-  byId('loadPresetBtn')?.addEventListener('click', () => {
-    const raw = localStorage.getItem(FILTER_PRESET_KEY);
-    if (!raw) return;
-    try {
-      const snap = JSON.parse(raw);
-      applyFiltersSnapshot(snap);
-      syncGlobalFilters();
-    } catch {
-      console.warn('Preset inválido.');
-    }
-  });
   byId('exportPrejogoPdfBtn')?.addEventListener('click', exportPrejogoPdf);
 
   byId('scannerExportBtn')?.addEventListener('click', () => {
@@ -1247,7 +1098,7 @@ async function main() {
     const group = byId('scanGroup').value;
     const minGames = Number(byId('scanMinGames').value || 1);
     const rows = DATA.marketRows
-      .filter((r) => (league === 'Todas' || r.league === league) && r.scope === scope && Number(r.jogos || 0) >= minGames && marketInGroup(r.market, group) && matchesQuickSearch(r.team, r.market))
+      .filter((r) => (league === 'Todas' || r.league === league) && r.scope === scope && Number(r.jogos || 0) >= minGames && marketInGroup(r.market, group))
       .map((r) => ({ ...r, opportunityScore: opportunityScore(r) }))
       .sort((a, b) => Number(b.opportunityScore ?? -999) - Number(a.opportunityScore ?? -999));
     downloadCSV(
@@ -1266,16 +1117,6 @@ async function main() {
       s.map((r) => [r.market, r.homeEdge, r.awayEdge, r.avg, r.hitAvg])
     );
   });
-
-  const savedPreset = localStorage.getItem(FILTER_PRESET_KEY);
-  if (savedPreset) {
-    try {
-      applyFiltersSnapshot(JSON.parse(savedPreset));
-    } catch {
-      console.warn('Preset guardado inválido.');
-    }
-  }
-  syncGlobalFilters();
 }
 
 main().catch((err) => {
