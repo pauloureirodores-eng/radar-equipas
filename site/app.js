@@ -14,6 +14,7 @@ const RADAR_AXES = ['Resultados', 'Ataque', 'Defesa', 'Ritmo'];
 
 let DATA = null;
 const TABLE_SORT_STATE = {};
+let PREJOGO_STATE = { league: null, home: null, away: null, probs: null, shortlist: [] };
 
 function parseSortableNumber(raw) {
   const text = String(raw ?? '').trim();
@@ -93,6 +94,22 @@ function applyExistingSort(tableId) {
   if (current) {
     sortTableRows(tableId, current.colIdx, current.direction);
   }
+}
+
+function downloadCSV(filename, headers, rows) {
+  const esc = (v) => `"${String(v ?? '').replaceAll('"', '""')}"`;
+  const csv = [headers.map(esc).join(',')]
+    .concat(rows.map((r) => r.map(esc).join(',')))
+    .join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
 }
 
 function setActiveTab(tabId) {
@@ -582,6 +599,100 @@ function recentFormRate(league, team, venue, metric) {
   return last.reduce((a, x) => a + x.value, 0) / last.length;
 }
 
+function stdDev(values) {
+  const valid = values.filter((x) => Number.isFinite(x));
+  if (!valid.length) return null;
+  const m = avg(valid);
+  const variance = valid.reduce((acc, x) => acc + ((x - m) ** 2), 0) / valid.length;
+  return Math.sqrt(variance);
+}
+
+function matchConfidence(league, home, away) {
+  const h = getResumoRow(league, home, 'Casa');
+  const a = getResumoRow(league, away, 'Fora');
+  if (!h || !a) return null;
+
+  const gamesHome = Number(h.jogos);
+  const gamesAway = Number(a.jogos);
+  const sampleFactor = clamp(Math.min(gamesHome, gamesAway) / 19, 0, 1);
+
+  const hs = getSeries(league, home, 'H', 'roll5_goal_diff').map((x) => x.value).slice(-6);
+  const as = getSeries(league, away, 'A', 'roll5_goal_diff').map((x) => x.value).slice(-6);
+  const hStd = stdDev(hs);
+  const aStd = stdDev(as);
+  const combinedStd = avg([hStd, aStd]);
+  const stabilityFactor = combinedStd == null ? 0.5 : clamp(1 - (combinedStd / 2.5), 0, 1);
+
+  const score = Math.round((sampleFactor * 0.55 + stabilityFactor * 0.45) * 100);
+  return { score, sampleFactor, stabilityFactor, gamesHome, gamesAway };
+}
+
+function evKellyRows(probs) {
+  const items = [
+    ['1 (Casa vence)', probs.p1, Number(byId('odds1').value)],
+    ['X (Empate)', probs.px, Number(byId('oddsX').value)],
+    ['2 (Fora vence)', probs.p2, Number(byId('odds2').value)],
+    ['Over 2.5', probs.over25, Number(byId('oddsO25').value)],
+    ['BTTS', probs.btts, Number(byId('oddsBTTS').value)]
+  ];
+
+  return items.map(([market, p, odds]) => {
+    const o = Number.isFinite(odds) && odds > 1 ? odds : null;
+    const ev = o ? (p * o - 1) : null;
+    const kelly = o ? Math.max(0, (p * o - 1) / (o - 1)) : null;
+    return { market, p, odds: o, ev, kelly };
+  });
+}
+
+function renderEVKellyTable(probs) {
+  const rows = evKellyRows(probs);
+  byId('evKellyTable').querySelector('tbody').innerHTML = rows.map((r) => `<tr><td>${r.market}</td><td>${fmtPct(r.p)}</td><td>${r.odds ? fmtNum(r.odds, 2) : '—'}</td><td>${r.ev != null ? `${fmtNum(r.ev * 100, 1)}%` : '—'}</td><td>${r.kelly != null ? `${fmtNum(r.kelly * 100, 1)}%` : '—'}</td></tr>`).join('');
+  applyExistingSort('evKellyTable');
+}
+
+function h2hRows(league, home, away) {
+  const rows = DATA.seriesRows
+    .filter((r) => r.league === league && r.team === home && r.opponent === away)
+    .map((r) => {
+      const gf = Number(r.gf);
+      const ga = Number(r.ga);
+      return {
+        date: r.date,
+        context: r.venue === 'H' ? 'Casa' : 'Fora',
+        score: `${home} ${gf}-${ga} ${away}`,
+        totalGoals: gf + ga,
+        outcome: gf > ga ? 'W' : gf === ga ? 'D' : 'L'
+      };
+    })
+    .sort((a, b) => String(b.date).localeCompare(String(a.date)));
+  return rows;
+}
+
+function renderH2H(league, home, away) {
+  const rows = h2hRows(league, home, away);
+  if (!rows.length) {
+    byId('h2hSummary').innerHTML = '<article class="kpi-card"><h3>H2H</h3><p class="meta">Sem histórico direto disponível nesta liga.</p></article>';
+    byId('h2hTable').querySelector('tbody').innerHTML = '<tr><td colspan="4">Sem histórico direto.</td></tr>';
+    return;
+  }
+
+  const n = rows.length;
+  const wins = rows.filter((r) => r.outcome === 'W').length;
+  const draws = rows.filter((r) => r.outcome === 'D').length;
+  const losses = rows.filter((r) => r.outcome === 'L').length;
+  const avgGoals = avg(rows.map((r) => r.totalGoals));
+
+  byId('h2hSummary').innerHTML = `
+    <article class="kpi-card"><h3>Amostra</h3><div class="kpi-row"><span>Jogos</span><strong>${n}</strong></div></article>
+    <article class="kpi-card"><h3>Registo (${home})</h3><div class="kpi-row"><span>V-E-D</span><strong>${wins}-${draws}-${losses}</strong></div></article>
+    <article class="kpi-card"><h3>Média de golos</h3><div class="kpi-row"><span>Total por jogo</span><strong>${avgGoals != null ? fmtNum(avgGoals) : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>Último jogo</h3><div class="kpi-row"><span>Data</span><strong>${rows[0].date}</strong></div></article>
+  `;
+
+  byId('h2hTable').querySelector('tbody').innerHTML = rows.slice(0, 12).map((r) => `<tr><td>${r.date}</td><td>${r.context}</td><td>${r.score}</td><td>${r.totalGoals}</td></tr>`).join('');
+  applyExistingSort('h2hTable');
+}
+
 function poissonPmfArray(lambda, maxGoals) {
   const pmf = (lam, k) => {
     if (lam <= 0) return k === 0 ? 1 : 0;
@@ -673,8 +784,12 @@ function renderPrejogo() {
   const eg = computeExpectedGoals(league, home, away, weight);
   if (!eg) {
     byId('prejogoProbCards').innerHTML = '<article class="kpi-card"><h3>Pré-jogo</h3><p class="meta">Sem dados suficientes para calcular EG.</p></article>';
+    byId('prejogoConfidenceCards').innerHTML = '<article class="kpi-card"><h3>Confiança</h3><p class="meta">Sem dados suficientes.</p></article>';
+    byId('evKellyTable').querySelector('tbody').innerHTML = '<tr><td colspan="5">Insere odds para calcular EV/Kelly.</td></tr>';
     byId('prejogoShortlistTable').querySelector('tbody').innerHTML = '<tr><td colspan="5">Sem shortlist para este jogo.</td></tr>';
     byId('scoreHeatmap').innerHTML = '<p class="meta">Sem dados de heatmap.</p>';
+    byId('h2hSummary').innerHTML = '<article class="kpi-card"><h3>H2H</h3><p class="meta">Sem dados.</p></article>';
+    byId('h2hTable').querySelector('tbody').innerHTML = '<tr><td colspan="4">Sem histórico direto.</td></tr>';
     return;
   }
 
@@ -687,14 +802,30 @@ function renderPrejogo() {
     <article class="kpi-card"><h3>Configuração</h3><div class="kpi-row"><span>Peso forma</span><strong>${fmtPct(weight)}</strong></div><div class="kpi-row"><span>Liga</span><strong>${league}</strong></div></article>
   `;
 
+  const conf = matchConfidence(league, home, away);
+  byId('prejogoConfidenceCards').innerHTML = conf
+    ? `
+      <article class="kpi-card"><h3>Score de Confiança</h3><div class="kpi-row"><span>0-100</span><strong>${conf.score}</strong></div></article>
+      <article class="kpi-card"><h3>Fator Amostra</h3><div class="kpi-row"><span>Casa/Fora</span><strong>${conf.gamesHome}/${conf.gamesAway}</strong></div></article>
+      <article class="kpi-card"><h3>Qualidade da Amostra</h3><div class="kpi-row"><span>normalizado</span><strong>${fmtPct(conf.sampleFactor)}</strong></div></article>
+      <article class="kpi-card"><h3>Estabilidade</h3><div class="kpi-row"><span>forma recente</span><strong>${fmtPct(conf.stabilityFactor)}</strong></div></article>
+    `
+    : '<article class="kpi-card"><h3>Confiança</h3><p class="meta">Sem dados suficientes.</p></article>';
+
+  PREJOGO_STATE = { league, home, away, probs, shortlist: [] };
+  renderEVKellyTable(probs);
+
   renderScoreHeatmap(probs.pmfHome, probs.pmfAway);
 
   const shortlist = buildConfrontoMerged(league, home, away)
     .sort((a, b) => b.avg - a.avg)
     .slice(0, 15);
+  PREJOGO_STATE.shortlist = shortlist;
 
   byId('prejogoShortlistTable').querySelector('tbody').innerHTML = shortlist.map((r) => `<tr><td>${r.market}</td><td>${fmtNum(r.homeEdge * 100, 1)} pp</td><td>${fmtNum(r.awayEdge * 100, 1)} pp</td><td>${fmtNum(r.avg * 100, 1)} pp</td><td>${r.hitAvg != null ? fmtPct(r.hitAvg) : '—'}</td></tr>`).join('') || '<tr><td colspan="5">Sem shortlist para este jogo.</td></tr>';
   applyExistingSort('prejogoShortlistTable');
+
+  renderH2H(league, home, away);
 }
 
 function populatePrejogo(leagues) {
@@ -711,6 +842,9 @@ function populatePrejogo(leagues) {
 
   byId('pjLeague').addEventListener('change', refreshTeams);
   ['pjHome', 'pjAway', 'pjRecentWeight'].forEach((id) => byId(id).addEventListener('change', renderPrejogo));
+  ['odds1', 'oddsX', 'odds2', 'oddsO25', 'oddsBTTS'].forEach((id) => byId(id).addEventListener('input', () => {
+    if (PREJOGO_STATE?.probs) renderEVKellyTable(PREJOGO_STATE.probs);
+  }));
   refreshTeams();
 }
 
@@ -737,7 +871,32 @@ async function main() {
 
   document.querySelectorAll('.tab').forEach((btn) => btn.addEventListener('click', () => setActiveTab(btn.dataset.tab)));
 
-  ['rankingTable', 'scannerTable', 'confrontoMarketTable', 'formTable', 'prejogoShortlistTable'].forEach(enableTableSorting);
+  ['rankingTable', 'scannerTable', 'confrontoMarketTable', 'formTable', 'prejogoShortlistTable', 'evKellyTable', 'h2hTable'].forEach(enableTableSorting);
+
+  byId('scannerExportBtn')?.addEventListener('click', () => {
+    const league = byId('scanLeague').value;
+    const scope = byId('scanScope').value;
+    const group = byId('scanGroup').value;
+    const minGames = Number(byId('scanMinGames').value || 1);
+    const rows = DATA.marketRows
+      .filter((r) => (league === 'Todas' || r.league === league) && r.scope === scope && Number(r.jogos || 0) >= minGames && marketInGroup(r.market, group))
+      .sort((a, b) => Number(b.edge_vs_liga ?? -999) - Number(a.edge_vs_liga ?? -999));
+    downloadCSV(
+      `scanner_${league}_${scope}.csv`,
+      ['Liga', 'Equipa', 'Mercado', 'Jogos', 'HitRate', 'EdgeVsLiga', 'ROI', 'Value'],
+      rows.map((r) => [r.league, r.team, r.market, r.jogos, r.hit_rate, r.edge_vs_liga, r.roi_unid_por_aposta, r.value_estimado])
+    );
+  });
+
+  byId('shortlistExportBtn')?.addEventListener('click', () => {
+    const s = PREJOGO_STATE?.shortlist || [];
+    if (!s.length) return;
+    downloadCSV(
+      `shortlist_${PREJOGO_STATE.league}_${PREJOGO_STATE.home}_vs_${PREJOGO_STATE.away}.csv`,
+      ['Mercado', 'EdgeCasa', 'EdgeFora', 'EdgeMedia', 'HitMedio'],
+      s.map((r) => [r.market, r.homeEdge, r.awayEdge, r.avg, r.hitAvg])
+    );
+  });
 }
 
 main().catch((err) => {

@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Radar de Equipas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -13,6 +16,7 @@
   <header class="hero container">
     <p class="eyebrow">Análise de Futebol</p>
     <h1>Radar de Equipas e Mercados</h1>
+    <p class="lead">Insights multi-liga para decisão pré-jogo, matchup e leitura de mercado.</p>
     <div class="chips" id="summaryChips"></div>
   </header>
 
@@ -65,7 +69,7 @@
 
     <section class="tab-panel" id="panel-scanner">
       <section class="panel">
-        <div class="panel-head"><h2>Scanner Multi-Equipa</h2></div>
+        <div class="panel-head"><h2>Scanner Multi-Equipa</h2><button id="scannerExportBtn" class="ghost-btn">Exportar CSV</button></div>
         <div class="controls-grid">
           <label>Liga<select id="scanLeague"></select></label>
           <label>Contexto<select id="scanScope"><option>Total</option><option>Casa</option><option>Fora</option></select></label>
@@ -183,8 +187,31 @@
         </div>
         <div class="kpi-grid" id="prejogoProbCards"></div>
       </section>
+
       <section class="panel">
-        <div class="panel-head"><h2>Shortlist de Mercados</h2></div>
+        <div class="panel-head"><h2>Confiança do Matchup</h2></div>
+        <div class="kpi-grid" id="prejogoConfidenceCards"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>EV e Kelly (odds de mercado)</h2></div>
+        <div class="controls-grid">
+          <label>Odds 1<input id="odds1" type="number" step="0.01" min="1.01" placeholder="2.10" /></label>
+          <label>Odds X<input id="oddsX" type="number" step="0.01" min="1.01" placeholder="3.40" /></label>
+          <label>Odds 2<input id="odds2" type="number" step="0.01" min="1.01" placeholder="3.30" /></label>
+          <label>Odds Over 2.5<input id="oddsO25" type="number" step="0.01" min="1.01" placeholder="1.95" /></label>
+          <label>Odds BTTS<input id="oddsBTTS" type="number" step="0.01" min="1.01" placeholder="1.88" /></label>
+        </div>
+        <div class="table-wrap">
+          <table id="evKellyTable">
+            <thead><tr><th>Mercado</th><th>Probabilidade modelo</th><th>Odds</th><th>EV</th><th>Kelly</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Shortlist de Mercados</h2><button id="shortlistExportBtn" class="ghost-btn">Exportar CSV</button></div>
         <div class="table-wrap">
           <table id="prejogoShortlistTable">
             <thead><tr><th>Mercado</th><th>Edge Casa</th><th>Edge Fora</th><th>Edge Média</th><th>Hit Médio</th></tr></thead>
@@ -196,6 +223,17 @@
       <section class="panel">
         <div class="panel-head"><h2>Heatmap de Resultados (Poisson 0-5)</h2></div>
         <div id="scoreHeatmap" class="heatmap-grid"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Histórico Direto (H2H)</h2></div>
+        <div class="kpi-grid" id="h2hSummary"></div>
+        <div class="table-wrap">
+          <table id="h2hTable">
+            <thead><tr><th>Data</th><th>Contexto</th><th>Resultado</th><th>Total Golos</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
       </section>
     </section>
   </main>
