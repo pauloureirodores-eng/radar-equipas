@@ -376,6 +376,70 @@ function getSeries(league, team, venue, metric) {
     .map((r) => ({ date: r.date, value: Number(r[metric]) }));
 }
 
+function drawFormLineChart(series, metric) {
+  const svg = byId('formLineChart');
+  if (!svg) return;
+
+  if (!series.length) {
+    svg.innerHTML = '<text x="16" y="28" fill="#5f6a78" font-size="14">Sem dados suficientes para o gráfico.</text>';
+    return;
+  }
+
+  const width = 640;
+  const height = 280;
+  const margin = { top: 16, right: 20, bottom: 34, left: 42 };
+  const chartW = width - margin.left - margin.right;
+  const chartH = height - margin.top - margin.bottom;
+
+  const isRateMetric = ['roll5_over_2_5', 'roll5_btts', 'roll5_clean_sheet'].includes(metric);
+  const values = series.map((s) => s.value).filter((v) => Number.isFinite(v));
+  const minData = Math.min(...values);
+  const maxData = Math.max(...values);
+
+  let yMin = minData;
+  let yMax = maxData;
+  if (isRateMetric) {
+    yMin = Math.min(0, yMin);
+    yMax = Math.max(1, yMax);
+  }
+  if (yMin === yMax) {
+    yMin -= 0.5;
+    yMax += 0.5;
+  }
+
+  const xAt = (idx) => margin.left + (idx / Math.max(series.length - 1, 1)) * chartW;
+  const yAt = (v) => margin.top + (1 - ((v - yMin) / (yMax - yMin))) * chartH;
+
+  const points = series.map((s, i) => `${xAt(i)},${yAt(s.value)}`).join(' ');
+
+  const yTicks = 4;
+  let grid = '';
+  let labels = '';
+  for (let i = 0; i <= yTicks; i += 1) {
+    const t = i / yTicks;
+    const y = margin.top + t * chartH;
+    const v = yMax - t * (yMax - yMin);
+    const label = isRateMetric ? `${(v * 100).toFixed(0)}%` : v.toFixed(2);
+    grid += `<line x1="${margin.left}" y1="${y}" x2="${width - margin.right}" y2="${y}" stroke="#edf0f2" stroke-width="1" />`;
+    labels += `<text x="${margin.left - 8}" y="${y + 4}" text-anchor="end" fill="#5f6a78" font-size="11">${label}</text>`;
+  }
+
+  const xStart = series[0].date ?? '';
+  const xEnd = series[series.length - 1].date ?? '';
+
+  svg.innerHTML = `
+    <rect x="0" y="0" width="${width}" height="${height}" fill="#ffffff" />
+    ${grid}
+    <line x1="${margin.left}" y1="${height - margin.bottom}" x2="${width - margin.right}" y2="${height - margin.bottom}" stroke="#d9dddf" />
+    <line x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${height - margin.bottom}" stroke="#d9dddf" />
+    ${labels}
+    <polyline fill="none" stroke="#0e7490" stroke-width="3" points="${points}" />
+    ${series.map((s, i) => `<circle cx="${xAt(i)}" cy="${yAt(s.value)}" r="3.2" fill="#0e7490" />`).join('')}
+    <text x="${margin.left}" y="${height - 8}" fill="#5f6a78" font-size="11">${xStart}</text>
+    <text x="${width - margin.right}" y="${height - 8}" text-anchor="end" fill="#5f6a78" font-size="11">${xEnd}</text>
+  `;
+}
+
 function renderForma() {
   const league = byId('formLeague').value;
   const team = byId('formTeam').value;
@@ -394,6 +458,8 @@ function renderForma() {
     <article class="kpi-card"><h3>Média da série</h3><div class="kpi-row"><span>Média</span><strong>${avgVal != null ? fmtNum(avgVal) : '—'}</strong></div></article>
     <article class="kpi-card"><h3>Amostra</h3><div class="kpi-row"><span>Registos</span><strong>${series.length}</strong></div></article>
   `;
+
+  drawFormLineChart(series, metric);
 
   byId('formTable').querySelector('tbody').innerHTML = series.slice(-12).reverse().map((r, idx, arr) => {
     const next = arr[idx + 1];
