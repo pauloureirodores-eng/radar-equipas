@@ -110,6 +110,8 @@ def main() -> None:
         "market",
         "jogos",
         "hit_rate",
+        "wilson_lo",
+        "wilson_hi",
         "edge_vs_liga",
         "roi_unid_por_aposta",
         "odds_avg",
@@ -119,6 +121,8 @@ def main() -> None:
     market_rows = mercados[[c for c in market_cols if c in mercados.columns]].copy()
     for c in (
         "hit_rate",
+        "wilson_lo",
+        "wilson_hi",
         "edge_vs_liga",
         "roi_unid_por_aposta",
         "odds_avg",

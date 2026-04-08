@@ -30,6 +30,11 @@
 
   <main class="container">
     <section class="tab-panel active" id="panel-overview">
+      <section class="panel feature">
+        <div class="panel-head"><h2>Jogo da Semana</h2></div>
+        <div id="matchOfWeekCard" class="kpi-grid"></div>
+      </section>
+
       <section class="panel">
         <div class="panel-head">
           <h2>Ligas</h2>
@@ -87,7 +92,7 @@
         <div class="table-wrap">
           <table id="scannerTable">
             <thead>
-              <tr><th>Equipa</th><th>Mercado</th><th>Jogos</th><th>Hit Rate</th><th>Edge vs Liga</th><th>ROI</th><th>Value</th></tr>
+              <tr><th>Equipa</th><th>Mercado</th><th>Jogos</th><th>Hit Rate</th><th>IC</th><th>Edge vs Liga</th><th>ROI</th><th>Value</th></tr>
             </thead>
             <tbody></tbody>
           </table>
@@ -119,6 +124,19 @@
             <canvas id="radarAway" width="380" height="320"></canvas>
             <div class="mini-list" id="awayStrengths"></div>
           </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Comparador Lado a Lado</h2></div>
+        <div class="linechart-wrap">
+          <svg id="compareLineChart" viewBox="0 0 760 300" preserveAspectRatio="none"></svg>
+        </div>
+        <div class="table-wrap">
+          <table id="compareDeltaTable">
+            <thead><tr><th>Métrica</th><th>Casa</th><th>Fora</th><th>Delta</th></tr></thead>
+            <tbody></tbody>
+          </table>
         </div>
       </section>
 

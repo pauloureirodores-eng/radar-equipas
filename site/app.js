@@ -182,6 +182,7 @@ function renderLay(league) {
 }
 
 function renderOverview(league) {
+  renderMatchOfWeek(league);
   renderLeagueCards(DATA, league);
   renderRanking(league);
   renderMarkets(league);
@@ -208,8 +209,19 @@ function renderScanner() {
   let rows = DATA.marketRows.filter((r) => (league === 'Todas' || r.league === league) && r.scope === scope && Number(r.jogos || 0) >= minGames && marketInGroup(r.market, group));
   rows = rows.sort((a, b) => Number(b.edge_vs_liga ?? -999) - Number(a.edge_vs_liga ?? -999));
 
-  byId('scannerTable').querySelector('tbody').innerHTML = rows.slice(0, 120).map((r) => `<tr><td>${r.team}</td><td>${r.market}</td><td>${r.jogos}</td><td>${r.hit_rate != null ? fmtPct(r.hit_rate) : '—'}</td><td>${r.edge_vs_liga != null ? `${fmtNum(r.edge_vs_liga * 100, 1)} pp` : '—'}</td><td>${r.roi_unid_por_aposta != null ? fmtNum(r.roi_unid_por_aposta, 3) : '—'}</td><td>${r.value_estimado != null ? `${fmtNum(r.value_estimado * 100, 1)}%` : '—'}</td></tr>`).join('') || '<tr><td colspan="7">Sem dados para os filtros escolhidos.</td></tr>';
+  byId('scannerTable').querySelector('tbody').innerHTML = rows.slice(0, 120).map((r) => `<tr><td>${r.team}</td><td>${r.market}</td><td>${r.jogos}</td><td>${r.hit_rate != null ? fmtPct(r.hit_rate) : '—'}</td><td>${renderCiCell(r)}</td><td>${r.edge_vs_liga != null ? `${fmtNum(r.edge_vs_liga * 100, 1)} pp` : '—'}</td><td>${r.roi_unid_por_aposta != null ? fmtNum(r.roi_unid_por_aposta, 3) : '—'}</td><td>${r.value_estimado != null ? `${fmtNum(r.value_estimado * 100, 1)}%` : '—'}</td></tr>`).join('') || '<tr><td colspan="8">Sem dados para os filtros escolhidos.</td></tr>';
   applyExistingSort('scannerTable');
+}
+
+function renderCiCell(r) {
+  const lo = toNum(r.wilson_lo);
+  const hi = toNum(r.wilson_hi);
+  const hr = toNum(r.hit_rate);
+  if (lo == null || hi == null || hr == null) return '—';
+  const left = clamp(lo * 100, 0, 100);
+  const right = clamp(hi * 100, 0, 100);
+  const point = clamp(hr * 100, 0, 100);
+  return `<div class="ci-cell"><div class="ci-track"><span class="ci-range" style="left:${left}%;width:${Math.max(1,right-left)}%"></span><span class="ci-point" style="left:${point}%"></span></div><div class="ci-label">${fmtPct(lo)}–${fmtPct(hi)}</div></div>`;
 }
 
 function getResumoRow(league, team, scope) {
@@ -466,8 +478,118 @@ function renderConfronto() {
   if (!league || !home || !away || home === away) return;
   renderConfrontoKpis(league, home, away);
   renderRadarSection(league, home, away);
+  renderCompareSection(league, home, away);
   renderConfrontoMarkets(league, home, away);
   renderConfrontoInsights(league, home, away);
+}
+
+function renderCompareSection(league, home, away) {
+  const homePoints = getSeries(league, home, 'H', 'roll5_points').filter((x) => Number.isFinite(x.value));
+  const awayPoints = getSeries(league, away, 'A', 'roll5_points').filter((x) => Number.isFinite(x.value));
+  drawCompareLineChart(homePoints, awayPoints, home, away);
+
+  const h = getResumoRow(league, home, 'Casa');
+  const a = getResumoRow(league, away, 'Fora');
+  if (!h || !a) {
+    byId('compareDeltaTable').querySelector('tbody').innerHTML = '<tr><td colspan="4">Sem dados para comparar.</td></tr>';
+    return;
+  }
+
+  const rows = [
+    ['PPG', Number(h.ppg), Number(a.ppg)],
+    ['Vitórias %', Number(h['vit%']) * 100, Number(a['vit%']) * 100],
+    ['Golos marcados', Number(h.golos_marcados), Number(a.golos_marcados)],
+    ['Golos sofridos', Number(h.golos_sofridos), Number(a.golos_sofridos)],
+    ['BTTS %', Number(h['BTTS%']) * 100, Number(a['BTTS%']) * 100],
+    ['Over 2.5 %', Number(h['O2.5%']) * 100, Number(a['O2.5%']) * 100]
+  ];
+
+  byId('compareDeltaTable').querySelector('tbody').innerHTML = rows.map(([m, hv, av]) => {
+    const d = hv - av;
+    const suffix = m.includes('%') ? '%' : '';
+    return `<tr><td>${m}</td><td>${fmtNum(hv, 2)}${suffix}</td><td>${fmtNum(av, 2)}${suffix}</td><td>${d >= 0 ? '+' : ''}${fmtNum(d, 2)}${suffix}</td></tr>`;
+  }).join('');
+  applyExistingSort('compareDeltaTable');
+}
+
+function drawCompareLineChart(homeSeries, awaySeries, homeName, awayName) {
+  const svg = byId('compareLineChart');
+  if (!svg) return;
+  if (!homeSeries.length && !awaySeries.length) {
+    svg.innerHTML = '<text x="16" y="28" fill="#5f6a78" font-size="14">Sem séries para comparar.</text>';
+    return;
+  }
+
+  const width = 760;
+  const height = 300;
+  const margin = { top: 18, right: 18, bottom: 34, left: 42 };
+  const chartW = width - margin.left - margin.right;
+  const chartH = height - margin.top - margin.bottom;
+
+  const maxN = Math.max(homeSeries.length, awaySeries.length, 2);
+  const allVals = homeSeries.concat(awaySeries).map((x) => x.value).filter((v) => Number.isFinite(v));
+  const minV = Math.min(...allVals, 0);
+  const maxV = Math.max(...allVals, 1);
+  const yMin = minV === maxV ? minV - 1 : minV;
+  const yMax = minV === maxV ? maxV + 1 : maxV;
+
+  const xAt = (i, n) => margin.left + (i / Math.max(n - 1, 1)) * chartW;
+  const yAt = (v) => margin.top + (1 - ((v - yMin) / (yMax - yMin))) * chartH;
+
+  const toPoints = (arr) => arr.map((p, i) => `${xAt(i, arr.length)},${yAt(p.value)}`).join(' ');
+  const hPts = homeSeries.length ? toPoints(homeSeries) : '';
+  const aPts = awaySeries.length ? toPoints(awaySeries) : '';
+
+  svg.innerHTML = `
+    <rect x="0" y="0" width="${width}" height="${height}" fill="#fff"/>
+    <line x1="${margin.left}" y1="${height - margin.bottom}" x2="${width - margin.right}" y2="${height - margin.bottom}" stroke="#d9dddf"/>
+    <line x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${height - margin.bottom}" stroke="#d9dddf"/>
+    ${hPts ? `<polyline fill="none" stroke="#0e7490" stroke-width="2.5" points="${hPts}" />` : ''}
+    ${aPts ? `<polyline fill="none" stroke="#c2410c" stroke-width="2.5" points="${aPts}" />` : ''}
+    <text x="${margin.left}" y="14" fill="#0e7490" font-size="12">${homeName} (Casa)</text>
+    <text x="${width - margin.right}" y="14" text-anchor="end" fill="#c2410c" font-size="12">${awayName} (Fora)</text>
+    <text x="${margin.left}" y="${height - 8}" fill="#5f6a78" font-size="11">Início</text>
+    <text x="${width - margin.right}" y="${height - 8}" text-anchor="end" fill="#5f6a78" font-size="11">Recente</text>
+  `;
+}
+
+function renderMatchOfWeek(league) {
+  const teams = (DATA.rankings[league] || []).map((x) => x.team).slice(0, 8);
+  if (teams.length < 2) {
+    byId('matchOfWeekCard').innerHTML = '<article class="kpi-card"><h3>Jogo da Semana</h3><p class="meta">Sem equipas suficientes.</p></article>';
+    return;
+  }
+
+  let best = null;
+  for (let i = 0; i < teams.length; i += 1) {
+    for (let j = 0; j < teams.length; j += 1) {
+      if (i === j) continue;
+      const home = teams[i];
+      const away = teams[j];
+      const eg = computeExpectedGoals(league, home, away, 0.35);
+      const conf = matchConfidence(league, home, away);
+      if (!eg || !conf) continue;
+      const probs = poissonProbs(eg.lambdaHome, eg.lambdaAway, 10);
+      const shortlist = buildConfrontoMerged(league, home, away);
+      const edgeTop = shortlist.length ? Math.max(...shortlist.map((x) => x.avg || 0)) : 0;
+      const score = conf.score * 0.6 + (probs.over25 * 100) * 0.25 + (edgeTop * 100) * 0.15;
+      if (!best || score > best.score) {
+        best = { home, away, conf, probs, score, edgeTop };
+      }
+    }
+  }
+
+  if (!best) {
+    byId('matchOfWeekCard').innerHTML = '<article class="kpi-card"><h3>Jogo da Semana</h3><p class="meta">Sem dados suficientes.</p></article>';
+    return;
+  }
+
+  byId('matchOfWeekCard').innerHTML = `
+    <article class="kpi-card"><h3>Matchup em foco</h3><div class="kpi-row"><span>Jogo</span><strong>${best.home} vs ${best.away}</strong></div><div class="kpi-row"><span>Liga</span><strong>${league}</strong></div></article>
+    <article class="kpi-card"><h3>Probabilidades</h3><div class="kpi-row"><span>1 / X / 2</span><strong>${fmtPct(best.probs.p1)} / ${fmtPct(best.probs.px)} / ${fmtPct(best.probs.p2)}</strong></div><div class="kpi-row"><span>Over 2.5</span><strong>${fmtPct(best.probs.over25)}</strong></div></article>
+    <article class="kpi-card"><h3>Confiança</h3><div class="kpi-row"><span>Score</span><strong>${best.conf.score}</strong></div><div class="kpi-row"><span>Estabilidade</span><strong>${fmtPct(best.conf.stabilityFactor)}</strong></div></article>
+    <article class="kpi-card"><h3>Mercado</h3><div class="kpi-row"><span>Melhor edge</span><strong>${best.edgeTop ? `${fmtNum(best.edgeTop * 100, 1)} pp` : '—'}</strong></div><div class="kpi-row"><span>Prioridade</span><strong>${best.score.toFixed(0)}</strong></div></article>
+  `;
 }
 
 function getSeries(league, team, venue, metric) {
@@ -871,7 +993,7 @@ async function main() {
 
   document.querySelectorAll('.tab').forEach((btn) => btn.addEventListener('click', () => setActiveTab(btn.dataset.tab)));
 
-  ['rankingTable', 'scannerTable', 'confrontoMarketTable', 'formTable', 'prejogoShortlistTable', 'evKellyTable', 'h2hTable'].forEach(enableTableSorting);
+  ['rankingTable', 'scannerTable', 'confrontoMarketTable', 'compareDeltaTable', 'formTable', 'prejogoShortlistTable', 'evKellyTable', 'h2hTable'].forEach(enableTableSorting);
 
   byId('scannerExportBtn')?.addEventListener('click', () => {
     const league = byId('scanLeague').value;
