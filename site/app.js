@@ -3,10 +3,24 @@ const fmtNum = (n, d = 2) => Number(n).toFixed(d);
 const byId = (id) => document.getElementById(id);
 
 const RADAR_AXES = ['Resultados', 'Ataque', 'Defesa', 'Ritmo'];
+const LEAGUE_LABELS = {
+  E0: 'Premier League (Inglaterra)',
+  E1: 'Championship (Inglaterra)',
+  F1: 'Ligue 1 (França)',
+  I1: 'Serie A (Itália)',
+  P1: 'Liga Portugal',
+  D1: 'Bundesliga',
+  SP1: 'La Liga',
+  SC0: 'Scottish Premier League',
+  N1: 'Eredivisie',
+  T1: 'Turkish Superleague'
+};
+const WATCHLIST_KEY = 'radar_watchlist_v1';
 
 let DATA = null;
 const TABLE_SORT_STATE = {};
 let PREJOGO_STATE = { league: null, home: null, away: null, probs: null, shortlist: [] };
+let WATCHLIST = new Set();
 
 function parseSortableNumber(raw) {
   const text = String(raw ?? '').trim();
@@ -130,6 +144,53 @@ function norm(v, min, max) {
   return clamp((v - min) / (max - min), 0, 1);
 }
 
+function leagueLabel(code) {
+  return LEAGUE_LABELS[code] || code;
+}
+
+function leagueOptions(leagues) {
+  return leagues.map((l) => `<option value="${l}">${leagueLabel(l)}</option>`).join('');
+}
+
+function loadWatchlist() {
+  try {
+    const raw = localStorage.getItem(WATCHLIST_KEY);
+    if (!raw) return;
+    const items = JSON.parse(raw);
+    if (Array.isArray(items)) WATCHLIST = new Set(items.map(String));
+  } catch {
+    WATCHLIST = new Set();
+  }
+}
+
+function saveWatchlist() {
+  localStorage.setItem(WATCHLIST_KEY, JSON.stringify(Array.from(WATCHLIST)));
+}
+
+function watchKey(row) {
+  return `${row.league}|${row.team}|${row.scope}|${row.market}`;
+}
+
+function sampleQuality(games) {
+  const g = Number(games || 0);
+  if (g >= 20) return { label: 'Alta', cls: 'good' };
+  if (g >= 12) return { label: 'Média', cls: '' };
+  return { label: 'Baixa', cls: 'warn' };
+}
+
+function miniSparkline(row) {
+  const a = toNum(row.hit_rate);
+  const b = toNum(row.form_recent_5);
+  if (a == null || b == null) return '—';
+  const series = [0, 1, 2, 3, 4].map((i) => a + ((b - a) * i / 4));
+  const width = 78;
+  const height = 22;
+  const xAt = (i) => 4 + (i / 4) * (width - 8);
+  const yAt = (v) => 2 + (1 - clamp(v, 0, 1)) * (height - 6);
+  const pts = series.map((v, i) => `${xAt(i)},${yAt(v)}`).join(' ');
+  return `<div class="spark-wrap"><svg viewBox="0 0 ${width} ${height}" class="spark"><polyline fill="none" stroke="#0e7490" stroke-width="2" points="${pts}" /></svg><span>${fmtPct(b)}</span></div>`;
+}
+
 function opportunityScore(row) {
   const edge = toNum(row.edge_vs_liga);
   const games = toNum(row.jogos) ?? 0;
@@ -159,7 +220,7 @@ function renderSummaryChips(data) {
 function renderLeagueCards(data, selectedLeague) {
   byId('leagueCards').innerHTML = data.overview.map((lg) => {
     const activeStyle = lg.league === selectedLeague ? 'style="border-color:#0e7490"' : '';
-    return `<button class="league-card" data-league="${lg.league}" ${activeStyle}><h3>${lg.league}</h3><p>Líder: <strong>${lg.topTeam}</strong></p><p>PPG líder: ${fmtNum(lg.topPPG)}</p><p>Equipas: ${lg.teams} · Jogos: ${lg.matches}</p></button>`;
+    return `<button class="league-card" data-league="${lg.league}" ${activeStyle}><h3>${leagueLabel(lg.league)}</h3><p>Líder: <strong>${lg.topTeam}</strong></p><p>PPG líder: ${fmtNum(lg.topPPG)}</p><p>Equipas: ${lg.teams} · Jogos: ${lg.matches}</p></button>`;
   }).join('');
 
   byId('leagueCards').querySelectorAll('[data-league]').forEach((el) => {
@@ -197,16 +258,51 @@ function renderLay(league) {
   byId('layList').innerHTML = rows.map((m) => `<article class="item"><p class="title">${m.team} · ${m.cenario_lay}</p><p class="meta">${m.descricao} · Hit: ${m.hit_rate != null ? fmtPct(m.hit_rate) : '—'} · Score: ${m.lay_score != null ? fmtNum(m.lay_score, 2) : '—'}</p><span class="badge ${m.flag_candidato ? 'good' : 'warn'}">${m.flag_candidato ? 'candidato' : 'observar'}</span></article>`).join('') || '<p class="meta">Sem cenários lay.</p>';
 }
 
+function renderWeeklyVariation(league) {
+  const teams = (DATA.rankings[league] || []).map((x) => x.team);
+  const teamVar = teams.map((team) => {
+    const all = DATA.seriesRows
+      .filter((r) => r.league === league && r.team === team)
+      .sort((a, b) => String(a.date).localeCompare(String(b.date)))
+      .map((r) => Number(r.roll5_points))
+      .filter((x) => Number.isFinite(x));
+    if (all.length < 2) return null;
+    const d = all[all.length - 1] - all[all.length - 2];
+    return { team, delta: d };
+  }).filter(Boolean).sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta)).slice(0, 8);
+
+  byId('variationTeams').innerHTML = teamVar.length
+    ? teamVar.map((x) => `<article class="item"><p class="title">${x.team}</p><p class="meta">Variação pontos (últ. vs ant.): <strong>${x.delta >= 0 ? '+' : ''}${fmtNum(x.delta, 2)}</strong></p></article>`).join('')
+    : '<p class="meta">Sem variação suficiente.</p>';
+
+  const marketVar = DATA.marketRows
+    .filter((r) => r.league === league && r.scope === 'Total')
+    .map((r) => {
+      const recent = toNum(r.form_recent_5);
+      const season = toNum(r.hit_rate);
+      if (recent == null || season == null) return null;
+      return { team: r.team, market: r.market, delta: recent - season, recent, season };
+    })
+    .filter(Boolean)
+    .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta))
+    .slice(0, 8);
+
+  byId('variationMarkets').innerHTML = marketVar.length
+    ? marketVar.map((x) => `<article class="item"><p class="title">${x.team} · ${x.market}</p><p class="meta">Forma 5J vs época: ${fmtPct(x.recent)} vs ${fmtPct(x.season)} · <strong>${x.delta >= 0 ? '+' : ''}${fmtNum(x.delta * 100, 1)} pp</strong></p></article>`).join('')
+    : '<p class="meta">Sem variação suficiente.</p>';
+}
+
 function renderOverview(league) {
   renderMatchOfWeek(league);
   renderLeagueCards(DATA, league);
   renderRanking(league);
   renderMarkets(league);
   renderLay(league);
+  renderWeeklyVariation(league);
 }
 
 function populateScannerFilters(leagues) {
-  byId('scanLeague').innerHTML = ['Todas', ...leagues].map((l) => `<option value="${l}">${l}</option>`).join('');
+  byId('scanLeague').innerHTML = ['Todas', ...leagues].map((l) => `<option value="${l}">${l === 'Todas' ? l : leagueLabel(l)}</option>`).join('');
 }
 
 function marketInGroup(market, group) {
@@ -259,7 +355,36 @@ function renderScanner() {
       : 'Sem mercados para estes filtros.';
   }
 
-  byId('scannerTable').querySelector('tbody').innerHTML = shown.map((r) => `<tr><td>${r.team}</td><td>${r.market}</td><td>${r.jogos}</td><td>${r.hit_rate != null ? fmtPct(r.hit_rate) : '—'}</td><td>${renderCiCell(r)}</td><td>${r.opportunityScore}<br>${scoreBadge(r.opportunityScore)}</td><td>${r.edge_vs_liga != null ? `${fmtNum(r.edge_vs_liga * 100, 1)} pp` : '—'}</td><td>${r.roi_unid_por_aposta != null ? fmtNum(r.roi_unid_por_aposta, 3) : '—'}</td><td>${r.value_estimado != null ? `${fmtNum(r.value_estimado * 100, 1)}%` : '—'}</td></tr>`).join('') || '<tr><td colspan="9">Sem dados para os filtros escolhidos.</td></tr>';
+  byId('scannerTable').querySelector('tbody').innerHTML = shown.map((r) => {
+    const key = watchKey(r);
+    const watched = WATCHLIST.has(key);
+    const sq = sampleQuality(r.jogos);
+    return `<tr>
+      <td><button class="watch-btn ${watched ? 'active' : ''}" data-watch-key="${key}" title="Adicionar/remover watchlist">${watched ? '★' : '☆'}</button></td>
+      <td>${r.team}</td>
+      <td>${r.market}</td>
+      <td>${r.jogos}</td>
+      <td>${r.hit_rate != null ? fmtPct(r.hit_rate) : '—'}</td>
+      <td>${renderCiCell(r)}</td>
+      <td>${miniSparkline(r)}</td>
+      <td><span class="badge ${sq.cls}">${sq.label}</span></td>
+      <td>${r.opportunityScore}<br>${scoreBadge(r.opportunityScore)}</td>
+      <td>${r.edge_vs_liga != null ? `${fmtNum(r.edge_vs_liga * 100, 1)} pp` : '—'}</td>
+      <td>${r.roi_unid_por_aposta != null ? fmtNum(r.roi_unid_por_aposta, 3) : '—'}</td>
+      <td>${r.value_estimado != null ? `${fmtNum(r.value_estimado * 100, 1)}%` : '—'}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="12">Sem dados para os filtros escolhidos.</td></tr>';
+
+  byId('scannerTable').querySelectorAll('.watch-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.watchKey;
+      if (!key) return;
+      if (WATCHLIST.has(key)) WATCHLIST.delete(key); else WATCHLIST.add(key);
+      saveWatchlist();
+      renderScanner();
+    });
+  });
+  renderWatchlistPanel();
   applyExistingSort('scannerTable');
 }
 
@@ -272,6 +397,28 @@ function renderCiCell(r) {
   const right = clamp(hi * 100, 0, 100);
   const point = clamp(hr * 100, 0, 100);
   return `<div class="ci-cell"><div class="ci-track"><span class="ci-range" style="left:${left}%;width:${Math.max(1,right-left)}%"></span><span class="ci-point" style="left:${point}%"></span></div><div class="ci-label">${fmtPct(lo)}–${fmtPct(hi)}</div></div>`;
+}
+
+function renderWatchlistPanel() {
+  const el = byId('scannerWatchlist');
+  if (!el) return;
+  const items = Array.from(WATCHLIST).map((k) => {
+    const [league, team, scope, market] = k.split('|');
+    return { key: k, league, team, scope, market };
+  });
+  el.innerHTML = items.length
+    ? items.map((x) => `<article class="item"><p class="title">${x.team} · ${x.market}</p><p class="meta">${leagueLabel(x.league)} · ${x.scope}</p><button class="ghost-btn watch-remove" data-watch-key="${x.key}">Remover</button></article>`).join('')
+    : '<p class="meta">Sem mercados guardados na watchlist.</p>';
+
+  el.querySelectorAll('.watch-remove').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.watchKey;
+      if (!key) return;
+      WATCHLIST.delete(key);
+      saveWatchlist();
+      renderScanner();
+    });
+  });
 }
 
 function getResumoRow(league, team, scope) {
@@ -532,7 +679,7 @@ function renderConfrontoInsights(league, home, away) {
 
 function populateConfronto(leagues) {
   const leagueSel = byId('cfLeague');
-  leagueSel.innerHTML = leagues.map((l) => `<option value="${l}">${l}</option>`).join('');
+  leagueSel.innerHTML = leagueOptions(leagues);
 
   function refreshTeams() {
     const lg = leagueSel.value;
@@ -663,7 +810,7 @@ function renderMatchOfWeek(league) {
   }
 
   byId('matchOfWeekCard').innerHTML = `
-    <article class="kpi-card"><h3>Matchup em foco</h3><div class="kpi-row"><span>Jogo</span><strong>${best.home} vs ${best.away}</strong></div><div class="kpi-row"><span>Liga</span><strong>${league}</strong></div></article>
+    <article class="kpi-card"><h3>Matchup em foco</h3><div class="kpi-row"><span>Jogo</span><strong>${best.home} vs ${best.away}</strong></div><div class="kpi-row"><span>Liga</span><strong>${leagueLabel(league)}</strong></div></article>
     <article class="kpi-card"><h3>Probabilidades</h3><div class="kpi-row"><span>1 / X / 2</span><strong>${fmtPct(best.probs.p1)} / ${fmtPct(best.probs.px)} / ${fmtPct(best.probs.p2)}</strong></div><div class="kpi-row"><span>Over 2.5</span><strong>${fmtPct(best.probs.over25)}</strong></div></article>
     <article class="kpi-card"><h3>Confiança</h3><div class="kpi-row"><span>Score</span><strong>${best.conf.score}</strong></div><div class="kpi-row"><span>Estabilidade</span><strong>${fmtPct(best.conf.stabilityFactor)}</strong></div></article>
     <article class="kpi-card"><h3>Mercado</h3><div class="kpi-row"><span>Melhor edge</span><strong>${best.edgeTop ? `${fmtNum(best.edgeTop * 100, 1)} pp` : '—'}</strong></div><div class="kpi-row"><span>Prioridade</span><strong>${best.score.toFixed(0)}</strong></div></article>
@@ -760,7 +907,7 @@ function renderForma() {
 }
 
 function populateForma(leagues) {
-  byId('formLeague').innerHTML = leagues.map((l) => `<option value="${l}">${l}</option>`).join('');
+  byId('formLeague').innerHTML = leagueOptions(leagues);
 
   function refreshTeams() {
     const lg = byId('formLeague').value;
@@ -987,7 +1134,7 @@ function renderPrejogo() {
     <article class="kpi-card"><h3>Expected Goals</h3><div class="kpi-row"><span>${home}</span><strong>${fmtNum(eg.lambdaHome)}</strong></div><div class="kpi-row"><span>${away}</span><strong>${fmtNum(eg.lambdaAway)}</strong></div></article>
     <article class="kpi-card"><h3>1X2</h3><div class="kpi-row"><span>1</span><strong>${fmtPct(probs.p1)}</strong></div><div class="kpi-row"><span>X</span><strong>${fmtPct(probs.px)}</strong></div><div class="kpi-row"><span>2</span><strong>${fmtPct(probs.p2)}</strong></div></article>
     <article class="kpi-card"><h3>Totais</h3><div class="kpi-row"><span>Over 2.5</span><strong>${fmtPct(probs.over25)}</strong></div><div class="kpi-row"><span>BTTS</span><strong>${fmtPct(probs.btts)}</strong></div></article>
-    <article class="kpi-card"><h3>Configuração</h3><div class="kpi-row"><span>Peso forma</span><strong>${fmtPct(weight)}</strong></div><div class="kpi-row"><span>Liga</span><strong>${league}</strong></div></article>
+    <article class="kpi-card"><h3>Configuração</h3><div class="kpi-row"><span>Peso forma</span><strong>${fmtPct(weight)}</strong></div><div class="kpi-row"><span>Liga</span><strong>${leagueLabel(league)}</strong></div></article>
   `;
 
   const conf = matchConfidence(league, home, away);
@@ -1017,7 +1164,7 @@ function renderPrejogo() {
 }
 
 function populatePrejogo(leagues) {
-  byId('pjLeague').innerHTML = leagues.map((l) => `<option value="${l}">${l}</option>`).join('');
+  byId('pjLeague').innerHTML = leagueOptions(leagues);
 
   function refreshTeams() {
     const lg = byId('pjLeague').value;
@@ -1034,6 +1181,28 @@ function populatePrejogo(leagues) {
     if (PREJOGO_STATE?.probs) renderEVKellyTable(PREJOGO_STATE.probs);
   }));
   refreshTeams();
+}
+
+function resetScannerFilters() {
+  if (byId('scanLeague')) byId('scanLeague').value = 'Todas';
+  if (byId('scanScope')) byId('scanScope').value = 'Total';
+  if (byId('scanGroup')) byId('scanGroup').value = 'resultados';
+  if (byId('scanMinGames')) byId('scanMinGames').value = 8;
+  renderScanner();
+}
+
+function resetPrejogoFilters() {
+  const pjLeague = byId('pjLeague');
+  if (pjLeague && pjLeague.options.length) {
+    pjLeague.selectedIndex = 0;
+    pjLeague.dispatchEvent(new Event('change'));
+  }
+  if (byId('pjRecentWeight')) byId('pjRecentWeight').value = 35;
+  ['odds1', 'oddsX', 'odds2', 'oddsO25', 'oddsBTTS'].forEach((id) => {
+    const el = byId(id);
+    if (el) el.value = '';
+  });
+  renderPrejogo();
 }
 
 function renderChangelog() {
@@ -1058,7 +1227,7 @@ function exportPrejogoPdf() {
       table{width:100%;border-collapse:collapse} th,td{border-bottom:1px solid #eee;padding:8px;text-align:left}
     </style></head><body>
       <h1>Relatório Pré-jogo</h1>
-      <p class="meta">${PREJOGO_STATE.home} vs ${PREJOGO_STATE.away} · ${PREJOGO_STATE.league} · gerado em ${now}</p>
+      <p class="meta">${PREJOGO_STATE.home} vs ${PREJOGO_STATE.away} · ${leagueLabel(PREJOGO_STATE.league)} · gerado em ${now}</p>
       <div class="grid">
         <div class="card"><h2>1X2</h2><p>1: ${fmtPct(PREJOGO_STATE.probs.p1)} · X: ${fmtPct(PREJOGO_STATE.probs.px)} · 2: ${fmtPct(PREJOGO_STATE.probs.p2)}</p></div>
         <div class="card"><h2>Totais</h2><p>Over 2.5: ${fmtPct(PREJOGO_STATE.probs.over25)} · BTTS: ${fmtPct(PREJOGO_STATE.probs.btts)}</p></div>
@@ -1078,13 +1247,14 @@ function exportPrejogoPdf() {
 async function main() {
   const res = await fetch('./data/site-data.json');
   DATA = await res.json();
+  loadWatchlist();
 
   renderSummaryChips(DATA);
   renderChangelog();
 
   const leagues = DATA.overview.map((x) => x.league);
 
-  byId('leagueSelect').innerHTML = leagues.map((l) => `<option value="${l}">${l}</option>`).join('');
+  byId('leagueSelect').innerHTML = leagueOptions(leagues);
   byId('leagueSelect').addEventListener('change', (e) => renderOverview(e.target.value));
   renderOverview(leagues[0]);
 
@@ -1100,6 +1270,8 @@ async function main() {
 
   ['rankingTable', 'scannerTable', 'confrontoMarketTable', 'compareDeltaTable', 'formTable', 'prejogoShortlistTable', 'evKellyTable', 'h2hTable'].forEach(enableTableSorting);
   byId('exportPrejogoPdfBtn')?.addEventListener('click', exportPrejogoPdf);
+  byId('scannerResetBtn')?.addEventListener('click', resetScannerFilters);
+  byId('prejogoResetBtn')?.addEventListener('click', resetPrejogoFilters);
 
   byId('scannerExportBtn')?.addEventListener('click', () => {
     const league = byId('scanLeague').value;
@@ -1112,8 +1284,8 @@ async function main() {
       .sort((a, b) => Number(b.opportunityScore ?? -999) - Number(a.opportunityScore ?? -999));
     downloadCSV(
       `scanner_${league}_${scope}.csv`,
-      ['Liga', 'Equipa', 'Mercado', 'Jogos', 'HitRate', 'OpportunityScore', 'EdgeVsLiga', 'ROI', 'Value'],
-      rows.map((r) => [r.league, r.team, r.market, r.jogos, r.hit_rate, r.opportunityScore, r.edge_vs_liga, r.roi_unid_por_aposta, r.value_estimado])
+      ['Liga', 'Equipa', 'Mercado', 'Jogos', 'HitRate', 'FormRecent5', 'SampleQuality', 'OpportunityScore', 'EdgeVsLiga', 'ROI', 'Value'],
+      rows.map((r) => [leagueLabel(r.league), r.team, r.market, r.jogos, r.hit_rate, r.form_recent_5, sampleQuality(r.jogos).label, r.opportunityScore, r.edge_vs_liga, r.roi_unid_por_aposta, r.value_estimado])
     );
   });
 

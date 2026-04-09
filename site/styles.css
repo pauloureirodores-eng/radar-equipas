@@ -95,7 +95,7 @@ select, input { border: 1px solid var(--line); border-radius: 10px; padding: 0.4
 .league-card h3 { margin: 0; font-size: 0.95rem; }
 .league-card p { margin: 0.3rem 0 0; color: var(--muted); font-size: 0.86rem; }
 .table-wrap { overflow: auto; }
-table { width: 100%; border-collapse: collapse; min-width: 760px; }
+table { width: 100%; border-collapse: collapse; min-width: 980px; }
 th, td { text-align: left; padding: 0.6rem; border-bottom: 1px solid #f0ebe2; font-size: 0.9rem; }
 th { color: var(--muted); font-weight: 600; }
 th.sortable { cursor: pointer; user-select: none; }
@@ -112,6 +112,29 @@ tr:hover td { background: #fcfbf8; }
 .badge { display: inline-block; margin-top: 0.35rem; padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.75rem; border: 1px solid; color: var(--primary); border-color: rgba(14,116,144,0.35); background: rgba(14,116,144,0.1); }
 .badge.good { color: var(--ok); border-color: rgba(15,118,110,0.35); background: rgba(15,118,110,0.1); }
 .badge.warn { color: #b45309; border-color: rgba(180,83,9,0.35); background: rgba(180,83,9,0.1); }
+.watch-btn {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: #9aa4b0;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.watch-btn.active {
+  color: #d97706;
+  border-color: rgba(217, 119, 6, 0.35);
+  background: rgba(217, 119, 6, 0.08);
+}
+.spark-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.spark {
+  width: 78px;
+  height: 22px;
+}
 .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
 .kpi-card { border: 1px solid var(--line); border-radius: 12px; padding: 0.8rem; background: #fff; }
 .kpi-card h3 { margin: 0 0 0.5rem; font-size: 0.95rem; }
