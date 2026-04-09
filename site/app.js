@@ -303,6 +303,17 @@ function renderWeeklyVariation(league) {
     : '<p class="meta">Sem variação suficiente.</p>';
 }
 
+function renderSosTable(league) {
+  const rows = (DATA.phase2Sos || [])
+    .filter((r) => r.league === league)
+    .sort((a, b) => Number(b.adj_ppg ?? -999) - Number(a.adj_ppg ?? -999))
+    .slice(0, 20);
+  byId('sosTable').querySelector('tbody').innerHTML = rows.length
+    ? rows.map((r) => `<tr><td>${r.team}</td><td>${fmtNum(r.raw_ppg)}</td><td>${fmtNum(r.sos_ppg)}</td><td>${fmtNum(r.adj_ppg)}</td><td>${r.last5_ppg != null ? fmtNum(r.last5_ppg) : '—'}</td><td>${r.sample_matches}</td></tr>`).join('')
+    : '<tr><td colspan="6">Sem dados SOS.</td></tr>';
+  applyExistingSort('sosTable');
+}
+
 function renderOverview(league) {
   renderMatchOfWeek(league);
   renderLeagueCards(DATA, league);
@@ -310,6 +321,7 @@ function renderOverview(league) {
   renderMarkets(league);
   renderLay(league);
   renderWeeklyVariation(league);
+  renderSosTable(league);
 }
 
 function populateScannerFilters(leagues) {
@@ -1225,6 +1237,44 @@ function renderChangelog() {
     : '<p class="meta">Sem entradas de changelog ainda.</p>';
 }
 
+function drawCapitalCurve(curve) {
+  const svg = byId('capitalCurveChart');
+  if (!svg) return;
+  if (!curve || !curve.length) {
+    svg.innerHTML = '<text x="16" y="28" fill="#5f6a78" font-size="14">Sem bets temporais para curva de capital.</text>';
+    return;
+  }
+
+  const width = 980;
+  const height = 320;
+  const margin = { top: 16, right: 26, bottom: 36, left: 52 };
+  const chartW = width - margin.left - margin.right;
+  const chartH = height - margin.top - margin.bottom;
+
+  const caps = curve.map((x) => Number(x.capital)).filter((v) => Number.isFinite(v));
+  const yMin = Math.min(...caps) - 1;
+  const yMax = Math.max(...caps) + 1;
+  const xAt = (i) => margin.left + (i / Math.max(curve.length - 1, 1)) * chartW;
+  const yAt = (v) => margin.top + (1 - ((v - yMin) / Math.max(yMax - yMin, 1e-9))) * chartH;
+
+  const pts = curve.map((x, i) => `${xAt(i)},${yAt(Number(x.capital))}`).join(' ');
+  const ddPts = curve.map((x, i) => `${xAt(i)},${yAt(Number(x.capital) - Number(x.drawdown || 0))}`).join(' ');
+  const start = curve[0]?.date || '';
+  const end = curve[curve.length - 1]?.date || '';
+
+  svg.innerHTML = `
+    <rect x="0" y="0" width="${width}" height="${height}" fill="#ffffff" />
+    <line x1="${margin.left}" y1="${height - margin.bottom}" x2="${width - margin.right}" y2="${height - margin.bottom}" stroke="#d9dddf" />
+    <line x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${height - margin.bottom}" stroke="#d9dddf" />
+    <polyline fill="none" stroke="#0e7490" stroke-width="2.8" points="${pts}" />
+    <polyline fill="none" stroke="#c2410c" stroke-dasharray="5 4" stroke-width="1.8" points="${ddPts}" />
+    <text x="${margin.left}" y="14" fill="#0e7490" font-size="12">Capital</text>
+    <text x="${margin.left + 66}" y="14" fill="#c2410c" font-size="12">Drawdown path</text>
+    <text x="${margin.left}" y="${height - 8}" fill="#5f6a78" font-size="11">${start}</text>
+    <text x="${width - margin.right}" y="${height - 8}" text-anchor="end" fill="#5f6a78" font-size="11">${end}</text>
+  `;
+}
+
 function renderPerformance() {
   const rows = DATA.backtestRows || [];
   const dq = DATA.dataQuality || { checks: [], summary: { checks_total: 0, checks_warn: 0 } };
@@ -1268,6 +1318,21 @@ function renderPerformance() {
     .map((c) => `<tr><td>${c.name}</td><td><span class="badge ${c.status === 'ok' ? 'good' : 'warn'}">${c.status === 'ok' ? 'OK' : 'WARN'}</span></td><td>${c.detail}</td></tr>`)
     .join('') || '<tr><td colspan="3">Sem checks de qualidade.</td></tr>';
   applyExistingSort('qualityChecksTable');
+
+  const temporal = DATA.temporalBacktest || {};
+  drawCapitalCurve(temporal.curve || []);
+  byId('weeklyBacktestTable').querySelector('tbody').innerHTML = (temporal.weekly || [])
+    .map((w) => `<tr>
+      <td>${w.week_key}</td>
+      <td>${w.bets}</td>
+      <td>${w.wins}</td>
+      <td>${toNum(w.hit_rate) != null ? fmtPct(w.hit_rate) : '—'}</td>
+      <td>${toNum(w.roi) != null ? `${fmtNum(w.roi * 100, 2)}%` : '—'}</td>
+      <td>${toNum(w.profit) != null ? fmtNum(w.profit, 2) : '—'}</td>
+      <td>${toNum(w.capital_end) != null ? fmtNum(w.capital_end, 2) : '—'}</td>
+      <td>${toNum(w.max_drawdown_week) != null ? fmtNum(w.max_drawdown_week, 2) : '—'}</td>
+    </tr>`).join('') || '<tr><td colspan="8">Sem dados temporais.</td></tr>';
+  applyExistingSort('weeklyBacktestTable');
 }
 
 function exportPrejogoPdf() {
@@ -1325,7 +1390,7 @@ async function main() {
 
   document.querySelectorAll('.tab').forEach((btn) => btn.addEventListener('click', () => setActiveTab(btn.dataset.tab)));
 
-  ['rankingTable', 'scannerTable', 'confrontoMarketTable', 'compareDeltaTable', 'formTable', 'perfMarketTable', 'qualityChecksTable', 'prejogoShortlistTable', 'evKellyTable', 'h2hTable'].forEach(enableTableSorting);
+  ['rankingTable', 'scannerTable', 'confrontoMarketTable', 'compareDeltaTable', 'formTable', 'sosTable', 'perfMarketTable', 'qualityChecksTable', 'weeklyBacktestTable', 'prejogoShortlistTable', 'evKellyTable', 'h2hTable'].forEach(enableTableSorting);
   byId('exportPrejogoPdfBtn')?.addEventListener('click', exportPrejogoPdf);
   byId('scannerResetBtn')?.addEventListener('click', resetScannerFilters);
   byId('prejogoResetBtn')?.addEventListener('click', resetPrejogoFilters);

@@ -82,6 +82,16 @@
           <div id="variationMarkets" class="list"></div>
         </article>
       </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Power Rating Ajustado (SOS) - Fase 2</h2></div>
+        <div class="table-wrap">
+          <table id="sosTable">
+            <thead><tr><th>Equipa</th><th>PPG bruto</th><th>SOS (PPG adversários)</th><th>PPG ajustado</th><th>PPG últimos 5</th><th>Amostra</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
     </section>
 
     <section class="tab-panel" id="panel-scanner">
@@ -219,6 +229,19 @@
         <div class="table-wrap">
           <table id="perfMarketTable">
             <thead><tr><th>Liga</th><th>Grupo</th><th>Mercados</th><th>Apostas</th><th>Hit Rate</th><th>ROI médio</th><th>EV médio</th><th>Drawdown (proxy)</th><th>Brier (proxy)</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Backtesting Temporal (Fase 1.1)</h2></div>
+        <div class="linechart-wrap">
+          <svg id="capitalCurveChart" viewBox="0 0 980 320" preserveAspectRatio="none"></svg>
+        </div>
+        <div class="table-wrap">
+          <table id="weeklyBacktestTable">
+            <thead><tr><th>Semana</th><th>Bets</th><th>Wins</th><th>Hit Rate</th><th>ROI</th><th>Profit</th><th>Capital final</th><th>Max DD semana</th></tr></thead>
             <tbody></tbody>
           </table>
         </div>

@@ -153,6 +153,7 @@ tr:hover td { background: #fcfbf8; }
 .heat-cell .prob { margin-top: 0.2rem; color: var(--muted); }
 .linechart-wrap { border: 1px solid var(--line); border-radius: 12px; background: #fff; padding: 0.4rem; margin-bottom: 0.7rem; }
 #formLineChart { width: 100%; height: 320px; display: block; }
+#capitalCurveChart { width: 100%; height: 300px; display: block; }
 #scannerMeta { margin: 0.15rem 0 0.75rem; font-size: 0.86rem; color: var(--muted); }
 .ci-cell { min-width: 130px; }
 .ci-track { position: relative; height: 9px; border-radius: 999px; background: #edf1f5; overflow: hidden; }
@@ -180,4 +181,5 @@ tr:hover td { background: #fcfbf8; }
   .heatmap-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .tabs { border-radius: 14px; }
   #formLineChart { height: 280px; }
+  #capitalCurveChart { height: 250px; }
 }

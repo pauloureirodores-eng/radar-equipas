@@ -157,6 +157,205 @@ def build_data_quality(
     }
 
 
+def eval_market_hit(market: str, gf: float, ga: float) -> bool | None:
+    m = str(market or "").lower()
+    total = gf + ga
+    if "over 2.5" in m:
+        return total >= 3
+    if "under 2.5" in m:
+        return total <= 2
+    if "ambas marcam" in m or "btts" in m:
+        return gf > 0 and ga > 0
+    if "clean sheet" in m:
+        return ga == 0
+    if "casa marca" in m:
+        return gf >= 1
+    return None
+
+
+def build_temporal_backtest(
+    market_rows: pd.DataFrame,
+    serie_full: pd.DataFrame,
+) -> dict:
+    home_matches = serie_full[serie_full["venue"] == "H"].copy()
+    home_matches["date"] = pd.to_datetime(home_matches["date"], errors="coerce")
+    home_matches = home_matches.dropna(subset=["date"]).sort_values("date")
+
+    supported_markets = [
+        "Over 2.5 golos",
+        "Under 2.5 golos",
+        "Ambas marcam (BTTS)",
+        "Casa marca (>=1)",
+        "Clean sheet",
+    ]
+    mdf = market_rows[market_rows["market"].isin(supported_markets)].copy()
+
+    bets: list[dict] = []
+    for _, r in home_matches.iterrows():
+        league = str(r["league"])
+        home = str(r["team"])
+        away = str(r.get("opponent", ""))
+        gf = float(r.get("gf", 0))
+        ga = float(r.get("ga", 0))
+        dt = pd.to_datetime(r["date"], errors="coerce")
+        if pd.isna(dt):
+            continue
+
+        hm = mdf[(mdf["league"] == league) & (mdf["team"] == home) & (mdf["scope"] == "Casa")]
+        aw = mdf[(mdf["league"] == league) & (mdf["team"] == away) & (mdf["scope"] == "Fora")]
+        if hm.empty or aw.empty:
+            continue
+
+        merged = hm.merge(
+            aw,
+            on="market",
+            suffixes=("_h", "_a"),
+            how="inner",
+        )
+        if merged.empty:
+            continue
+
+        merged["avg_edge"] = pd.to_numeric(merged["edge_vs_liga_h"], errors="coerce").add(
+            pd.to_numeric(merged["edge_vs_liga_a"], errors="coerce"),
+            fill_value=0.0,
+        ) / 2.0
+        merged["avg_odds"] = pd.concat(
+            [
+                pd.to_numeric(merged["odds_avg_h"], errors="coerce"),
+                pd.to_numeric(merged["odds_avg_a"], errors="coerce"),
+            ],
+            axis=1,
+        ).mean(axis=1, skipna=True)
+
+        candidates = merged[
+            (merged["avg_edge"] > 0)
+            & (merged["avg_odds"] > 1.01)
+        ].sort_values("avg_edge", ascending=False)
+        if candidates.empty:
+            continue
+
+        pick = candidates.iloc[0]
+        market = str(pick["market"])
+        hit = eval_market_hit(market, gf, ga)
+        if hit is None:
+            continue
+        odds = float(pick["avg_odds"])
+        profit = (odds - 1.0) if hit else -1.0
+        bets.append(
+            {
+                "date": dt.strftime("%Y-%m-%d"),
+                "league": league,
+                "home": home,
+                "away": away,
+                "market": market,
+                "odds": odds,
+                "edge": float(pick["avg_edge"]),
+                "hit": bool(hit),
+                "profit": float(profit),
+            }
+        )
+
+    if not bets:
+        return {
+            "initial_bankroll": 100.0,
+            "final_bankroll": 100.0,
+            "total_bets": 0,
+            "hit_rate": None,
+            "roi": None,
+            "max_drawdown": 0.0,
+            "curve": [],
+            "weekly": [],
+        }
+
+    bankroll = 100.0
+    peak = bankroll
+    wins = 0
+    curve: list[dict] = []
+    for b in bets:
+        bankroll += b["profit"]
+        peak = max(peak, bankroll)
+        drawdown = max(0.0, peak - bankroll)
+        wins += 1 if b["hit"] else 0
+        curve.append({**b, "capital": float(bankroll), "drawdown": float(drawdown)})
+
+    curve_df = pd.DataFrame(curve)
+    dt = pd.to_datetime(curve_df["date"], errors="coerce")
+    iso = dt.dt.isocalendar()
+    curve_df["week_key"] = iso["year"].astype(str) + "-W" + iso["week"].astype(str).str.zfill(2)
+    weekly_df = (
+        curve_df.groupby("week_key", as_index=False)
+        .agg(
+            bets=("profit", "count"),
+            wins=("hit", "sum"),
+            profit=("profit", "sum"),
+            capital_end=("capital", "last"),
+            max_drawdown_week=("drawdown", "max"),
+        )
+        .sort_values("week_key")
+    )
+    weekly_df["hit_rate"] = weekly_df["wins"] / weekly_df["bets"]
+    weekly_df["roi"] = weekly_df["profit"] / weekly_df["bets"]
+
+    return {
+        "initial_bankroll": 100.0,
+        "final_bankroll": float(bankroll),
+        "total_bets": int(len(curve)),
+        "hit_rate": float(wins / len(curve)),
+        "roi": float(curve_df["profit"].sum() / len(curve)),
+        "max_drawdown": float(curve_df["drawdown"].max()),
+        "curve": records(curve_df[["date", "league", "home", "away", "market", "odds", "edge", "hit", "profit", "capital", "drawdown"]]),
+        "weekly": records(weekly_df[["week_key", "bets", "wins", "hit_rate", "roi", "profit", "capital_end", "max_drawdown_week"]]),
+    }
+
+
+def build_phase2_sos(resumo: pd.DataFrame, serie_full: pd.DataFrame) -> list[dict]:
+    res_total = resumo[resumo["scope"] == "Total"].copy()
+    ppg_map = {
+        (str(r["league"]), str(r["team"])): float(r["ppg"])
+        for _, r in res_total.iterrows()
+        if pd.notna(r.get("ppg"))
+    }
+    league_avg_ppg = (
+        res_total.groupby("league")["ppg"].mean().to_dict()
+        if "ppg" in res_total.columns
+        else {}
+    )
+
+    out: list[dict] = []
+    for (league, team), g in serie_full.groupby(["league", "team"]):
+        opp_ppg = []
+        for opp in g.get("opponent", pd.Series(dtype=str)).astype(str):
+            key = (str(league), str(opp))
+            if key in ppg_map:
+                opp_ppg.append(ppg_map[key])
+        if not opp_ppg:
+            continue
+
+        points = pd.to_numeric(g.get("points"), errors="coerce")
+        raw_ppg = float(points.mean()) if points.notna().any() else None
+        if raw_ppg is None:
+            continue
+
+        sos = float(sum(opp_ppg) / len(opp_ppg))
+        lg_avg = float(league_avg_ppg.get(league, raw_ppg))
+        adj_ppg = raw_ppg * (sos / lg_avg) if lg_avg > 0 else raw_ppg
+
+        last5 = points.dropna().tail(5)
+        last5_ppg = float(last5.mean()) if not last5.empty else None
+        out.append(
+            {
+                "league": str(league),
+                "team": str(team),
+                "raw_ppg": raw_ppg,
+                "sos_ppg": sos,
+                "adj_ppg": adj_ppg,
+                "last5_ppg": last5_ppg,
+                "sample_matches": int(points.dropna().shape[0]),
+            }
+        )
+    return out
+
+
 def main() -> None:
     base = Path(__file__).resolve().parents[1]
     out = base / "output"
@@ -296,6 +495,7 @@ def main() -> None:
 
     serie["date"] = pd.to_datetime(serie["date"], errors="coerce")
     serie = serie.sort_values(["league", "team", "date"])
+    serie_full = serie.copy()
     serie_last = serie.groupby(["league", "team", "venue"], group_keys=False).tail(14).copy()
     serie_cols = [
         "league",
@@ -319,6 +519,8 @@ def main() -> None:
 
     backtest_rows = build_backtest_rows(market_rows)
     data_quality = build_data_quality(base, resumo, mercados, lay, serie)
+    temporal_backtest = build_temporal_backtest(market_rows, serie_full)
+    phase2_sos = build_phase2_sos(resumo, serie_full)
 
     changelog = []
     if changelog_path.exists():
@@ -345,6 +547,8 @@ def main() -> None:
         "layRows": records(lay_rows),
         "seriesRows": records(serie_rows),
         "backtestRows": backtest_rows,
+        "temporalBacktest": temporal_backtest,
+        "phase2Sos": phase2_sos,
         "dataQuality": data_quality,
         "changelog": changelog,
     }
