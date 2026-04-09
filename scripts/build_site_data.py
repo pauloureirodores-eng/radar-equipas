@@ -864,6 +864,90 @@ def build_phase24_profiles(phase23_staking: dict) -> dict:
     return {"profiles": profiles}
 
 
+def build_weekly_alerts(serie_full: pd.DataFrame, market_rows: pd.DataFrame) -> dict:
+    alerts: list[dict] = []
+
+    # Team form alerts from temporal series.
+    s = serie_full.copy()
+    s["date"] = pd.to_datetime(s["date"], errors="coerce")
+    s = s.dropna(subset=["date"]).sort_values(["league", "team", "date"])
+    for (league, team), g in s.groupby(["league", "team"], dropna=False):
+        vals = pd.to_numeric(g.get("roll5_points"), errors="coerce").dropna()
+        if vals.shape[0] < 2:
+            continue
+        delta = float(vals.iloc[-1] - vals.iloc[-2])
+        abs_delta = abs(delta)
+        if abs_delta < 0.45:
+            continue
+        severity = "high" if abs_delta >= 0.9 else "medium"
+        direction = "up" if delta > 0 else "down"
+        alerts.append(
+            {
+                "league": str(league),
+                "type": "team_form",
+                "entity": str(team),
+                "market": None,
+                "direction": direction,
+                "severity": severity,
+                "score": float(abs_delta * 100.0),
+                "delta": delta,
+                "message": f"{team}: forma em pontos {'subiu' if delta > 0 else 'caiu'} {delta:+.2f} (ultimo vs anterior).",
+            }
+        )
+
+    # Market alerts from recent form vs season baseline.
+    m = market_rows.copy()
+    for col in ("jogos", "hit_rate", "form_recent_5"):
+        if col in m.columns:
+            m[col] = pd.to_numeric(m[col], errors="coerce")
+    m = m[(m["scope"] == "Total") & (m["jogos"] >= 8)]
+    m["delta"] = m["form_recent_5"] - m["hit_rate"]
+    m = m[m["delta"].notna() & (m["delta"].abs() >= 0.12)]
+    for _, r in m.iterrows():
+        delta = float(r["delta"])
+        abs_delta = abs(delta)
+        severity = "high" if abs_delta >= 0.20 else "medium"
+        direction = "up" if delta > 0 else "down"
+        alerts.append(
+            {
+                "league": str(r["league"]),
+                "type": "market_shift",
+                "entity": str(r["team"]),
+                "market": str(r["market"]),
+                "direction": direction,
+                "severity": severity,
+                "score": float(abs_delta * 100.0),
+                "delta": delta,
+                "message": f"{r['team']} - {r['market']}: forma 5J {'acima' if delta > 0 else 'abaixo'} da epoca ({delta * 100:+.1f} pp).",
+            }
+        )
+
+    alerts = sorted(
+        alerts,
+        key=lambda x: (
+            1 if x["severity"] == "high" else 0,
+            x["score"],
+        ),
+        reverse=True,
+    )
+    by_league: dict[str, list[dict]] = {}
+    for a in alerts:
+        lg = a["league"]
+        by_league.setdefault(lg, []).append(a)
+    for lg in list(by_league.keys()):
+        by_league[lg] = by_league[lg][:30]
+
+    return {
+        "summary": {
+            "total": int(len(alerts)),
+            "high": int(sum(1 for a in alerts if a["severity"] == "high")),
+            "medium": int(sum(1 for a in alerts if a["severity"] == "medium")),
+        },
+        "global": alerts[:120],
+        "byLeague": by_league,
+    }
+
+
 def main() -> None:
     base = Path(__file__).resolve().parents[1]
     out = base / "output"
@@ -1033,6 +1117,7 @@ def main() -> None:
     phase2_calibration = build_phase2_calibration(phase2_model_rows)
     phase23_staking = build_phase23_staking(temporal_backtest)
     phase24_profiles = build_phase24_profiles(phase23_staking)
+    weekly_alerts = build_weekly_alerts(serie_full, market_rows)
 
     changelog = []
     if changelog_path.exists():
@@ -1065,6 +1150,7 @@ def main() -> None:
         "phase2Calibration": phase2_calibration,
         "phase23Staking": phase23_staking,
         "phase24Profiles": phase24_profiles,
+        "weeklyAlerts": weekly_alerts,
         "dataQuality": data_quality,
         "changelog": changelog,
     }

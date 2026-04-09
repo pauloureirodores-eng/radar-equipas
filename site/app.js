@@ -303,6 +303,27 @@ function renderWeeklyVariation(league) {
     : '<p class="meta">Sem variação suficiente.</p>';
 }
 
+function renderWeeklyAlerts(league) {
+  const payload = DATA.weeklyAlerts || { summary: { total: 0, high: 0, medium: 0 }, byLeague: {} };
+  const leagueAlerts = (payload.byLeague && payload.byLeague[league]) ? payload.byLeague[league] : [];
+  const top = leagueAlerts.slice(0, 12);
+  const high = top.filter((a) => a.severity === 'high').length;
+  const medium = top.filter((a) => a.severity === 'medium').length;
+  byId('weeklyAlertsMeta').textContent = top.length
+    ? `${top.length} alertas nesta liga · ${high} high · ${medium} medium`
+    : 'Sem alertas relevantes para esta liga na atualização atual.';
+
+  byId('weeklyAlertsList').innerHTML = top.length
+    ? top.map((a) => {
+      const sevClass = a.severity === 'high' ? 'warn' : '';
+      const sevLabel = a.severity === 'high' ? 'HIGH' : 'MEDIUM';
+      const dir = a.direction === 'up' ? '↑' : '↓';
+      const typeLabel = a.type === 'team_form' ? 'Equipa' : 'Mercado';
+      return `<article class="item"><p class="title">${dir} ${a.entity}${a.market ? ` · ${a.market}` : ''}</p><p class="meta">${a.message}</p><span class="badge ${sevClass}">${typeLabel} · ${sevLabel}</span></article>`;
+    }).join('')
+    : '<p class="meta">Sem alertas automáticos para mostrar.</p>';
+}
+
 function renderSosTable(league) {
   const rows = (DATA.phase2Sos || [])
     .filter((r) => r.league === league)
@@ -321,6 +342,7 @@ function renderOverview(league) {
   renderMarkets(league);
   renderLay(league);
   renderWeeklyVariation(league);
+  renderWeeklyAlerts(league);
   renderSosTable(league);
 }
 
