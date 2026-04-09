@@ -25,6 +25,7 @@
     <button class="tab" data-tab="scanner">Scanner</button>
     <button class="tab" data-tab="confronto">Confronto</button>
     <button class="tab" data-tab="forma">Forma</button>
+    <button class="tab" data-tab="performance">Performance</button>
     <button class="tab" data-tab="prejogo">Pré-jogo</button>
   </nav>
 
@@ -203,6 +204,34 @@
               <tbody></tbody>
             </table>
           </div>
+        </div>
+      </section>
+    </section>
+
+    <section class="tab-panel" id="panel-performance">
+      <section class="panel">
+        <div class="panel-head"><h2>Monitorização de Estratégias</h2></div>
+        <div id="perfCards" class="kpi-grid"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Backtesting por Mercado</h2></div>
+        <div class="table-wrap">
+          <table id="perfMarketTable">
+            <thead><tr><th>Liga</th><th>Grupo</th><th>Mercados</th><th>Apostas</th><th>Hit Rate</th><th>ROI médio</th><th>EV médio</th><th>Drawdown (proxy)</th><th>Brier (proxy)</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Qualidade de Dados</h2></div>
+        <div id="qualityCards" class="kpi-grid"></div>
+        <div class="table-wrap">
+          <table id="qualityChecksTable">
+            <thead><tr><th>Check</th><th>Estado</th><th>Detalhe</th></tr></thead>
+            <tbody></tbody>
+          </table>
         </div>
       </section>
     </section>

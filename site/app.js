@@ -191,6 +191,17 @@ function miniSparkline(row) {
   return `<div class="spark-wrap"><svg viewBox="0 0 ${width} ${height}" class="spark"><polyline fill="none" stroke="#0e7490" stroke-width="2" points="${pts}" /></svg><span>${fmtPct(b)}</span></div>`;
 }
 
+function groupLabel(group) {
+  const map = {
+    resultados: 'Resultados',
+    golos: 'Golos',
+    btts: 'BTTS',
+    cantos: 'Cantos',
+    outros: 'Outros'
+  };
+  return map[group] || group;
+}
+
 function opportunityScore(row) {
   const edge = toNum(row.edge_vs_liga);
   const games = toNum(row.jogos) ?? 0;
@@ -1214,6 +1225,51 @@ function renderChangelog() {
     : '<p class="meta">Sem entradas de changelog ainda.</p>';
 }
 
+function renderPerformance() {
+  const rows = DATA.backtestRows || [];
+  const dq = DATA.dataQuality || { checks: [], summary: { checks_total: 0, checks_warn: 0 } };
+  const validRoi = rows.map((r) => toNum(r.roi_mean)).filter((x) => x != null);
+  const validEv = rows.map((r) => toNum(r.ev_mean)).filter((x) => x != null);
+  const totalBets = rows.reduce((acc, r) => acc + Number(r.bets || 0), 0);
+  const best = rows
+    .filter((r) => toNum(r.roi_mean) != null)
+    .sort((a, b) => Number(b.roi_mean) - Number(a.roi_mean))[0];
+
+  byId('perfCards').innerHTML = `
+    <article class="kpi-card"><h3>Bets avaliadas</h3><div class="kpi-row"><span>Total</span><strong>${totalBets}</strong></div></article>
+    <article class="kpi-card"><h3>ROI médio</h3><div class="kpi-row"><span>Todos os grupos</span><strong>${validRoi.length ? `${fmtNum(avg(validRoi) * 100, 2)}%` : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>EV médio</h3><div class="kpi-row"><span>Todos os grupos</span><strong>${validEv.length ? `${fmtNum(avg(validEv) * 100, 2)}%` : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>Melhor segmento</h3><div class="kpi-row"><span>Liga/Grupo</span><strong>${best ? `${leagueLabel(best.league)} · ${groupLabel(best.group)}` : '—'}</strong></div></article>
+  `;
+
+  byId('perfMarketTable').querySelector('tbody').innerHTML = rows
+    .sort((a, b) => Number(b.roi_mean ?? -999) - Number(a.roi_mean ?? -999))
+    .map((r) => `<tr>
+      <td>${leagueLabel(r.league)}</td>
+      <td>${groupLabel(r.group)}</td>
+      <td>${r.markets}</td>
+      <td>${r.bets}</td>
+      <td>${toNum(r.hit_rate) != null ? fmtPct(r.hit_rate) : '—'}</td>
+      <td>${toNum(r.roi_mean) != null ? `${fmtNum(r.roi_mean * 100, 2)}%` : '—'}</td>
+      <td>${toNum(r.ev_mean) != null ? `${fmtNum(r.ev_mean * 100, 2)}%` : '—'}</td>
+      <td>${toNum(r.drawdown_proxy) != null ? `${fmtNum(r.drawdown_proxy * 100, 1)}%` : '—'}</td>
+      <td>${toNum(r.brier_proxy) != null ? fmtNum(r.brier_proxy, 3) : '—'}</td>
+    </tr>`).join('') || '<tr><td colspan="9">Sem dados de backtesting.</td></tr>';
+  applyExistingSort('perfMarketTable');
+
+  byId('qualityCards').innerHTML = `
+    <article class="kpi-card"><h3>Checks executados</h3><div class="kpi-row"><span>Total</span><strong>${dq.summary?.checks_total ?? 0}</strong></div></article>
+    <article class="kpi-card"><h3>Alertas</h3><div class="kpi-row"><span>Warn</span><strong>${dq.summary?.checks_warn ?? 0}</strong></div></article>
+    <article class="kpi-card"><h3>Estado</h3><div class="kpi-row"><span>Qualidade global</span><strong>${(dq.summary?.checks_warn ?? 0) === 0 ? 'OK' : 'Atenção'}</strong></div></article>
+    <article class="kpi-card"><h3>Atualização</h3><div class="kpi-row"><span>Dados</span><strong>${(DATA.meta?.generatedAt || '').slice(0, 10) || '—'}</strong></div></article>
+  `;
+
+  byId('qualityChecksTable').querySelector('tbody').innerHTML = (dq.checks || [])
+    .map((c) => `<tr><td>${c.name}</td><td><span class="badge ${c.status === 'ok' ? 'good' : 'warn'}">${c.status === 'ok' ? 'OK' : 'WARN'}</span></td><td>${c.detail}</td></tr>`)
+    .join('') || '<tr><td colspan="3">Sem checks de qualidade.</td></tr>';
+  applyExistingSort('qualityChecksTable');
+}
+
 function exportPrejogoPdf() {
   if (!PREJOGO_STATE?.league || !PREJOGO_STATE?.home || !PREJOGO_STATE?.away || !PREJOGO_STATE?.probs) return;
   const now = new Date().toLocaleString('pt-PT', { timeZone: 'Europe/Lisbon' });
@@ -1264,11 +1320,12 @@ async function main() {
 
   populateConfronto(leagues);
   populateForma(leagues);
+  renderPerformance();
   populatePrejogo(leagues);
 
   document.querySelectorAll('.tab').forEach((btn) => btn.addEventListener('click', () => setActiveTab(btn.dataset.tab)));
 
-  ['rankingTable', 'scannerTable', 'confrontoMarketTable', 'compareDeltaTable', 'formTable', 'prejogoShortlistTable', 'evKellyTable', 'h2hTable'].forEach(enableTableSorting);
+  ['rankingTable', 'scannerTable', 'confrontoMarketTable', 'compareDeltaTable', 'formTable', 'perfMarketTable', 'qualityChecksTable', 'prejogoShortlistTable', 'evKellyTable', 'h2hTable'].forEach(enableTableSorting);
   byId('exportPrejogoPdfBtn')?.addEventListener('click', exportPrejogoPdf);
   byId('scannerResetBtn')?.addEventListener('click', resetScannerFilters);
   byId('prejogoResetBtn')?.addEventListener('click', resetPrejogoFilters);

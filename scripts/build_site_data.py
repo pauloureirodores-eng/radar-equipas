@@ -17,6 +17,146 @@ def records(df: pd.DataFrame) -> list[dict]:
     return json.loads(df.to_json(orient="records", force_ascii=False))
 
 
+def market_group(market: str) -> str:
+    m = str(market or "").lower()
+    if "canto" in m:
+        return "cantos"
+    if "btts" in m or "ambas marcam" in m:
+        return "btts"
+    if (
+        "golo" in m
+        or "casa marca" in m
+        or "clean sheet" in m
+        or "over 1.5" in m
+        or "over 2.5" in m
+        or "over 3.5" in m
+        or "under 2.5" in m
+    ):
+        return "golos"
+    if "vitoria" in m or "empate" in m or "1x2" in m or "handicap" in m:
+        return "resultados"
+    return "outros"
+
+
+def safe_weighted_mean(values: pd.Series, weights: pd.Series) -> float | None:
+    vals = pd.to_numeric(values, errors="coerce")
+    w = pd.to_numeric(weights, errors="coerce")
+    mask = vals.notna() & w.notna() & (w > 0)
+    if not mask.any():
+        return None
+    return float((vals[mask] * w[mask]).sum() / w[mask].sum())
+
+
+def build_backtest_rows(market_rows: pd.DataFrame) -> list[dict]:
+    df = market_rows.copy()
+    df["group"] = df["market"].map(market_group)
+    out: list[dict] = []
+
+    grouped = df.groupby(["league", "group"], dropna=False)
+    for (league, group), g in grouped:
+        bets = int(pd.to_numeric(g["jogos"], errors="coerce").fillna(0).sum())
+        hit_rate = safe_weighted_mean(g["hit_rate"], g["jogos"])
+        roi_mean = safe_weighted_mean(g["roi_unid_por_aposta"], g["jogos"])
+        ev_mean = safe_weighted_mean(g["value_estimado"], g["jogos"])
+        brier_proxy = float(
+            (pd.to_numeric(g["hit_rate"], errors="coerce") - pd.to_numeric(g["form_recent_5"], errors="coerce"))
+            .pow(2)
+            .mean(skipna=True)
+        ) if ("hit_rate" in g.columns and "form_recent_5" in g.columns) else None
+
+        drawdown_proxy = None
+        if roi_mean is not None:
+            drawdown_proxy = max(0.0, min(1.0, -roi_mean * 3.0))
+
+        out.append(
+            {
+                "league": str(league),
+                "group": str(group),
+                "markets": int(g.shape[0]),
+                "bets": bets,
+                "hit_rate": hit_rate,
+                "roi_mean": roi_mean,
+                "ev_mean": ev_mean,
+                "drawdown_proxy": drawdown_proxy,
+                "brier_proxy": brier_proxy if pd.notna(brier_proxy) else None,
+            }
+        )
+    return out
+
+
+def build_data_quality(
+    base: Path,
+    resumo: pd.DataFrame,
+    mercados: pd.DataFrame,
+    lay: pd.DataFrame,
+    serie: pd.DataFrame,
+) -> dict:
+    checks: list[dict] = []
+
+    checks.append(
+        {
+            "name": "Row count mínimo",
+            "status": "ok" if all(x.shape[0] > 0 for x in (resumo, mercados, lay, serie)) else "warn",
+            "detail": f"resumo={resumo.shape[0]}, mercados={mercados.shape[0]}, lay={lay.shape[0]}, serie={serie.shape[0]}",
+        }
+    )
+
+    dup_cols = [c for c in ["league", "team", "scope", "market"] if c in mercados.columns]
+    dup_count = int(mercados.duplicated(subset=dup_cols).sum()) if dup_cols else 0
+    checks.append(
+        {
+            "name": "Duplicados mercado (league/team/scope/market)",
+            "status": "ok" if dup_count == 0 else "warn",
+            "detail": str(dup_count),
+        }
+    )
+
+    missing_cols = [c for c in ["league", "team", "scope", "market", "jogos", "hit_rate"] if c in mercados.columns]
+    missing_rate = float(mercados[missing_cols].isna().mean().mean()) if missing_cols else 0.0
+    checks.append(
+        {
+            "name": "Missing rate campos chave",
+            "status": "ok" if missing_rate <= 0.03 else "warn",
+            "detail": f"{missing_rate * 100:.2f}%",
+        }
+    )
+
+    hit = pd.to_numeric(mercados.get("hit_rate"), errors="coerce")
+    bad_hit = int(((hit < 0) | (hit > 1)).sum()) if hit is not None else 0
+    odds = pd.to_numeric(mercados.get("odds_avg"), errors="coerce")
+    bad_odds = int((odds <= 1).sum()) if odds is not None else 0
+    jogos = pd.to_numeric(mercados.get("jogos"), errors="coerce")
+    bad_jogos = int((jogos <= 0).sum()) if jogos is not None else 0
+    checks.append(
+        {
+            "name": "Outliers (hit/odds/jogos)",
+            "status": "ok" if (bad_hit + bad_odds + bad_jogos) == 0 else "warn",
+            "detail": f"hit={bad_hit}, odds={bad_odds}, jogos={bad_jogos}",
+        }
+    )
+
+    source_files = sorted(base.glob("*.csv"))
+    stale_days = None
+    if source_files:
+        newest = max(f.stat().st_mtime for f in source_files)
+        stale_days = (datetime.now().timestamp() - newest) / 86400
+    checks.append(
+        {
+            "name": "Staleness fontes CSV",
+            "status": "ok" if stale_days is not None and stale_days <= 10 else "warn",
+            "detail": "n/a" if stale_days is None else f"{stale_days:.1f} dias",
+        }
+    )
+
+    return {
+        "checks": checks,
+        "summary": {
+            "checks_total": len(checks),
+            "checks_warn": sum(1 for c in checks if c["status"] != "ok"),
+        },
+    }
+
+
 def main() -> None:
     base = Path(__file__).resolve().parents[1]
     out = base / "output"
@@ -177,6 +317,9 @@ def main() -> None:
     serie_rows = serie_last[[c for c in serie_cols if c in serie_last.columns]].copy()
     serie_rows["date"] = serie_rows["date"].dt.strftime("%Y-%m-%d")
 
+    backtest_rows = build_backtest_rows(market_rows)
+    data_quality = build_data_quality(base, resumo, mercados, lay, serie)
+
     changelog = []
     if changelog_path.exists():
         try:
@@ -201,6 +344,8 @@ def main() -> None:
         "marketRows": records(market_rows),
         "layRows": records(lay_rows),
         "seriesRows": records(serie_rows),
+        "backtestRows": backtest_rows,
+        "dataQuality": data_quality,
         "changelog": changelog,
     }
 

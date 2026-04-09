@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-04-08T16:51:31.281059+00:00",
+    "generatedAt": "2026-04-09T11:44:30.347012+00:00",
     "sourceFiles": [
       "D1.csv",
       "E0.csv",
@@ -247226,6 +247226,481 @@
       "roll5_clean_sheet": 0.4
     }
   ],
+  "backtestRows": [
+    {
+      "league": "D1",
+      "group": "btts",
+      "markets": 54,
+      "bets": 1008,
+      "hit_rate": 0.5952380952380952,
+      "roi_mean": null,
+      "ev_mean": null,
+      "drawdown_proxy": null,
+      "brier_proxy": 0.017312740056940307
+    },
+    {
+      "league": "D1",
+      "group": "cantos",
+      "markets": 324,
+      "bets": 6048,
+      "hit_rate": 0.4573412698412698,
+      "roi_mean": null,
+      "ev_mean": null,
+      "drawdown_proxy": null,
+      "brier_proxy": 0.03527599652981216
+    },
+    {
+      "league": "D1",
+      "group": "golos",
+      "markets": 324,
+      "bets": 6048,
+      "hit_rate": 0.5396825396825397,
+      "roi_mean": -0.08521825396825396,
+      "ev_mean": -0.06478637929530787,
+      "drawdown_proxy": 0.2556547619047619,
+      "brier_proxy": 0.019049874156203014
+    },
+    {
+      "league": "D1",
+      "group": "resultados",
+      "markets": 108,
+      "bets": 2016,
+      "hit_rate": 0.375,
+      "roi_mean": -0.09098710317460316,
+      "ev_mean": 0.05559836509390077,
+      "drawdown_proxy": 0.2729613095238095,
+      "brier_proxy": 0.026941760304092413
+    },
+    {
+      "league": "E0",
+      "group": "btts",
+      "markets": 60,
+      "bets": 1236,
+      "hit_rate": 0.5566343042071198,
+      "roi_mean": null,
+      "ev_mean": null,
+      "drawdown_proxy": null,
+      "brier_proxy": 0.025957091619455044
+    },
+    {
+      "league": "E0",
+      "group": "cantos",
+      "markets": 360,
+      "bets": 7416,
+      "hit_rate": 0.49973031283710895,
+      "roi_mean": null,
+      "ev_mean": null,
+      "drawdown_proxy": null,
+      "brier_proxy": 0.030700168753452554
+    },
+    {
+      "league": "E0",
+      "group": "golos",
+      "markets": 360,
+      "bets": 7416,
+      "hit_rate": 0.5118662351672061,
+      "roi_mean": -0.05676375404530743,
+      "ev_mean": -0.05447840382172809,
+      "drawdown_proxy": 0.1702912621359223,
+      "brier_proxy": 0.03017133508730939
+    },
+    {
+      "league": "E0",
+      "group": "resultados",
+      "markets": 120,
+      "bets": 2472,
+      "hit_rate": 0.3640776699029126,
+      "roi_mean": -0.06106796116504855,
+      "ev_mean": 0.04619969681943144,
+      "drawdown_proxy": 0.18320388349514566,
+      "brier_proxy": 0.02982739785668864
+    },
+    {
+      "league": "E1",
+      "group": "btts",
+      "markets": 72,
+      "bets": 1956,
+      "hit_rate": 0.5644171779141104,
+      "roi_mean": null,
+      "ev_mean": null,
+      "drawdown_proxy": null,
+      "brier_proxy": 0.03628415225822687
+    },
+    {
+      "league": "E1",
+      "group": "cantos",
+      "markets": 432,
+      "bets": 11736,
+      "hit_rate": 0.5095432856169052,
+      "roi_mean": null,
+      "ev_mean": null,
+      "drawdown_proxy": null,
+      "brier_proxy": 0.04168600906390874
+    },
+    {
+      "league": "E1",
+      "group": "golos",
+      "markets": 432,
+      "bets": 11736,
+      "hit_rate": 0.5,
+      "roi_mean": -0.05963190184049079,
+      "ev_mean": -0.05824780313811938,
+      "drawdown_proxy": 0.17889570552147238,
+      "brier_proxy": 0.03248366508327863
+    },
+    {
+      "league": "E1",
+      "group": "resultados",
+      "markets": 144,
+      "bets": 3912,
+      "hit_rate": 0.3670756646216769,
+      "roi_mean": -0.05169478527607361,
+      "ev_mean": 0.005129815446548994,
+      "drawdown_proxy": 0.15508435582822083,
+      "brier_proxy": 0.04001289512425327
+    },
+    {
+      "league": "F1",
+      "group": "btts",
+      "markets": 54,
+      "bets": 1004,
+      "hit_rate": 0.4860557768924303,
+      "roi_mean": null,
+      "ev_mean": null,
+      "drawdown_proxy": null,
+      "brier_proxy": 0.02470960297947439
+    },
+    {
+      "league": "F1",
+      "group": "cantos",
+      "markets": 324,
+      "bets": 6024,
+      "hit_rate": 0.4309428950863214,
+      "roi_mean": null,
+      "ev_mean": null,
+      "drawdown_proxy": null,
+      "brier_proxy": 0.03680260754706657
+    },
+    {
+      "league": "F1",
+      "group": "golos",
+      "markets": 324,
+      "bets": 6024,
+      "hit_rate": 0.5039840637450199,
+      "roi_mean": -0.06786852589641434,
+      "ev_mean": -0.05313019716007765,
+      "drawdown_proxy": 0.20360557768924303,
+      "brier_proxy": 0.022713222373650255
+    },
+    {
+      "league": "F1",
+      "group": "resultados",
+      "markets": 108,
+      "bets": 2008,
+      "hit_rate": 0.3844621513944223,
+      "roi_mean": -0.06395916334661356,
+      "ev_mean": 0.07465254468491518,
+      "drawdown_proxy": 0.19187749003984067,
+      "brier_proxy": 0.02812226405205271
+    },
+    {
+      "league": "I1",
+      "group": "btts",
+      "markets": 60,
+      "bets": 1240,
+      "hit_rate": 0.4645161290322581,
+      "roi_mean": null,
+      "ev_mean": null,
+      "drawdown_proxy": null,
+      "brier_proxy": 0.03881991565739777
+    },
+    {
+      "league": "I1",
+      "group": "cantos",
+      "markets": 360,
+      "bets": 7440,
+      "hit_rate": 0.39838709677419354,
+      "roi_mean": null,
+      "ev_mean": null,
+      "drawdown_proxy": null,
+      "brier_proxy": 0.02391623012976773
+    },
+    {
+      "league": "I1",
+      "group": "golos",
+      "markets": 360,
+      "bets": 7440,
+      "hit_rate": 0.48870967741935484,
+      "roi_mean": -0.046145161290322576,
+      "ev_mean": -0.04816564234304542,
+      "drawdown_proxy": 0.1384354838709677,
+      "brier_proxy": 0.027314841060222122
+    },
+    {
+      "league": "I1",
+      "group": "resultados",
+      "markets": 120,
+      "bets": 2480,
+      "hit_rate": 0.36935483870967745,
+      "roi_mean": -0.06770161290322581,
+      "ev_mean": 0.07334727063822409,
+      "drawdown_proxy": 0.20310483870967744,
+      "brier_proxy": 0.027572490316799633
+    },
+    {
+      "league": "N1",
+      "group": "btts",
+      "markets": 54,
+      "bets": 1044,
+      "hit_rate": 0.6283524904214559,
+      "roi_mean": null,
+      "ev_mean": null,
+      "drawdown_proxy": null,
+      "brier_proxy": 0.03379855443300322
+    },
+    {
+      "league": "N1",
+      "group": "cantos",
+      "markets": 324,
+      "bets": 6264,
+      "hit_rate": 0.5239463601532567,
+      "roi_mean": null,
+      "ev_mean": null,
+      "drawdown_proxy": null,
+      "brier_proxy": 0.024093772499188704
+    },
+    {
+      "league": "N1",
+      "group": "golos",
+      "markets": 324,
+      "bets": 6264,
+      "hit_rate": 0.5402298850574713,
+      "roi_mean": -0.0818390804597701,
+      "ev_mean": -0.07010782232036691,
+      "drawdown_proxy": 0.2455172413793103,
+      "brier_proxy": 0.02895845256478227
+    },
+    {
+      "league": "N1",
+      "group": "resultados",
+      "markets": 108,
+      "bets": 2088,
+      "hit_rate": 0.3735632183908046,
+      "roi_mean": -0.07077107279693487,
+      "ev_mean": 0.07234710190060963,
+      "drawdown_proxy": 0.2123132183908046,
+      "brier_proxy": 0.03800268869309883
+    },
+    {
+      "league": "P1",
+      "group": "btts",
+      "markets": 54,
+      "bets": 1000,
+      "hit_rate": 0.468,
+      "roi_mean": null,
+      "ev_mean": null,
+      "drawdown_proxy": null,
+      "brier_proxy": 0.039213383321147995
+    },
+    {
+      "league": "P1",
+      "group": "cantos",
+      "markets": 324,
+      "bets": 6000,
+      "hit_rate": 0.44066666666666665,
+      "roi_mean": null,
+      "ev_mean": null,
+      "drawdown_proxy": null,
+      "brier_proxy": 0.03206331224577468
+    },
+    {
+      "league": "P1",
+      "group": "golos",
+      "markets": 324,
+      "bets": 6000,
+      "hit_rate": 0.51,
+      "roi_mean": -0.07858000000000001,
+      "ev_mean": -0.05573071764346768,
+      "drawdown_proxy": 0.23574000000000003,
+      "brier_proxy": 0.03436008131446524
+    },
+    {
+      "league": "P1",
+      "group": "resultados",
+      "markets": 108,
+      "bets": 2000,
+      "hit_rate": 0.37,
+      "roi_mean": -0.12601,
+      "ev_mean": 0.13849929426129418,
+      "drawdown_proxy": 0.37803000000000003,
+      "brier_proxy": 0.03100167600772448
+    },
+    {
+      "league": "SC0",
+      "group": "btts",
+      "markets": 36,
+      "bets": 768,
+      "hit_rate": 0.5052083333333334,
+      "roi_mean": null,
+      "ev_mean": null,
+      "drawdown_proxy": null,
+      "brier_proxy": 0.03334937700910974
+    },
+    {
+      "league": "SC0",
+      "group": "cantos",
+      "markets": 216,
+      "bets": 4608,
+      "hit_rate": 0.5243055555555556,
+      "roi_mean": null,
+      "ev_mean": null,
+      "drawdown_proxy": null,
+      "brier_proxy": 0.02971300963082219
+    },
+    {
+      "league": "SC0",
+      "group": "golos",
+      "markets": 216,
+      "bets": 4608,
+      "hit_rate": 0.5121527777777778,
+      "roi_mean": -0.058750000000000004,
+      "ev_mean": -0.056353214837367216,
+      "drawdown_proxy": 0.17625000000000002,
+      "brier_proxy": 0.027038097076044473
+    },
+    {
+      "league": "SC0",
+      "group": "resultados",
+      "markets": 72,
+      "bets": 1536,
+      "hit_rate": 0.3541666666666667,
+      "roi_mean": -0.07399739583333331,
+      "ev_mean": -0.0037290406071282477,
+      "drawdown_proxy": 0.22199218749999994,
+      "brier_proxy": 0.02349737948011449
+    },
+    {
+      "league": "SP1",
+      "group": "btts",
+      "markets": 60,
+      "bets": 1200,
+      "hit_rate": 0.56,
+      "roi_mean": null,
+      "ev_mean": null,
+      "drawdown_proxy": null,
+      "brier_proxy": 0.023996055366591086
+    },
+    {
+      "league": "SP1",
+      "group": "cantos",
+      "markets": 360,
+      "bets": 7200,
+      "hit_rate": 0.46055555555555555,
+      "roi_mean": null,
+      "ev_mean": null,
+      "drawdown_proxy": null,
+      "brier_proxy": 0.030962676563681027
+    },
+    {
+      "league": "SP1",
+      "group": "golos",
+      "markets": 360,
+      "bets": 7200,
+      "hit_rate": 0.5077777777777778,
+      "roi_mean": -0.06451666666666665,
+      "ev_mean": -0.04073869295634921,
+      "drawdown_proxy": 0.19354999999999994,
+      "brier_proxy": 0.024584668879125724
+    },
+    {
+      "league": "SP1",
+      "group": "resultados",
+      "markets": 120,
+      "bets": 2400,
+      "hit_rate": 0.375,
+      "roi_mean": -0.0641625,
+      "ev_mean": 0.0815136805555555,
+      "drawdown_proxy": 0.19248749999999998,
+      "brier_proxy": 0.0350009271069539
+    },
+    {
+      "league": "T1",
+      "group": "btts",
+      "markets": 54,
+      "bets": 1000,
+      "hit_rate": 0.54,
+      "roi_mean": null,
+      "ev_mean": null,
+      "drawdown_proxy": null,
+      "brier_proxy": 0.032619784375124354
+    },
+    {
+      "league": "T1",
+      "group": "cantos",
+      "markets": 324,
+      "bets": 6000,
+      "hit_rate": 0.4583333333333333,
+      "roi_mean": null,
+      "ev_mean": null,
+      "drawdown_proxy": null,
+      "brier_proxy": 0.02887137980953145
+    },
+    {
+      "league": "T1",
+      "group": "golos",
+      "markets": 324,
+      "bets": 6000,
+      "hit_rate": 0.502,
+      "roi_mean": -0.07788,
+      "ev_mean": -0.06142505443630445,
+      "drawdown_proxy": 0.23364000000000001,
+      "brier_proxy": 0.02494040383392801
+    },
+    {
+      "league": "T1",
+      "group": "resultados",
+      "markets": 108,
+      "bets": 2000,
+      "hit_rate": 0.348,
+      "roi_mean": -0.14217499999999997,
+      "ev_mean": -0.047698464387464445,
+      "drawdown_proxy": 0.42652499999999993,
+      "brier_proxy": 0.023158872769000298
+    }
+  ],
+  "dataQuality": {
+    "checks": [
+      {
+        "name": "Row count mínimo",
+        "status": "ok",
+        "detail": "resumo=558, mercados=8370, lay=1373, serie=5728"
+      },
+      {
+        "name": "Duplicados mercado (league/team/scope/market)",
+        "status": "ok",
+        "detail": "0"
+      },
+      {
+        "name": "Missing rate campos chave",
+        "status": "ok",
+        "detail": "1.11%"
+      },
+      {
+        "name": "Outliers (hit/odds/jogos)",
+        "status": "ok",
+        "detail": "hit=0, odds=0, jogos=0"
+      },
+      {
+        "name": "Staleness fontes CSV",
+        "status": "ok",
+        "detail": "0.8 dias"
+      }
+    ],
+    "summary": {
+      "checks_total": 5,
+      "checks_warn": 0
+    }
+  },
   "changelog": [
     {
       "date": "2026-04-08",
