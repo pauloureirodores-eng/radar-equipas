@@ -1354,6 +1354,31 @@ function drawStakeCurve(staking) {
   `;
 }
 
+function renderPerformanceGuide() {
+  const temporal = DATA.temporalBacktest || {};
+  const initial = toNum(temporal.initial_bankroll) ?? 100;
+  const final = toNum(temporal.final_bankroll);
+  const profit = final != null ? final - initial : null;
+  const hit = toNum(temporal.hit_rate);
+  const bets = toNum(temporal.total_bets);
+
+  byId('performanceGuideCards').innerHTML = `
+    <article class="kpi-card"><h3>1) O que é isto?</h3><p class="meta">É uma simulação histórica com regras fixas de seleção de mercados.</p></article>
+    <article class="kpi-card"><h3>2) Regra de lucro</h3><p class="meta">Win: + (odds - 1) por unidade. Loss: -1 unidade.</p></article>
+    <article class="kpi-card"><h3>3) Hit rate</h3><p class="meta">É a taxa de acerto das apostas simuladas (não de todos os jogos).</p></article>
+    <article class="kpi-card"><h3>4) Limitação</h3><p class="meta">Não é garantia futura. Serve para comparar estratégias e risco.</p></article>
+  `;
+
+  const summary = [
+    `Banca inicial: ${fmtNum(initial, 2)}`,
+    final != null ? `Banca final simulada: ${fmtNum(final, 2)}` : 'Banca final simulada: —',
+    profit != null ? `Lucro simulado: ${profit >= 0 ? '+' : ''}${fmtNum(profit, 2)}` : 'Lucro simulado: —',
+    hit != null ? `Hit rate: ${fmtPct(hit)}` : 'Hit rate: —',
+    bets != null ? `Apostas: ${fmtNum(bets, 0)}` : 'Apostas: —'
+  ];
+  byId('performanceGuideNote').textContent = summary.join(' · ');
+}
+
 function renderStrategyProfiles() {
   const payload = DATA.phase24Profiles || { profiles: [] };
   const selected = byId('strategyProfileSelect')?.value || 'balanceado';
@@ -1388,6 +1413,8 @@ function renderStrategyProfiles() {
 }
 
 function renderPerformance() {
+  renderPerformanceGuide();
+
   const rows = DATA.backtestRows || [];
   const dq = DATA.dataQuality || { checks: [], summary: { checks_total: 0, checks_warn: 0 } };
   const validRoi = rows.map((r) => toNum(r.roi_mean)).filter((x) => x != null);

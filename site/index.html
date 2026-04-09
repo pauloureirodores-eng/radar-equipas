@@ -227,6 +227,12 @@
 
     <section class="tab-panel" id="panel-performance">
       <section class="panel">
+        <div class="panel-head"><h2>Como Ler Esta Tab</h2></div>
+        <div id="performanceGuideCards" class="kpi-grid"></div>
+        <p id="performanceGuideNote" class="lead"></p>
+      </section>
+
+      <section class="panel">
         <div class="panel-head"><h2>Monitorização de Estratégias</h2></div>
         <div id="perfCards" class="kpi-grid"></div>
       </section>
@@ -235,7 +241,7 @@
         <div class="panel-head"><h2>Backtesting por Mercado</h2></div>
         <div class="table-wrap">
           <table id="perfMarketTable">
-            <thead><tr><th>Liga</th><th>Grupo</th><th>Mercados</th><th>Apostas</th><th>Hit Rate</th><th>ROI médio</th><th>EV médio</th><th>Drawdown (proxy)</th><th>Brier (proxy)</th></tr></thead>
+            <thead><tr><th>Liga</th><th>Grupo</th><th>Mercados</th><th>Apostas</th><th>Hit Rate</th><th>ROI médio (simulado)</th><th>EV médio (simulado)</th><th>Queda máx (proxy)</th><th>Erro calibração (proxy)</th></tr></thead>
             <tbody></tbody>
           </table>
         </div>
@@ -262,7 +268,7 @@
         </div>
         <div class="table-wrap">
           <table id="stakeTable">
-            <thead><tr><th>Estratégia</th><th>Capital final</th><th>Profit</th><th>ROI sobre stake</th><th>Drawdown máx</th><th>Hit rate</th><th>Bets</th></tr></thead>
+            <thead><tr><th>Estratégia</th><th>Capital final (simulado)</th><th>Lucro total (simulado)</th><th>ROI sobre stake</th><th>Queda máx</th><th>Hit rate</th><th>Bets</th></tr></thead>
             <tbody></tbody>
           </table>
         </div>
