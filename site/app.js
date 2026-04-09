@@ -2,14 +2,6 @@
 const fmtNum = (n, d = 2) => Number(n).toFixed(d);
 const byId = (id) => document.getElementById(id);
 
-const MARKET_GROUPS = {
-  resultados: ['vit', 'derrota', 'empate', '1x2'],
-  golos: ['over', 'under', 'golos'],
-  btts: ['btts', 'ambas'],
-  cantos: ['cantos'],
-  todos: []
-};
-
 const RADAR_AXES = ['Resultados', 'Ataque', 'Defesa', 'Ritmo'];
 
 let DATA = null;
@@ -218,10 +210,29 @@ function populateScannerFilters(leagues) {
 }
 
 function marketInGroup(market, group) {
+  const m = String(market || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   if (group === 'todos') return true;
-  const keys = MARKET_GROUPS[group] || [];
-  const m = String(market || '').toLowerCase();
-  return keys.some((k) => m.includes(k));
+  if (!m) return false;
+
+  const isCorners = m.includes('canto');
+  const isBtts = m.includes('btts') || m.includes('ambas marcam');
+  const isGoalCore = m.includes('golo')
+    || m.includes('casa marca')
+    || m.includes('clean sheet')
+    || m.includes('over 1.5')
+    || m.includes('over 2.5')
+    || m.includes('over 3.5')
+    || m.includes('under 2.5');
+  const isResult = m.includes('vitoria')
+    || m.includes('empate')
+    || m.includes('1x2')
+    || m.includes('handicap');
+
+  if (group === 'cantos') return isCorners;
+  if (group === 'btts') return isBtts;
+  if (group === 'golos') return isGoalCore && !isCorners && !isBtts;
+  if (group === 'resultados') return isResult && !isCorners;
+  return true;
 }
 
 function renderScanner() {
@@ -238,7 +249,17 @@ function renderScanner() {
     .map((r) => ({ ...r, opportunityScore: opportunityScore(r) }))
     .sort((a, b) => Number(b.opportunityScore ?? -999) - Number(a.opportunityScore ?? -999));
 
-  byId('scannerTable').querySelector('tbody').innerHTML = rows.slice(0, 120).map((r) => `<tr><td>${r.team}</td><td>${r.market}</td><td>${r.jogos}</td><td>${r.hit_rate != null ? fmtPct(r.hit_rate) : '—'}</td><td>${renderCiCell(r)}</td><td>${r.opportunityScore}<br>${scoreBadge(r.opportunityScore)}</td><td>${r.edge_vs_liga != null ? `${fmtNum(r.edge_vs_liga * 100, 1)} pp` : '—'}</td><td>${r.roi_unid_por_aposta != null ? fmtNum(r.roi_unid_por_aposta, 3) : '—'}</td><td>${r.value_estimado != null ? `${fmtNum(r.value_estimado * 100, 1)}%` : '—'}</td></tr>`).join('') || '<tr><td colspan="9">Sem dados para os filtros escolhidos.</td></tr>';
+  const shown = rows.slice(0, 120);
+  const avgOpp = shown.length ? Math.round(shown.reduce((acc, r) => acc + (r.opportunityScore || 0), 0) / shown.length) : null;
+  const top = shown[0];
+  const meta = byId('scannerMeta');
+  if (meta) {
+    meta.textContent = shown.length
+      ? `${shown.length} mercados listados · oportunidade média ${avgOpp} · topo: ${top.team} (${top.market})`
+      : 'Sem mercados para estes filtros.';
+  }
+
+  byId('scannerTable').querySelector('tbody').innerHTML = shown.map((r) => `<tr><td>${r.team}</td><td>${r.market}</td><td>${r.jogos}</td><td>${r.hit_rate != null ? fmtPct(r.hit_rate) : '—'}</td><td>${renderCiCell(r)}</td><td>${r.opportunityScore}<br>${scoreBadge(r.opportunityScore)}</td><td>${r.edge_vs_liga != null ? `${fmtNum(r.edge_vs_liga * 100, 1)} pp` : '—'}</td><td>${r.roi_unid_por_aposta != null ? fmtNum(r.roi_unid_por_aposta, 3) : '—'}</td><td>${r.value_estimado != null ? `${fmtNum(r.value_estimado * 100, 1)}%` : '—'}</td></tr>`).join('') || '<tr><td colspan="9">Sem dados para os filtros escolhidos.</td></tr>';
   applyExistingSort('scannerTable');
 }
 
@@ -665,9 +686,9 @@ function drawFormLineChart(series, metric) {
     return;
   }
 
-  const width = 640;
-  const height = 280;
-  const margin = { top: 16, right: 20, bottom: 34, left: 42 };
+  const width = 960;
+  const height = 340;
+  const margin = { top: 16, right: 24, bottom: 36, left: 52 };
   const chartW = width - margin.left - margin.right;
   const chartH = height - margin.top - margin.bottom;
 
@@ -727,18 +748,6 @@ function renderForma() {
   const metric = byId('formMetric').value;
 
   const series = getSeries(league, team, venue, metric).filter((x) => Number.isFinite(x.value));
-  const latest = series.length ? series[series.length - 1].value : null;
-  const prev = series.length > 1 ? series[series.length - 2].value : null;
-  const avgVal = series.length ? series.reduce((a, x) => a + x.value, 0) / series.length : null;
-  const delta = (latest != null && prev != null) ? latest - prev : null;
-
-  byId('formTrendCards').innerHTML = `
-    <article class="kpi-card"><h3>Último valor</h3><div class="kpi-row"><span>${metric}</span><strong>${latest != null ? fmtNum(latest) : '—'}</strong></div></article>
-    <article class="kpi-card"><h3>Tendência</h3><div class="kpi-row"><span>Último vs anterior</span><strong>${delta != null ? (delta >= 0 ? '+' : '') + fmtNum(delta) : '—'}</strong></div></article>
-    <article class="kpi-card"><h3>Média da série</h3><div class="kpi-row"><span>Média</span><strong>${avgVal != null ? fmtNum(avgVal) : '—'}</strong></div></article>
-    <article class="kpi-card"><h3>Amostra</h3><div class="kpi-row"><span>Registos</span><strong>${series.length}</strong></div></article>
-  `;
-
   drawFormLineChart(series, metric);
 
   byId('formTable').querySelector('tbody').innerHTML = series.slice(-12).reverse().map((r, idx, arr) => {

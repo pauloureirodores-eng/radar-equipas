@@ -89,6 +89,7 @@
           </label>
           <label>Mín. jogos<input type="number" id="scanMinGames" min="1" value="8" /></label>
         </div>
+        <p id="scannerMeta" class="lead"></p>
         <div class="table-wrap">
           <table id="scannerTable">
             <thead>
@@ -177,18 +178,15 @@
             </select>
           </label>
         </div>
-        <div class="grid-2">
-          <div class="panel lite"><div id="formTrendCards" class="kpi-grid"></div></div>
-          <div class="panel lite">
-            <div class="linechart-wrap">
-              <svg id="formLineChart" viewBox="0 0 640 280" preserveAspectRatio="none"></svg>
-            </div>
-            <div class="table-wrap">
-              <table id="formTable">
-                <thead><tr><th>Data</th><th>Valor</th><th>Tendência</th></tr></thead>
-                <tbody></tbody>
-              </table>
-            </div>
+        <div class="panel lite">
+          <div class="linechart-wrap">
+            <svg id="formLineChart" viewBox="0 0 960 340" preserveAspectRatio="none"></svg>
+          </div>
+          <div class="table-wrap">
+            <table id="formTable">
+              <thead><tr><th>Data</th><th>Valor</th><th>Tendência</th></tr></thead>
+              <tbody></tbody>
+            </table>
           </div>
         </div>
       </section>
