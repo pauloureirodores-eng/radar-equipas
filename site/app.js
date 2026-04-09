@@ -1356,6 +1356,7 @@ function drawStakeCurve(staking) {
 
 function renderPerformanceGuide() {
   const temporal = DATA.temporalBacktest || {};
+  const sel = temporal.selectionStats || {};
   const initial = toNum(temporal.initial_bankroll) ?? 100;
   const final = toNum(temporal.final_bankroll);
   const profit = final != null ? final - initial : null;
@@ -1377,6 +1378,18 @@ function renderPerformanceGuide() {
     bets != null ? `Apostas: ${fmtNum(bets, 0)}` : 'Apostas: —'
   ];
   byId('performanceGuideNote').textContent = summary.join(' · ');
+
+  const total = toNum(sel.total_home_matches) ?? 0;
+  const stage1 = toNum(sel.with_team_data) ?? 0;
+  const stage2 = toNum(sel.with_market_overlap) ?? 0;
+  const stage3 = toNum(sel.with_positive_edge_odds) ?? 0;
+  const selected = toNum(sel.selected_bets) ?? 0;
+  const selRate = toNum(sel.selection_rate);
+
+  byId('performanceSelectionFlow').innerHTML = `
+    <article class="item"><p class="title">Critério de seleção (ordem real)</p><p class="meta">1) jogo em casa na série temporal · 2) existe dados de mercado para equipa casa (Casa) e adversário (Fora) · 3) existe mercado comum entre as duas equipas · 4) apenas mercados com edge médio > 0 e odds médias > 1.01 · 5) escolhe-se 1 pick por jogo: o maior edge médio.</p></article>
+    <article class="item"><p class="title">Funil desta atualização</p><p class="meta">Jogos casa: <strong>${fmtNum(total, 0)}</strong> → com dados casa/fora: <strong>${fmtNum(stage1, 0)}</strong> → com mercado comum: <strong>${fmtNum(stage2, 0)}</strong> → com edge+odds válidos: <strong>${fmtNum(stage3, 0)}</strong> → apostas selecionadas: <strong>${fmtNum(selected, 0)}</strong>${selRate != null ? ` (${fmtPct(selRate)})` : ''}.</p></article>
+  `;
 }
 
 function renderStrategyProfiles() {

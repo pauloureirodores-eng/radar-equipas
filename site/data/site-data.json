@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-04-09T16:56:57.380599+00:00",
+    "generatedAt": "2026-04-09T17:33:28.004553+00:00",
     "sourceFiles": [
       "D1.csv",
       "E0.csv",
@@ -293634,7 +293634,15 @@
         "capital_end": 751.1550140049,
         "max_drawdown_week": 2.289047619
       }
-    ]
+    ],
+    "selectionStats": {
+      "total_home_matches": 2864,
+      "with_team_data": 2864,
+      "with_market_overlap": 2864,
+      "with_positive_edge_odds": 2851,
+      "selected_bets": 2851,
+      "selection_rate": 0.9954608938547486
+    }
   },
   "phase2Sos": [
     {
@@ -568448,7 +568456,7 @@
       {
         "name": "Staleness fontes CSV",
         "status": "ok",
-        "detail": "1.0 dias"
+        "detail": "1.1 dias"
       }
     ],
     "summary": {

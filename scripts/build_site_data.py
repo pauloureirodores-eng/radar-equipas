@@ -196,6 +196,10 @@ def build_temporal_backtest(
     mdf = market_rows[market_rows["market"].isin(supported_markets)].copy()
 
     bets: list[dict] = []
+    total_home_matches = int(home_matches.shape[0])
+    with_team_data = 0
+    with_market_overlap = 0
+    with_positive_edge_odds = 0
     for _, r in home_matches.iterrows():
         league = str(r["league"])
         home = str(r["team"])
@@ -210,6 +214,7 @@ def build_temporal_backtest(
         aw = mdf[(mdf["league"] == league) & (mdf["team"] == away) & (mdf["scope"] == "Fora")]
         if hm.empty or aw.empty:
             continue
+        with_team_data += 1
 
         merged = hm.merge(
             aw,
@@ -219,6 +224,7 @@ def build_temporal_backtest(
         )
         if merged.empty:
             continue
+        with_market_overlap += 1
 
         merged["avg_edge"] = pd.to_numeric(merged["edge_vs_liga_h"], errors="coerce").add(
             pd.to_numeric(merged["edge_vs_liga_a"], errors="coerce"),
@@ -252,6 +258,7 @@ def build_temporal_backtest(
         ].sort_values("avg_edge", ascending=False)
         if candidates.empty:
             continue
+        with_positive_edge_odds += 1
 
         pick = candidates.iloc[0]
         market = str(pick["market"])
@@ -294,6 +301,14 @@ def build_temporal_backtest(
             "max_drawdown": 0.0,
             "curve": [],
             "weekly": [],
+            "selectionStats": {
+                "total_home_matches": total_home_matches,
+                "with_team_data": with_team_data,
+                "with_market_overlap": with_market_overlap,
+                "with_positive_edge_odds": with_positive_edge_odds,
+                "selected_bets": 0,
+                "selection_rate": 0.0,
+            },
         }
 
     bankroll = 100.0
@@ -334,6 +349,14 @@ def build_temporal_backtest(
         "max_drawdown": float(curve_df["drawdown"].max()),
         "curve": records(curve_df[["date", "league", "home", "away", "market", "odds", "edge", "sample_games", "ci_width", "confidence_score", "hit", "profit", "capital", "drawdown"]]),
         "weekly": records(weekly_df[["week_key", "bets", "wins", "hit_rate", "roi", "profit", "capital_end", "max_drawdown_week"]]),
+        "selectionStats": {
+            "total_home_matches": total_home_matches,
+            "with_team_data": with_team_data,
+            "with_market_overlap": with_market_overlap,
+            "with_positive_edge_odds": with_positive_edge_odds,
+            "selected_bets": int(len(curve)),
+            "selection_rate": float(len(curve) / total_home_matches) if total_home_matches > 0 else 0.0,
+        },
     }
 
 
