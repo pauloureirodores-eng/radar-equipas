@@ -762,6 +762,108 @@ def build_phase23_staking(temporal_backtest: dict) -> dict:
     }
 
 
+def build_phase24_profiles(phase23_staking: dict) -> dict:
+    strategies = phase23_staking.get("strategies", []) or []
+    weekly = phase23_staking.get("weekly", []) or []
+    if not strategies:
+        return {"profiles": []}
+
+    wdf = pd.DataFrame(weekly) if weekly else pd.DataFrame(columns=["strategy", "roi"])
+    if not wdf.empty and "roi" in wdf.columns:
+        wdf["roi"] = pd.to_numeric(wdf["roi"], errors="coerce")
+
+    def norm(v: float | None, lo: float, hi: float) -> float:
+        if v is None or not np.isfinite(v) or hi <= lo:
+            return 0.0
+        return float(clamp((v - lo) / (hi - lo), 0.0, 1.0))
+
+    enriched: list[dict] = []
+    for s in strategies:
+        sid = str(s.get("strategy"))
+        if not wdf.empty and "strategy" in wdf.columns:
+            w = wdf[wdf["strategy"] == sid]
+        else:
+            w = pd.DataFrame()
+        weekly_roi_std = float(w["roi"].std(skipna=True)) if (not w.empty and "roi" in w.columns) else None
+        initial_cap = float(s.get("initial_capital") or 100.0)
+        final_cap = float(s.get("final_capital") or initial_cap)
+        profit_pct = (final_cap - initial_cap) / initial_cap if initial_cap > 0 else None
+        enriched.append(
+            {
+                **s,
+                "profit_pct": profit_pct,
+                "weekly_roi_std": weekly_roi_std,
+            }
+        )
+
+    profile_defs = [
+        {
+            "id": "conservador",
+            "label": "Conservador",
+            "weights": {"dd": 0.50, "stability": 0.25, "roi": 0.15, "profit": 0.10},
+        },
+        {
+            "id": "balanceado",
+            "label": "Balanceado",
+            "weights": {"dd": 0.35, "stability": 0.20, "roi": 0.30, "profit": 0.15},
+        },
+        {
+            "id": "agressivo",
+            "label": "Agressivo",
+            "weights": {"dd": 0.15, "stability": 0.10, "roi": 0.45, "profit": 0.30},
+        },
+    ]
+
+    profiles: list[dict] = []
+    for p in profile_defs:
+        ranking: list[dict] = []
+        for s in enriched:
+            dd = float(s.get("max_drawdown_pct") or 0.0)
+            roi = float(s.get("roi_on_staked") or 0.0)
+            profit_pct = float(s.get("profit_pct") or 0.0)
+            weekly_std = s.get("weekly_roi_std")
+
+            dd_score = norm(1.0 - dd, 0.60, 1.0)
+            stability_score = norm(0.25 - (weekly_std if weekly_std is not None else 0.25), 0.0, 0.25)
+            roi_score = norm(roi, -0.05, 0.35)
+            profit_score = norm(profit_pct, -0.20, 2.50)
+
+            score = (
+                p["weights"]["dd"] * dd_score
+                + p["weights"]["stability"] * stability_score
+                + p["weights"]["roi"] * roi_score
+                + p["weights"]["profit"] * profit_score
+            ) * 100.0
+
+            ranking.append(
+                {
+                    "strategy": s.get("strategy"),
+                    "strategy_label": s.get("strategy_label"),
+                    "score": float(score),
+                    "max_drawdown_pct": dd,
+                    "roi_on_staked": roi,
+                    "profit_pct": profit_pct,
+                    "weekly_roi_std": weekly_std,
+                    "hit_rate": s.get("hit_rate"),
+                    "total_bets": s.get("total_bets"),
+                    "final_capital": s.get("final_capital"),
+                }
+            )
+
+        ranking = sorted(ranking, key=lambda x: x["score"], reverse=True)
+        best = ranking[0] if ranking else None
+        profiles.append(
+            {
+                "id": p["id"],
+                "label": p["label"],
+                "recommendation": best,
+                "ranking": ranking,
+            }
+        )
+
+    return {"profiles": profiles}
+
+
 def main() -> None:
     base = Path(__file__).resolve().parents[1]
     out = base / "output"
@@ -930,6 +1032,7 @@ def main() -> None:
     phase2_model_rows = build_phase2_model_rows(market_rows)
     phase2_calibration = build_phase2_calibration(phase2_model_rows)
     phase23_staking = build_phase23_staking(temporal_backtest)
+    phase24_profiles = build_phase24_profiles(phase23_staking)
 
     changelog = []
     if changelog_path.exists():
@@ -961,6 +1064,7 @@ def main() -> None:
         "phase2ModelRows": phase2_model_rows,
         "phase2Calibration": phase2_calibration,
         "phase23Staking": phase23_staking,
+        "phase24Profiles": phase24_profiles,
         "dataQuality": data_quality,
         "changelog": changelog,
     }

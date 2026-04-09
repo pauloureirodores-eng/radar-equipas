@@ -1332,6 +1332,39 @@ function drawStakeCurve(staking) {
   `;
 }
 
+function renderStrategyProfiles() {
+  const payload = DATA.phase24Profiles || { profiles: [] };
+  const selected = byId('strategyProfileSelect')?.value || 'balanceado';
+  const profile = (payload.profiles || []).find((p) => p.id === selected) || (payload.profiles || [])[0];
+
+  if (!profile) {
+    byId('strategyProfileCards').innerHTML = '<article class="kpi-card"><h3>Perfis</h3><p class="meta">Sem dados de perfil disponíveis.</p></article>';
+    byId('strategyProfileTable').querySelector('tbody').innerHTML = '<tr><td colspan="8">Sem estratégias avaliadas.</td></tr>';
+    return;
+  }
+
+  const rec = profile.recommendation || null;
+  byId('strategyProfileCards').innerHTML = `
+    <article class="kpi-card"><h3>Perfil selecionado</h3><div class="kpi-row"><span>Modo</span><strong>${profile.label}</strong></div></article>
+    <article class="kpi-card"><h3>Estratégia recomendada</h3><div class="kpi-row"><span>Top score</span><strong>${rec ? rec.strategy_label : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>Score da recomendação</h3><div class="kpi-row"><span>0-100</span><strong>${rec ? fmtNum(rec.score, 1) : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>Risco da recomendação</h3><div class="kpi-row"><span>Drawdown máx</span><strong>${rec && toNum(rec.max_drawdown_pct) != null ? `${fmtNum(rec.max_drawdown_pct * 100, 2)}%` : '—'}</strong></div></article>
+  `;
+
+  byId('strategyProfileTable').querySelector('tbody').innerHTML = (profile.ranking || [])
+    .map((r) => `<tr>
+      <td>${r.strategy_label}</td>
+      <td>${fmtNum(r.score, 1)}</td>
+      <td>${toNum(r.roi_on_staked) != null ? `${fmtNum(r.roi_on_staked * 100, 2)}%` : '—'}</td>
+      <td>${toNum(r.profit_pct) != null ? `${fmtNum(r.profit_pct * 100, 2)}%` : '—'}</td>
+      <td>${toNum(r.max_drawdown_pct) != null ? `${fmtNum(r.max_drawdown_pct * 100, 2)}%` : '—'}</td>
+      <td>${toNum(r.weekly_roi_std) != null ? `${fmtNum(r.weekly_roi_std * 100, 2)}%` : '—'}</td>
+      <td>${toNum(r.hit_rate) != null ? fmtPct(r.hit_rate) : '—'}</td>
+      <td>${r.total_bets ?? '—'}</td>
+    </tr>`).join('') || '<tr><td colspan="8">Sem estratégias avaliadas.</td></tr>';
+  applyExistingSort('strategyProfileTable');
+}
+
 function renderPerformance() {
   const rows = DATA.backtestRows || [];
   const dq = DATA.dataQuality || { checks: [], summary: { checks_total: 0, checks_warn: 0 } };
@@ -1414,6 +1447,8 @@ function renderPerformance() {
       <td>${s.total_bets ?? '—'}</td>
     </tr>`).join('') || '<tr><td colspan="7">Sem dados de estratégias.</td></tr>';
   applyExistingSort('stakeTable');
+
+  renderStrategyProfiles();
 }
 
 function modelConfidenceBadge(score) {
@@ -1611,7 +1646,8 @@ async function main() {
 
   document.querySelectorAll('.tab').forEach((btn) => btn.addEventListener('click', () => setActiveTab(btn.dataset.tab)));
 
-  ['rankingTable', 'scannerTable', 'confrontoMarketTable', 'compareDeltaTable', 'formTable', 'sosTable', 'perfMarketTable', 'qualityChecksTable', 'weeklyBacktestTable', 'stakeTable', 'modelTable', 'calibrationBinsTable', 'calibrationGroupTable', 'prejogoShortlistTable', 'evKellyTable', 'h2hTable'].forEach(enableTableSorting);
+  ['rankingTable', 'scannerTable', 'confrontoMarketTable', 'compareDeltaTable', 'formTable', 'sosTable', 'perfMarketTable', 'qualityChecksTable', 'weeklyBacktestTable', 'stakeTable', 'strategyProfileTable', 'modelTable', 'calibrationBinsTable', 'calibrationGroupTable', 'prejogoShortlistTable', 'evKellyTable', 'h2hTable'].forEach(enableTableSorting);
+  byId('strategyProfileSelect')?.addEventListener('change', renderStrategyProfiles);
   byId('exportPrejogoPdfBtn')?.addEventListener('click', exportPrejogoPdf);
   byId('scannerResetBtn')?.addEventListener('click', resetScannerFilters);
   byId('prejogoResetBtn')?.addEventListener('click', resetPrejogoFilters);

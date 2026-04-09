@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-04-09T14:35:50.078451+00:00",
+    "generatedAt": "2026-04-09T16:26:18.623917+00:00",
     "sourceFiles": [
       "D1.csv",
       "E0.csv",
@@ -563606,6 +563606,172 @@
     ],
     "best_strategy": "dynamic_c"
   },
+  "phase24Profiles": {
+    "profiles": [
+      {
+        "id": "conservador",
+        "label": "Conservador",
+        "recommendation": {
+          "strategy": "dynamic_c",
+          "strategy_label": "Dinâmica conservadora (0.15%-1.0%)",
+          "score": 77.94533012718215,
+          "max_drawdown_pct": 0.0646204440781225,
+          "roi_on_staked": 0.27077188464842233,
+          "profit_pct": 144.15019365036375,
+          "weekly_roi_std": 0.11006060037368379,
+          "hit_rate": 0.6580147316730972,
+          "total_bets": 2851,
+          "final_capital": 14515.019365036374
+        },
+        "ranking": [
+          {
+            "strategy": "dynamic_c",
+            "strategy_label": "Dinâmica conservadora (0.15%-1.0%)",
+            "score": 77.94533012718215,
+            "max_drawdown_pct": 0.0646204440781225,
+            "roi_on_staked": 0.27077188464842233,
+            "profit_pct": 144.15019365036375,
+            "weekly_roi_std": 0.11006060037368379,
+            "hit_rate": 0.6580147316730972,
+            "total_bets": 2851,
+            "final_capital": 14515.019365036374
+          },
+          {
+            "strategy": "flat_1u",
+            "strategy_label": "Flat stake (1u)",
+            "score": 75.7351398001296,
+            "max_drawdown_pct": 0.062394133493622,
+            "roi_on_staked": 0.22839530480750656,
+            "profit_pct": 6.511550140062012,
+            "weekly_roi_std": 0.11905417443449144,
+            "hit_rate": 0.6580147316730972,
+            "total_bets": 2851,
+            "final_capital": 751.1550140062012
+          },
+          {
+            "strategy": "kelly_q",
+            "strategy_label": "Kelly 0.25 (cap 0.8%)",
+            "score": 75.01923910672667,
+            "max_drawdown_pct": 0.07585677881423905,
+            "roi_on_staked": 0.24531497504102007,
+            "profit_pct": 162.57471821795815,
+            "weekly_roi_std": 0.11572975105531697,
+            "hit_rate": 0.6580147316730972,
+            "total_bets": 2851,
+            "final_capital": 16357.471821795814
+          }
+        ]
+      },
+      {
+        "id": "balanceado",
+        "label": "Balanceado",
+        "recommendation": {
+          "strategy": "dynamic_c",
+          "strategy_label": "Dinâmica conservadora (0.15%-1.0%)",
+          "score": 79.59875446190125,
+          "max_drawdown_pct": 0.0646204440781225,
+          "roi_on_staked": 0.27077188464842233,
+          "profit_pct": 144.15019365036375,
+          "weekly_roi_std": 0.11006060037368379,
+          "hit_rate": 0.6580147316730972,
+          "total_bets": 2851,
+          "final_capital": 14515.019365036374
+        },
+        "ranking": [
+          {
+            "strategy": "dynamic_c",
+            "strategy_label": "Dinâmica conservadora (0.15%-1.0%)",
+            "score": 79.59875446190125,
+            "max_drawdown_pct": 0.0646204440781225,
+            "roi_on_staked": 0.27077188464842233,
+            "profit_pct": 144.15019365036375,
+            "weekly_roi_std": 0.11006060037368379,
+            "hit_rate": 0.6580147316730972,
+            "total_bets": 2851,
+            "final_capital": 14515.019365036374
+          },
+          {
+            "strategy": "kelly_q",
+            "strategy_label": "Kelly 0.25 (cap 0.8%)",
+            "score": 76.25277489740525,
+            "max_drawdown_pct": 0.07585677881423905,
+            "roi_on_staked": 0.24531497504102007,
+            "profit_pct": 162.57471821795815,
+            "weekly_roi_std": 0.11572975105531697,
+            "hit_rate": 0.6580147316730972,
+            "total_bets": 2851,
+            "final_capital": 16357.471821795814
+          },
+          {
+            "strategy": "flat_1u",
+            "strategy_label": "Flat stake (1u)",
+            "score": 75.89582722511176,
+            "max_drawdown_pct": 0.062394133493622,
+            "roi_on_staked": 0.22839530480750656,
+            "profit_pct": 6.511550140062012,
+            "weekly_roi_std": 0.11905417443449144,
+            "hit_rate": 0.6580147316730972,
+            "total_bets": 2851,
+            "final_capital": 751.1550140062012
+          }
+        ]
+      },
+      {
+        "id": "agressivo",
+        "label": "Agressivo",
+        "recommendation": {
+          "strategy": "dynamic_c",
+          "strategy_label": "Dinâmica conservadora (0.15%-1.0%)",
+          "score": 84.26114635507058,
+          "max_drawdown_pct": 0.0646204440781225,
+          "roi_on_staked": 0.27077188464842233,
+          "profit_pct": 144.15019365036375,
+          "weekly_roi_std": 0.11006060037368379,
+          "hit_rate": 0.6580147316730972,
+          "total_bets": 2851,
+          "final_capital": 14515.019365036374
+        },
+        "ranking": [
+          {
+            "strategy": "dynamic_c",
+            "strategy_label": "Dinâmica conservadora (0.15%-1.0%)",
+            "score": 84.26114635507058,
+            "max_drawdown_pct": 0.0646204440781225,
+            "roi_on_staked": 0.27077188464842233,
+            "profit_pct": 144.15019365036375,
+            "weekly_roi_std": 0.11006060037368379,
+            "hit_rate": 0.6580147316730972,
+            "total_bets": 2851,
+            "final_capital": 14515.019365036374
+          },
+          {
+            "strategy": "kelly_q",
+            "strategy_label": "Kelly 0.25 (cap 0.8%)",
+            "score": 80.74911544436812,
+            "max_drawdown_pct": 0.07585677881423905,
+            "roi_on_staked": 0.24531497504102007,
+            "profit_pct": 162.57471821795815,
+            "weekly_roi_std": 0.11572975105531697,
+            "hit_rate": 0.6580147316730972,
+            "total_bets": 2851,
+            "final_capital": 16357.471821795814
+          },
+          {
+            "strategy": "flat_1u",
+            "strategy_label": "Flat stake (1u)",
+            "score": 79.21752480745401,
+            "max_drawdown_pct": 0.062394133493622,
+            "roi_on_staked": 0.22839530480750656,
+            "profit_pct": 6.511550140062012,
+            "weekly_roi_std": 0.11905417443449144,
+            "hit_rate": 0.6580147316730972,
+            "total_bets": 2851,
+            "final_capital": 751.1550140062012
+          }
+        ]
+      }
+    ]
+  },
   "dataQuality": {
     "checks": [
       {
@@ -563631,7 +563797,7 @@
       {
         "name": "Staleness fontes CSV",
         "status": "ok",
-        "detail": "0.9 dias"
+        "detail": "1.0 dias"
       }
     ],
     "summary": {

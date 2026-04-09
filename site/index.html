@@ -263,6 +263,26 @@
       </section>
 
       <section class="panel">
+        <div class="panel-head">
+          <h2>Perfis de Estratégia (Fase 2.4)</h2>
+          <label class="league-picker">Perfil
+            <select id="strategyProfileSelect">
+              <option value="conservador">Conservador</option>
+              <option value="balanceado">Balanceado</option>
+              <option value="agressivo">Agressivo</option>
+            </select>
+          </label>
+        </div>
+        <div id="strategyProfileCards" class="kpi-grid"></div>
+        <div class="table-wrap">
+          <table id="strategyProfileTable">
+            <thead><tr><th>Estratégia</th><th>Score perfil</th><th>ROI stake</th><th>Profit %</th><th>Drawdown máx</th><th>Volatilidade semanal</th><th>Hit rate</th><th>Bets</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
         <div class="panel-head"><h2>Qualidade de Dados</h2></div>
         <div id="qualityCards" class="kpi-grid"></div>
         <div class="table-wrap">
