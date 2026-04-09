@@ -356,6 +356,132 @@ def build_phase2_sos(resumo: pd.DataFrame, serie_full: pd.DataFrame) -> list[dic
     return out
 
 
+def build_phase2_model_rows(market_rows: pd.DataFrame) -> list[dict]:
+    df = market_rows.copy()
+    num_cols = [
+        "jogos",
+        "hit_rate",
+        "wilson_lo",
+        "wilson_hi",
+        "odds_avg",
+        "value_estimado",
+        "form_recent_5",
+    ]
+    for c in num_cols:
+        if c in df.columns:
+            df[c] = pd.to_numeric(df[c], errors="coerce")
+
+    for required in ("league", "team", "scope", "market"):
+        if required not in df.columns:
+            return []
+
+    league_market_prior = (
+        df.groupby(["league", "scope", "market"], dropna=False)["hit_rate"]
+        .mean()
+        .to_dict()
+    )
+    global_market_prior = df.groupby("market", dropna=False)["hit_rate"].mean().to_dict()
+    global_prior = float(df["hit_rate"].mean()) if df["hit_rate"].notna().any() else 0.5
+    prior_strength = 10.0
+
+    out: list[dict] = []
+    for _, r in df.iterrows():
+        league = str(r["league"])
+        team = str(r["team"])
+        scope = str(r["scope"])
+        market = str(r["market"])
+
+        n = float(r.get("jogos") or 0.0)
+        hit = r.get("hit_rate")
+        if not pd.notna(hit):
+            continue
+        p_emp = float(hit)
+        if p_emp < 0 or p_emp > 1:
+            continue
+
+        prior = league_market_prior.get((league, scope, market))
+        if prior is None or not pd.notna(prior):
+            prior = global_market_prior.get(market, global_prior)
+        prior = float(prior) if pd.notna(prior) else global_prior
+        prior = max(0.02, min(0.98, prior))
+
+        alpha0 = prior * prior_strength
+        beta0 = (1.0 - prior) * prior_strength
+        k = p_emp * max(n, 0.0)
+        p_post = (k + alpha0) / (max(n, 0.0) + alpha0 + beta0)
+
+        recent = r.get("form_recent_5")
+        if pd.notna(recent):
+            recent = max(0.0, min(1.0, float(recent)))
+            w_recent = min(0.2, 0.2 * (10.0 / max(n, 10.0)))
+            p_model = (1.0 - w_recent) * p_post + w_recent * recent
+        else:
+            p_model = p_post
+
+        wilson_lo = r.get("wilson_lo")
+        wilson_hi = r.get("wilson_hi")
+        if pd.notna(wilson_lo) and pd.notna(wilson_hi):
+            lo = float(wilson_lo)
+            hi = float(wilson_hi)
+        else:
+            # Fallback CI approximation for Bernoulli proportion.
+            sd = (p_model * (1.0 - p_model) / max(n, 1.0)) ** 0.5
+            lo = max(0.0, p_model - 1.96 * sd)
+            hi = min(1.0, p_model + 1.96 * sd)
+        ci_width = max(0.0, hi - lo)
+
+        odds = r.get("odds_avg")
+        if pd.notna(odds) and float(odds) > 1.01:
+            odds_v = float(odds)
+            p_implied = 1.0 / odds_v
+            edge_vs_odds = p_model - p_implied
+            ev_model = p_model * odds_v - 1.0
+            fair_odds = 1.0 / max(p_model, 1e-9)
+        else:
+            odds_v = None
+            p_implied = None
+            edge_vs_odds = None
+            ev_model = None
+            fair_odds = None
+
+        sample_factor = max(0.0, min(1.0, n / 20.0))
+        stability_factor = max(0.0, min(1.0, 1.0 - (ci_width / 0.6)))
+        edge_factor = max(0.0, min(1.0, abs(edge_vs_odds) / 0.12)) if edge_vs_odds is not None else 0.0
+        confidence_score = round((0.45 * sample_factor + 0.35 * stability_factor + 0.20 * edge_factor) * 100.0)
+        if n < 8:
+            sample_quality = "baixa"
+        elif n < 16:
+            sample_quality = "média"
+        else:
+            sample_quality = "alta"
+
+        out.append(
+            {
+                "league": league,
+                "team": team,
+                "scope": scope,
+                "market": market,
+                "group": market_group(market),
+                "sample_games": int(round(n)),
+                "sample_quality": sample_quality,
+                "p_empirical": p_emp,
+                "p_prior": prior,
+                "p_model": float(p_model),
+                "p_implied_odds": p_implied,
+                "fair_odds": fair_odds,
+                "odds_avg": odds_v,
+                "ev_model": ev_model,
+                "edge_vs_odds": edge_vs_odds,
+                "ci_lo": lo,
+                "ci_hi": hi,
+                "ci_width": ci_width,
+                "confidence_score": int(confidence_score),
+            }
+        )
+
+    return out
+
+
 def main() -> None:
     base = Path(__file__).resolve().parents[1]
     out = base / "output"
@@ -521,6 +647,7 @@ def main() -> None:
     data_quality = build_data_quality(base, resumo, mercados, lay, serie)
     temporal_backtest = build_temporal_backtest(market_rows, serie_full)
     phase2_sos = build_phase2_sos(resumo, serie_full)
+    phase2_model_rows = build_phase2_model_rows(market_rows)
 
     changelog = []
     if changelog_path.exists():
@@ -549,6 +676,7 @@ def main() -> None:
         "backtestRows": backtest_rows,
         "temporalBacktest": temporal_backtest,
         "phase2Sos": phase2_sos,
+        "phase2ModelRows": phase2_model_rows,
         "dataQuality": data_quality,
         "changelog": changelog,
     }

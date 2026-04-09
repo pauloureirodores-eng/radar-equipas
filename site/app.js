@@ -1335,6 +1335,76 @@ function renderPerformance() {
   applyExistingSort('weeklyBacktestTable');
 }
 
+function modelConfidenceBadge(score) {
+  const s = Number(score || 0);
+  if (s >= 75) return '<span class="badge good">Alta</span>';
+  if (s >= 55) return '<span class="badge">Média</span>';
+  return '<span class="badge warn">Baixa</span>';
+}
+
+function renderModel() {
+  const league = byId('modelLeague')?.value || 'Todas';
+  const scope = byId('modelScope')?.value || 'Todos';
+  const group = byId('modelGroup')?.value || 'todos';
+  const minConf = Number(byId('modelMinConf')?.value || 0);
+
+  const rows = (DATA.phase2ModelRows || [])
+    .filter((r) => (league === 'Todas' || r.league === league)
+      && (scope === 'Todos' || r.scope === scope)
+      && marketInGroup(r.market, group)
+      && Number(r.confidence_score || 0) >= minConf)
+    .sort((a, b) => {
+      const ca = Number(a.confidence_score || 0);
+      const cb = Number(b.confidence_score || 0);
+      if (cb !== ca) return cb - ca;
+      return Number(b.ev_model || -999) - Number(a.ev_model || -999);
+    });
+
+  const edgeVals = rows.map((r) => toNum(r.edge_vs_odds)).filter((x) => x != null);
+  const evVals = rows.map((r) => toNum(r.ev_model)).filter((x) => x != null);
+  const best = rows
+    .filter((r) => toNum(r.ev_model) != null)
+    .sort((a, b) => Number(b.ev_model) - Number(a.ev_model))[0];
+
+  byId('modelCards').innerHTML = `
+    <article class="kpi-card"><h3>Mercados filtrados</h3><div class="kpi-row"><span>Total</span><strong>${rows.length}</strong></div></article>
+    <article class="kpi-card"><h3>Edge médio vs odds</h3><div class="kpi-row"><span>Modelo - implícita</span><strong>${edgeVals.length ? `${fmtNum(avg(edgeVals) * 100, 2)} pp` : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>EV médio modelo</h3><div class="kpi-row"><span>Com odds médias</span><strong>${evVals.length ? `${fmtNum(avg(evVals) * 100, 2)}%` : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>Top oportunidade</h3><div class="kpi-row"><span>EV máximo</span><strong>${best ? `${best.team} · ${best.market}` : '—'}</strong></div></article>
+  `;
+
+  byId('modelTable').querySelector('tbody').innerHTML = rows.slice(0, 300).map((r) => {
+    const ci = (toNum(r.ci_lo) != null && toNum(r.ci_hi) != null) ? `${fmtPct(r.ci_lo)}–${fmtPct(r.ci_hi)}` : '—';
+    const sqCls = String(r.sample_quality || '').toLowerCase() === 'alta'
+      ? 'good'
+      : String(r.sample_quality || '').toLowerCase() === 'média' || String(r.sample_quality || '').toLowerCase() === 'media'
+        ? ''
+        : 'warn';
+    return `<tr>
+      <td>${leagueLabel(r.league)}</td>
+      <td>${r.team}</td>
+      <td>${r.scope}</td>
+      <td>${r.market}</td>
+      <td>${r.sample_games} <span class="badge ${sqCls}">${r.sample_quality || '—'}</span></td>
+      <td>${toNum(r.p_empirical) != null ? fmtPct(r.p_empirical) : '—'}</td>
+      <td>${toNum(r.p_model) != null ? fmtPct(r.p_model) : '—'}</td>
+      <td>${ci}</td>
+      <td>${toNum(r.fair_odds) != null ? fmtNum(r.fair_odds, 2) : '—'}</td>
+      <td>${toNum(r.odds_avg) != null ? fmtNum(r.odds_avg, 2) : '—'}</td>
+      <td>${toNum(r.edge_vs_odds) != null ? `${fmtNum(r.edge_vs_odds * 100, 2)} pp` : '—'}</td>
+      <td>${toNum(r.ev_model) != null ? `${fmtNum(r.ev_model * 100, 2)}%` : '—'}</td>
+      <td>${r.confidence_score ?? 0} ${modelConfidenceBadge(r.confidence_score)}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="13">Sem dados para os filtros escolhidos.</td></tr>';
+  applyExistingSort('modelTable');
+}
+
+function populateModel(leagues) {
+  byId('modelLeague').innerHTML = `<option value="Todas">Todas</option>${leagueOptions(leagues)}`;
+  ['modelLeague', 'modelScope', 'modelGroup', 'modelMinConf'].forEach((id) => byId(id)?.addEventListener('change', renderModel));
+  renderModel();
+}
+
 function exportPrejogoPdf() {
   if (!PREJOGO_STATE?.league || !PREJOGO_STATE?.home || !PREJOGO_STATE?.away || !PREJOGO_STATE?.probs) return;
   const now = new Date().toLocaleString('pt-PT', { timeZone: 'Europe/Lisbon' });
@@ -1386,11 +1456,12 @@ async function main() {
   populateConfronto(leagues);
   populateForma(leagues);
   renderPerformance();
+  populateModel(leagues);
   populatePrejogo(leagues);
 
   document.querySelectorAll('.tab').forEach((btn) => btn.addEventListener('click', () => setActiveTab(btn.dataset.tab)));
 
-  ['rankingTable', 'scannerTable', 'confrontoMarketTable', 'compareDeltaTable', 'formTable', 'sosTable', 'perfMarketTable', 'qualityChecksTable', 'weeklyBacktestTable', 'prejogoShortlistTable', 'evKellyTable', 'h2hTable'].forEach(enableTableSorting);
+  ['rankingTable', 'scannerTable', 'confrontoMarketTable', 'compareDeltaTable', 'formTable', 'sosTable', 'perfMarketTable', 'qualityChecksTable', 'weeklyBacktestTable', 'modelTable', 'prejogoShortlistTable', 'evKellyTable', 'h2hTable'].forEach(enableTableSorting);
   byId('exportPrejogoPdfBtn')?.addEventListener('click', exportPrejogoPdf);
   byId('scannerResetBtn')?.addEventListener('click', resetScannerFilters);
   byId('prejogoResetBtn')?.addEventListener('click', resetPrejogoFilters);
