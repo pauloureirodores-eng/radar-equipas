@@ -1275,6 +1275,63 @@ function drawCapitalCurve(curve) {
   `;
 }
 
+function drawStakeCurve(staking) {
+  const svg = byId('stakeCurveChart');
+  if (!svg) return;
+  const curve = staking?.curve || [];
+  if (!curve.length) {
+    svg.innerHTML = '<text x="16" y="28" fill="#5f6a78" font-size="14">Sem dados de stake para comparar estratégias.</text>';
+    return;
+  }
+
+  const width = 980;
+  const height = 320;
+  const margin = { top: 18, right: 24, bottom: 36, left: 52 };
+  const chartW = width - margin.left - margin.right;
+  const chartH = height - margin.top - margin.bottom;
+  const groups = {};
+  curve.forEach((r) => {
+    if (!groups[r.strategy]) groups[r.strategy] = [];
+    groups[r.strategy].push(r);
+  });
+  const strategies = Object.keys(groups);
+  const allCaps = curve.map((r) => Number(r.capital)).filter((x) => Number.isFinite(x));
+  const yMin = Math.min(...allCaps) - 1;
+  const yMax = Math.max(...allCaps) + 1;
+  const maxLen = Math.max(...strategies.map((s) => groups[s].length));
+  const xAt = (i) => margin.left + (i / Math.max(maxLen - 1, 1)) * chartW;
+  const yAt = (v) => margin.top + (1 - ((v - yMin) / Math.max(yMax - yMin, 1e-9))) * chartH;
+  const palette = {
+    flat_1u: '#0e7490',
+    kelly_q: '#7c3aed',
+    dynamic_c: '#c2410c'
+  };
+
+  const lines = strategies.map((s) => {
+    const pts = groups[s].map((r, i) => `${xAt(i)},${yAt(Number(r.capital))}`).join(' ');
+    const color = palette[s] || '#0f172a';
+    return `<polyline fill="none" stroke="${color}" stroke-width="2.4" points="${pts}" />`;
+  }).join('');
+
+  const startDate = (curve[0]?.date) || '';
+  const endDate = (curve[curve.length - 1]?.date) || '';
+  const legend = strategies.map((s, i) => {
+    const color = palette[s] || '#0f172a';
+    const label = groups[s][0]?.strategy_label || s;
+    return `<text x="${margin.left + i * 220}" y="14" fill="${color}" font-size="12">${label}</text>`;
+  }).join('');
+
+  svg.innerHTML = `
+    <rect x="0" y="0" width="${width}" height="${height}" fill="#ffffff" />
+    <line x1="${margin.left}" y1="${height - margin.bottom}" x2="${width - margin.right}" y2="${height - margin.bottom}" stroke="#d9dddf" />
+    <line x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${height - margin.bottom}" stroke="#d9dddf" />
+    ${lines}
+    ${legend}
+    <text x="${margin.left}" y="${height - 8}" fill="#5f6a78" font-size="11">${startDate}</text>
+    <text x="${width - margin.right}" y="${height - 8}" text-anchor="end" fill="#5f6a78" font-size="11">${endDate}</text>
+  `;
+}
+
 function renderPerformance() {
   const rows = DATA.backtestRows || [];
   const dq = DATA.dataQuality || { checks: [], summary: { checks_total: 0, checks_warn: 0 } };
@@ -1333,6 +1390,30 @@ function renderPerformance() {
       <td>${toNum(w.max_drawdown_week) != null ? fmtNum(w.max_drawdown_week, 2) : '—'}</td>
     </tr>`).join('') || '<tr><td colspan="8">Sem dados temporais.</td></tr>';
   applyExistingSort('weeklyBacktestTable');
+
+  const staking = DATA.phase23Staking || { strategies: [], curve: [] };
+  const bestKey = staking.best_strategy;
+  const best = (staking.strategies || []).find((x) => x.strategy === bestKey) || null;
+  byId('stakeCards').innerHTML = `
+    <article class="kpi-card"><h3>Estratégias testadas</h3><div class="kpi-row"><span>Total</span><strong>${(staking.strategies || []).length}</strong></div></article>
+    <article class="kpi-card"><h3>Melhor estratégia</h3><div class="kpi-row"><span>ROI ajustado</span><strong>${best ? best.strategy_label : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>Capital final (melhor)</h3><div class="kpi-row"><span>simulação</span><strong>${best ? fmtNum(best.final_capital, 2) : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>Drawdown (melhor)</h3><div class="kpi-row"><span>máx %</span><strong>${best && toNum(best.max_drawdown_pct) != null ? `${fmtNum(best.max_drawdown_pct * 100, 2)}%` : '—'}</strong></div></article>
+  `;
+  drawStakeCurve(staking);
+
+  byId('stakeTable').querySelector('tbody').innerHTML = (staking.strategies || [])
+    .sort((a, b) => Number(b.roi_on_staked ?? -999) - Number(a.roi_on_staked ?? -999))
+    .map((s) => `<tr>
+      <td>${s.strategy_label}</td>
+      <td>${toNum(s.final_capital) != null ? fmtNum(s.final_capital, 2) : '—'}</td>
+      <td>${toNum(s.total_profit) != null ? fmtNum(s.total_profit, 2) : '—'}</td>
+      <td>${toNum(s.roi_on_staked) != null ? `${fmtNum(s.roi_on_staked * 100, 2)}%` : '—'}</td>
+      <td>${toNum(s.max_drawdown_pct) != null ? `${fmtNum(s.max_drawdown_pct * 100, 2)}%` : '—'}</td>
+      <td>${toNum(s.hit_rate) != null ? fmtPct(s.hit_rate) : '—'}</td>
+      <td>${s.total_bets ?? '—'}</td>
+    </tr>`).join('') || '<tr><td colspan="7">Sem dados de estratégias.</td></tr>';
+  applyExistingSort('stakeTable');
 }
 
 function modelConfidenceBadge(score) {
@@ -1530,7 +1611,7 @@ async function main() {
 
   document.querySelectorAll('.tab').forEach((btn) => btn.addEventListener('click', () => setActiveTab(btn.dataset.tab)));
 
-  ['rankingTable', 'scannerTable', 'confrontoMarketTable', 'compareDeltaTable', 'formTable', 'sosTable', 'perfMarketTable', 'qualityChecksTable', 'weeklyBacktestTable', 'modelTable', 'calibrationBinsTable', 'calibrationGroupTable', 'prejogoShortlistTable', 'evKellyTable', 'h2hTable'].forEach(enableTableSorting);
+  ['rankingTable', 'scannerTable', 'confrontoMarketTable', 'compareDeltaTable', 'formTable', 'sosTable', 'perfMarketTable', 'qualityChecksTable', 'weeklyBacktestTable', 'stakeTable', 'modelTable', 'calibrationBinsTable', 'calibrationGroupTable', 'prejogoShortlistTable', 'evKellyTable', 'h2hTable'].forEach(enableTableSorting);
   byId('exportPrejogoPdfBtn')?.addEventListener('click', exportPrejogoPdf);
   byId('scannerResetBtn')?.addEventListener('click', resetScannerFilters);
   byId('prejogoResetBtn')?.addEventListener('click', resetPrejogoFilters);

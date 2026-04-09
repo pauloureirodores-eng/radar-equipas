@@ -18,6 +18,10 @@ def records(df: pd.DataFrame) -> list[dict]:
     return json.loads(df.to_json(orient="records", force_ascii=False))
 
 
+def clamp(v: float, lo: float, hi: float) -> float:
+    return max(lo, min(hi, v))
+
+
 def market_group(market: str) -> str:
     m = str(market or "").lower()
     if "canto" in m:
@@ -220,6 +224,20 @@ def build_temporal_backtest(
             pd.to_numeric(merged["edge_vs_liga_a"], errors="coerce"),
             fill_value=0.0,
         ) / 2.0
+        merged["avg_games"] = pd.concat(
+            [
+                pd.to_numeric(merged["jogos_h"], errors="coerce"),
+                pd.to_numeric(merged["jogos_a"], errors="coerce"),
+            ],
+            axis=1,
+        ).mean(axis=1, skipna=True)
+        merged["avg_ci_width"] = pd.concat(
+            [
+                pd.to_numeric(merged["wilson_hi_h"], errors="coerce") - pd.to_numeric(merged["wilson_lo_h"], errors="coerce"),
+                pd.to_numeric(merged["wilson_hi_a"], errors="coerce") - pd.to_numeric(merged["wilson_lo_a"], errors="coerce"),
+            ],
+            axis=1,
+        ).mean(axis=1, skipna=True)
         merged["avg_odds"] = pd.concat(
             [
                 pd.to_numeric(merged["odds_avg_h"], errors="coerce"),
@@ -241,6 +259,13 @@ def build_temporal_backtest(
         if hit is None:
             continue
         odds = float(pick["avg_odds"])
+        avg_games = float(pick["avg_games"]) if pd.notna(pick["avg_games"]) else 0.0
+        ci_width = float(pick["avg_ci_width"]) if pd.notna(pick["avg_ci_width"]) else 0.35
+        sample_factor = clamp(avg_games / 20.0, 0.0, 1.0)
+        stability_factor = clamp(1.0 - (ci_width / 0.6), 0.0, 1.0)
+        edge = float(pick["avg_edge"])
+        edge_factor = clamp(edge / 0.12, 0.0, 1.0)
+        confidence_score = int(round((0.45 * sample_factor + 0.35 * stability_factor + 0.20 * edge_factor) * 100.0))
         profit = (odds - 1.0) if hit else -1.0
         bets.append(
             {
@@ -250,7 +275,10 @@ def build_temporal_backtest(
                 "away": away,
                 "market": market,
                 "odds": odds,
-                "edge": float(pick["avg_edge"]),
+                "edge": edge,
+                "sample_games": avg_games,
+                "ci_width": ci_width,
+                "confidence_score": confidence_score,
                 "hit": bool(hit),
                 "profit": float(profit),
             }
@@ -304,7 +332,7 @@ def build_temporal_backtest(
         "hit_rate": float(wins / len(curve)),
         "roi": float(curve_df["profit"].sum() / len(curve)),
         "max_drawdown": float(curve_df["drawdown"].max()),
-        "curve": records(curve_df[["date", "league", "home", "away", "market", "odds", "edge", "hit", "profit", "capital", "drawdown"]]),
+        "curve": records(curve_df[["date", "league", "home", "away", "market", "odds", "edge", "sample_games", "ci_width", "confidence_score", "hit", "profit", "capital", "drawdown"]]),
         "weekly": records(weekly_df[["week_key", "bets", "wins", "hit_rate", "roi", "profit", "capital_end", "max_drawdown_week"]]),
     }
 
@@ -586,6 +614,154 @@ def build_phase2_calibration(phase2_model_rows: list[dict]) -> dict:
     }
 
 
+def build_phase23_staking(temporal_backtest: dict) -> dict:
+    curve = temporal_backtest.get("curve", []) or []
+    if not curve:
+        return {
+            "strategies": [],
+            "curve": [],
+            "weekly": [],
+            "best_strategy": None,
+        }
+
+    df = pd.DataFrame(curve).copy()
+    for c in ("odds", "edge", "confidence_score"):
+        if c in df.columns:
+            df[c] = pd.to_numeric(df[c], errors="coerce")
+    df["odds"] = df["odds"].fillna(2.0).clip(lower=1.01)
+    df["edge"] = df["edge"].fillna(0.0)
+    df["confidence_score"] = df["confidence_score"].fillna(50.0).clip(lower=0, upper=100)
+
+    # Approximate model probability from odds implied + measured edge.
+    df["p_model"] = (1.0 / df["odds"] + df["edge"]).clip(lower=0.02, upper=0.98)
+    df["hit01"] = df["hit"].astype(bool).astype(int)
+    df["date"] = pd.to_datetime(df["date"], errors="coerce")
+    df = df.dropna(subset=["date"]).sort_values("date")
+
+    def stake_flat(_row: pd.Series) -> float:
+        return 1.0
+
+    def stake_kelly_quarter(row: pd.Series) -> float:
+        odds = float(row["odds"])
+        p = float(row["p_model"])
+        kelly = max(0.0, (p * odds - 1.0) / (odds - 1.0))
+        # Fractional Kelly with stricter cap to control compounding volatility.
+        return float(clamp(kelly * 0.25, 0.0, 0.008))
+
+    def stake_dynamic_conservative(row: pd.Series) -> float:
+        conf = float(row["confidence_score"]) / 100.0
+        edge = clamp(float(row["edge"]) / 0.10, 0.0, 1.0)
+        raw = 0.002 + 0.004 * conf + 0.004 * edge
+        return float(clamp(raw, 0.0015, 0.01))
+
+    strategy_defs = [
+        ("flat_1u", "Flat stake (1u)", stake_flat, 100.0, "units"),
+        ("kelly_q", "Kelly 0.25 (cap 0.8%)", stake_kelly_quarter, 100.0, "bankroll_pct"),
+        ("dynamic_c", "Dinâmica conservadora (0.15%-1.0%)", stake_dynamic_conservative, 100.0, "bankroll_pct"),
+    ]
+
+    curve_rows: list[dict] = []
+    summaries: list[dict] = []
+    weekly_rows: list[dict] = []
+
+    for key, label, stake_fn, initial_capital, stake_type in strategy_defs:
+        cap = float(initial_capital)
+        peak = cap
+        invested = 0.0
+        wins = 0
+        strat_curve: list[dict] = []
+        for _, row in df.iterrows():
+            if stake_type == "units":
+                stake = float(stake_fn(row))
+            else:
+                stake_pct = float(stake_fn(row))
+                stake = cap * stake_pct
+            stake = max(0.0, stake)
+            odds = float(row["odds"])
+            is_hit = bool(row["hit"])
+            profit = stake * (odds - 1.0) if is_hit else -stake
+            cap += profit
+            peak = max(peak, cap)
+            dd_abs = max(0.0, peak - cap)
+            dd_pct = (dd_abs / peak) if peak > 0 else 0.0
+            invested += stake
+            wins += 1 if is_hit else 0
+            strat_curve.append(
+                {
+                    "strategy": key,
+                    "strategy_label": label,
+                    "date": row["date"].strftime("%Y-%m-%d"),
+                    "stake": float(stake),
+                    "stake_pct": float(stake / cap) if cap > 0 else None,
+                    "profit": float(profit),
+                    "capital": float(cap),
+                    "drawdown_abs": float(dd_abs),
+                    "drawdown_pct": float(dd_pct),
+                    "hit": bool(is_hit),
+                }
+            )
+
+        sdf = pd.DataFrame(strat_curve)
+        curve_rows.extend(strat_curve)
+
+        iso = pd.to_datetime(sdf["date"]).dt.isocalendar()
+        sdf["week_key"] = iso["year"].astype(str) + "-W" + iso["week"].astype(str).str.zfill(2)
+        wdf = (
+            sdf.groupby("week_key", as_index=False)
+            .agg(
+                bets=("profit", "count"),
+                wins=("hit", "sum"),
+                stake_total=("stake", "sum"),
+                profit=("profit", "sum"),
+                capital_end=("capital", "last"),
+                max_drawdown_abs=("drawdown_abs", "max"),
+                max_drawdown_pct=("drawdown_pct", "max"),
+            )
+            .sort_values("week_key")
+        )
+        wdf["hit_rate"] = wdf["wins"] / wdf["bets"]
+        wdf["roi"] = wdf["profit"] / wdf["stake_total"]
+        wdf["strategy"] = key
+        wdf["strategy_label"] = label
+        weekly_rows.extend(records(wdf))
+
+        total_bets = int(sdf.shape[0])
+        summaries.append(
+            {
+                "strategy": key,
+                "strategy_label": label,
+                "initial_capital": float(initial_capital),
+                "final_capital": float(cap),
+                "total_profit": float(cap - initial_capital),
+                "total_bets": total_bets,
+                "wins": int(wins),
+                "hit_rate": float(wins / total_bets) if total_bets else None,
+                "total_staked": float(invested),
+                "roi_on_staked": float((cap - initial_capital) / invested) if invested > 0 else None,
+                "max_drawdown_abs": float(sdf["drawdown_abs"].max()) if not sdf.empty else 0.0,
+                "max_drawdown_pct": float(sdf["drawdown_pct"].max()) if not sdf.empty else 0.0,
+            }
+        )
+
+    best = None
+    if summaries:
+        best = sorted(
+            summaries,
+            key=lambda x: (
+                (x.get("roi_on_staked") if x.get("roi_on_staked") is not None else -999),
+                -(x.get("max_drawdown_pct") if x.get("max_drawdown_pct") is not None else 999),
+            ),
+            reverse=True,
+        )[0]["strategy"]
+
+    return {
+        "strategies": summaries,
+        "curve": curve_rows,
+        "weekly": weekly_rows,
+        "best_strategy": best,
+    }
+
+
 def main() -> None:
     base = Path(__file__).resolve().parents[1]
     out = base / "output"
@@ -753,6 +929,7 @@ def main() -> None:
     phase2_sos = build_phase2_sos(resumo, serie_full)
     phase2_model_rows = build_phase2_model_rows(market_rows)
     phase2_calibration = build_phase2_calibration(phase2_model_rows)
+    phase23_staking = build_phase23_staking(temporal_backtest)
 
     changelog = []
     if changelog_path.exists():
@@ -783,6 +960,7 @@ def main() -> None:
         "phase2Sos": phase2_sos,
         "phase2ModelRows": phase2_model_rows,
         "phase2Calibration": phase2_calibration,
+        "phase23Staking": phase23_staking,
         "dataQuality": data_quality,
         "changelog": changelog,
     }
