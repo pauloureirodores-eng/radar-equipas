@@ -1393,12 +1393,12 @@ function renderPerformance() {
 
   const staking = DATA.phase23Staking || { strategies: [], curve: [] };
   const bestKey = staking.best_strategy;
-  const best = (staking.strategies || []).find((x) => x.strategy === bestKey) || null;
+  const bestStrategy = (staking.strategies || []).find((x) => x.strategy === bestKey) || null;
   byId('stakeCards').innerHTML = `
     <article class="kpi-card"><h3>Estratégias testadas</h3><div class="kpi-row"><span>Total</span><strong>${(staking.strategies || []).length}</strong></div></article>
-    <article class="kpi-card"><h3>Melhor estratégia</h3><div class="kpi-row"><span>ROI ajustado</span><strong>${best ? best.strategy_label : '—'}</strong></div></article>
-    <article class="kpi-card"><h3>Capital final (melhor)</h3><div class="kpi-row"><span>simulação</span><strong>${best ? fmtNum(best.final_capital, 2) : '—'}</strong></div></article>
-    <article class="kpi-card"><h3>Drawdown (melhor)</h3><div class="kpi-row"><span>máx %</span><strong>${best && toNum(best.max_drawdown_pct) != null ? `${fmtNum(best.max_drawdown_pct * 100, 2)}%` : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>Melhor estratégia</h3><div class="kpi-row"><span>ROI ajustado</span><strong>${bestStrategy ? bestStrategy.strategy_label : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>Capital final (melhor)</h3><div class="kpi-row"><span>simulação</span><strong>${bestStrategy ? fmtNum(bestStrategy.final_capital, 2) : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>Drawdown (melhor)</h3><div class="kpi-row"><span>máx %</span><strong>${bestStrategy && toNum(bestStrategy.max_drawdown_pct) != null ? `${fmtNum(bestStrategy.max_drawdown_pct * 100, 2)}%` : '—'}</strong></div></article>
   `;
   drawStakeCurve(staking);
 
