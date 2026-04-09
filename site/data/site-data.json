@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-04-09T11:54:01.984879+00:00",
+    "generatedAt": "2026-04-09T13:14:48.164783+00:00",
     "sourceFiles": [
       "D1.csv",
       "E0.csv",
@@ -286784,7 +286784,7 @@
       {
         "name": "Staleness fontes CSV",
         "status": "ok",
-        "detail": "0.8 dias"
+        "detail": "0.9 dias"
       }
     ],
     "summary": {
