@@ -10,6 +10,7 @@ from pathlib import Path
 from datetime import datetime, timezone
 
 import pandas as pd
+import numpy as np
 
 
 def records(df: pd.DataFrame) -> list[dict]:
@@ -482,6 +483,109 @@ def build_phase2_model_rows(market_rows: pd.DataFrame) -> list[dict]:
     return out
 
 
+def build_phase2_calibration(phase2_model_rows: list[dict]) -> dict:
+    if not phase2_model_rows:
+        return {
+            "summary": {
+                "rows": 0,
+                "weighted_samples": 0,
+                "brier": None,
+                "logloss": None,
+                "ece": None,
+            },
+            "bins": [],
+            "by_group": [],
+        }
+
+    df = pd.DataFrame(phase2_model_rows).copy()
+    for col in ("sample_games", "p_model", "p_empirical"):
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+    df = df.dropna(subset=["sample_games", "p_model", "p_empirical"])
+    df = df[df["sample_games"] > 0]
+    if df.empty:
+        return {
+            "summary": {
+                "rows": 0,
+                "weighted_samples": 0,
+                "brier": None,
+                "logloss": None,
+                "ece": None,
+            },
+            "bins": [],
+            "by_group": [],
+        }
+
+    # Weighted metrics with aggregated market-level targets.
+    w = df["sample_games"].astype(float)
+    p = df["p_model"].clip(1e-6, 1 - 1e-6)
+    y = df["p_empirical"].clip(0, 1)
+    brier = float((((p - y) ** 2) * w).sum() / w.sum())
+    logloss = float(((-y * p.map(np.log) - (1 - y) * (1 - p).map(np.log)) * w).sum() / w.sum())
+
+    # Reliability bins.
+    edges = [i / 10 for i in range(11)]
+    bins_out: list[dict] = []
+    ece_num = 0.0
+    for i in range(10):
+        lo = edges[i]
+        hi = edges[i + 1]
+        if i < 9:
+            bdf = df[(df["p_model"] >= lo) & (df["p_model"] < hi)]
+        else:
+            bdf = df[(df["p_model"] >= lo) & (df["p_model"] <= hi)]
+        if bdf.empty:
+            continue
+        bw = bdf["sample_games"].astype(float)
+        pred = float((bdf["p_model"] * bw).sum() / bw.sum())
+        obs = float((bdf["p_empirical"] * bw).sum() / bw.sum())
+        count = int(bdf.shape[0])
+        weight = float(bw.sum())
+        gap = abs(pred - obs)
+        ece_num += gap * weight
+        bins_out.append(
+            {
+                "bin": f"{int(lo * 100)}-{int(hi * 100)}%",
+                "p_pred": pred,
+                "p_obs": obs,
+                "gap_abs": gap,
+                "rows": count,
+                "samples": weight,
+            }
+        )
+    ece = float(ece_num / w.sum()) if w.sum() > 0 else None
+
+    by_group_out: list[dict] = []
+    for group, g in df.groupby("group"):
+        gw = g["sample_games"].astype(float)
+        gp = g["p_model"].clip(1e-6, 1 - 1e-6)
+        gy = g["p_empirical"].clip(0, 1)
+        gbrier = float((((gp - gy) ** 2) * gw).sum() / gw.sum())
+        glogloss = float(((-gy * gp.map(np.log) - (1 - gy) * (1 - gp).map(np.log)) * gw).sum() / gw.sum())
+        by_group_out.append(
+            {
+                "group": str(group),
+                "rows": int(g.shape[0]),
+                "samples": float(gw.sum()),
+                "brier": gbrier,
+                "logloss": glogloss,
+                "avg_confidence": float((g["confidence_score"] * gw).sum() / gw.sum()) if "confidence_score" in g.columns else None,
+            }
+        )
+
+    return {
+        "summary": {
+            "rows": int(df.shape[0]),
+            "weighted_samples": float(w.sum()),
+            "brier": brier,
+            "logloss": logloss,
+            "ece": ece,
+        },
+        "bins": bins_out,
+        "by_group": by_group_out,
+    }
+
+
 def main() -> None:
     base = Path(__file__).resolve().parents[1]
     out = base / "output"
@@ -648,6 +752,7 @@ def main() -> None:
     temporal_backtest = build_temporal_backtest(market_rows, serie_full)
     phase2_sos = build_phase2_sos(resumo, serie_full)
     phase2_model_rows = build_phase2_model_rows(market_rows)
+    phase2_calibration = build_phase2_calibration(phase2_model_rows)
 
     changelog = []
     if changelog_path.exists():
@@ -677,6 +782,7 @@ def main() -> None:
         "temporalBacktest": temporal_backtest,
         "phase2Sos": phase2_sos,
         "phase2ModelRows": phase2_model_rows,
+        "phase2Calibration": phase2_calibration,
         "dataQuality": data_quality,
         "changelog": changelog,
     }

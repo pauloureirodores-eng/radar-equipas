@@ -289,6 +289,34 @@
           </table>
         </div>
       </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Calibração do Modelo (Fase 2.2)</h2></div>
+        <div id="calibrationCards" class="kpi-grid"></div>
+        <div class="linechart-wrap">
+          <svg id="calibrationChart" viewBox="0 0 900 320" preserveAspectRatio="none"></svg>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Bins de Confiabilidade</h2></div>
+        <div class="table-wrap">
+          <table id="calibrationBinsTable">
+            <thead><tr><th>Bin</th><th>P prevista</th><th>P observada</th><th>Gap abs</th><th>Linhas</th><th>Amostras</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Calibração por Grupo</h2></div>
+        <div class="table-wrap">
+          <table id="calibrationGroupTable">
+            <thead><tr><th>Grupo</th><th>Linhas</th><th>Amostras</th><th>Brier</th><th>LogLoss</th><th>Confiança média</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
     </section>
 
     <section class="tab-panel" id="panel-prejogo">

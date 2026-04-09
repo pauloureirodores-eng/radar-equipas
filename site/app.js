@@ -1397,6 +1397,75 @@ function renderModel() {
     </tr>`;
   }).join('') || '<tr><td colspan="13">Sem dados para os filtros escolhidos.</td></tr>';
   applyExistingSort('modelTable');
+
+  const cal = DATA.phase2Calibration || { summary: {}, bins: [], by_group: [] };
+  const s = cal.summary || {};
+  byId('calibrationCards').innerHTML = `
+    <article class="kpi-card"><h3>Amostras ponderadas</h3><div class="kpi-row"><span>Total</span><strong>${toNum(s.weighted_samples) != null ? fmtNum(s.weighted_samples, 0) : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>Brier Score</h3><div class="kpi-row"><span>Quanto menor melhor</span><strong>${toNum(s.brier) != null ? fmtNum(s.brier, 4) : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>LogLoss</h3><div class="kpi-row"><span>Quanto menor melhor</span><strong>${toNum(s.logloss) != null ? fmtNum(s.logloss, 4) : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>ECE</h3><div class="kpi-row"><span>Erro de calibração</span><strong>${toNum(s.ece) != null ? fmtNum(s.ece, 4) : '—'}</strong></div></article>
+  `;
+
+  drawCalibrationChart(cal.bins || []);
+
+  byId('calibrationBinsTable').querySelector('tbody').innerHTML = (cal.bins || []).map((b) => `<tr>
+    <td>${b.bin}</td>
+    <td>${toNum(b.p_pred) != null ? fmtPct(b.p_pred) : '—'}</td>
+    <td>${toNum(b.p_obs) != null ? fmtPct(b.p_obs) : '—'}</td>
+    <td>${toNum(b.gap_abs) != null ? fmtNum(b.gap_abs * 100, 2) + ' pp' : '—'}</td>
+    <td>${b.rows ?? '—'}</td>
+    <td>${toNum(b.samples) != null ? fmtNum(b.samples, 0) : '—'}</td>
+  </tr>`).join('') || '<tr><td colspan="6">Sem bins de calibração.</td></tr>';
+  applyExistingSort('calibrationBinsTable');
+
+  byId('calibrationGroupTable').querySelector('tbody').innerHTML = (cal.by_group || [])
+    .sort((a, b) => Number(a.brier ?? 999) - Number(b.brier ?? 999))
+    .map((g) => `<tr>
+      <td>${groupLabel(g.group)}</td>
+      <td>${g.rows ?? '—'}</td>
+      <td>${toNum(g.samples) != null ? fmtNum(g.samples, 0) : '—'}</td>
+      <td>${toNum(g.brier) != null ? fmtNum(g.brier, 4) : '—'}</td>
+      <td>${toNum(g.logloss) != null ? fmtNum(g.logloss, 4) : '—'}</td>
+      <td>${toNum(g.avg_confidence) != null ? fmtNum(g.avg_confidence, 1) : '—'}</td>
+    </tr>`).join('') || '<tr><td colspan="6">Sem grupos para calibração.</td></tr>';
+  applyExistingSort('calibrationGroupTable');
+}
+
+function drawCalibrationChart(bins) {
+  const svg = byId('calibrationChart');
+  if (!svg) return;
+  const valid = (bins || []).filter((b) => toNum(b.p_pred) != null && toNum(b.p_obs) != null);
+  if (!valid.length) {
+    svg.innerHTML = '<text x="16" y="28" fill="#5f6a78" font-size="14">Sem dados de calibração.</text>';
+    return;
+  }
+
+  const width = 900;
+  const height = 320;
+  const margin = { top: 16, right: 22, bottom: 38, left: 52 };
+  const chartW = width - margin.left - margin.right;
+  const chartH = height - margin.top - margin.bottom;
+  const xAt = (v) => margin.left + clamp(v, 0, 1) * chartW;
+  const yAt = (v) => margin.top + (1 - clamp(v, 0, 1)) * chartH;
+
+  const pts = valid.map((b) => `${xAt(Number(b.p_pred))},${yAt(Number(b.p_obs))}`).join(' ');
+  const circles = valid.map((b) => `<circle cx="${xAt(Number(b.p_pred))}" cy="${yAt(Number(b.p_obs))}" r="4" fill="#0e7490" />`).join('');
+  const labels = valid.map((b) => `<text x="${xAt(Number(b.p_pred)) + 6}" y="${yAt(Number(b.p_obs)) - 6}" fill="#5f6a78" font-size="10">${b.bin}</text>`).join('');
+
+  svg.innerHTML = `
+    <rect x="0" y="0" width="${width}" height="${height}" fill="#ffffff" />
+    <line x1="${margin.left}" y1="${height - margin.bottom}" x2="${width - margin.right}" y2="${height - margin.bottom}" stroke="#d9dddf" />
+    <line x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${height - margin.bottom}" stroke="#d9dddf" />
+    <line x1="${xAt(0)}" y1="${yAt(0)}" x2="${xAt(1)}" y2="${yAt(1)}" stroke="#94a3b8" stroke-dasharray="5 4" />
+    <polyline fill="none" stroke="#0e7490" stroke-width="2.6" points="${pts}" />
+    ${circles}
+    ${labels}
+    <text x="${margin.left}" y="14" fill="#0e7490" font-size="12">Curva observada</text>
+    <text x="${margin.left + 126}" y="14" fill="#94a3b8" font-size="12">Diagonal ideal</text>
+    <text x="${margin.left}" y="${height - 8}" fill="#5f6a78" font-size="11">P prevista</text>
+    <text x="${margin.left - 40}" y="${margin.top + 8}" fill="#5f6a78" font-size="11">P obs.</text>
+  `;
 }
 
 function populateModel(leagues) {
@@ -1461,7 +1530,7 @@ async function main() {
 
   document.querySelectorAll('.tab').forEach((btn) => btn.addEventListener('click', () => setActiveTab(btn.dataset.tab)));
 
-  ['rankingTable', 'scannerTable', 'confrontoMarketTable', 'compareDeltaTable', 'formTable', 'sosTable', 'perfMarketTable', 'qualityChecksTable', 'weeklyBacktestTable', 'modelTable', 'prejogoShortlistTable', 'evKellyTable', 'h2hTable'].forEach(enableTableSorting);
+  ['rankingTable', 'scannerTable', 'confrontoMarketTable', 'compareDeltaTable', 'formTable', 'sosTable', 'perfMarketTable', 'qualityChecksTable', 'weeklyBacktestTable', 'modelTable', 'calibrationBinsTable', 'calibrationGroupTable', 'prejogoShortlistTable', 'evKellyTable', 'h2hTable'].forEach(enableTableSorting);
   byId('exportPrejogoPdfBtn')?.addEventListener('click', exportPrejogoPdf);
   byId('scannerResetBtn')?.addEventListener('click', resetScannerFilters);
   byId('prejogoResetBtn')?.addEventListener('click', resetPrejogoFilters);
