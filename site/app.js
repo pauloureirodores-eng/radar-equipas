@@ -259,18 +259,47 @@ function renderHomeKpis(league, teamFilter = 'Todas') {
   const marketRows = DATA.marketRows.filter((r) => r.league === league && r.scope === 'Total' && (teamFilter === 'Todas' || r.team === teamFilter));
   const positiveValue = marketRows.filter((r) => toNum(r.value_estimado) != null && Number(r.value_estimado) > 0).length;
   const avgHit = avg(marketRows.map((r) => toNum(r.hit_rate)).filter((x) => x != null));
+  const topOpp = marketRows
+    .map((r) => ({ ...r, opportunityScore: opportunityScore(r) }))
+    .sort((a, b) => Number(b.opportunityScore ?? -999) - Number(a.opportunityScore ?? -999))[0];
   const alerts = ((DATA.weeklyAlerts?.byLeague || {})[league] || []);
   const highAlerts = alerts.filter((a) => a.severity === 'high' && (teamFilter === 'Todas' || a.entity === teamFilter)).length;
   const anchorTeam = selected ? selected.team : (top ? top.team : '—');
   const ppg = selected ? selected.ppg : (top ? top.ppg : null);
 
   byId('homeKpis').innerHTML = `
-    <article class="kpi-card"><h3>Liga</h3><div class="kpi-row"><span>Selecionada</span><strong>${leagueLabel(league)}</strong></div></article>
-    <article class="kpi-card"><h3>Equipa foco</h3><div class="kpi-row"><span>Selecionada</span><strong>${anchorTeam}</strong></div></article>
-    <article class="kpi-card"><h3>PPG referência</h3><div class="kpi-row"><span>Rendimento</span><strong>${ppg != null ? fmtNum(ppg, 2) : '—'}</strong></div></article>
-    <article class="kpi-card"><h3>Mercados com Value</h3><div class="kpi-row"><span>Total</span><strong>${positiveValue}</strong></div></article>
-    <article class="kpi-card"><h3>Hit Rate Médio</h3><div class="kpi-row"><span>Mercados Total</span><strong>${avgHit != null ? fmtPct(avgHit) : '—'}</strong></div></article>
-    <article class="kpi-card"><h3>Alertas High</h3><div class="kpi-row"><span>Esta liga</span><strong>${highAlerts}</strong></div></article>
+    <article class="kpi-card"><h3>Equipa Foco</h3><div class="kpi-row"><span>${leagueLabel(league)}</span><strong>${anchorTeam}</strong></div></article>
+    <article class="kpi-card"><h3>PPG de Referência</h3><div class="kpi-row"><span>Rendimento atual</span><strong>${ppg != null ? fmtNum(ppg, 2) : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>Melhor Oportunidade</h3><div class="kpi-row"><span>Score</span><strong>${topOpp ? topOpp.opportunityScore : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>Alertas Críticos</h3><div class="kpi-row"><span>High severity</span><strong>${highAlerts}</strong></div></article>
+  `;
+}
+
+function renderHomeNarrative(league, teamFilter = 'Todas') {
+  const alerts = ((DATA.weeklyAlerts?.byLeague || {})[league] || []).filter((a) => teamFilter === 'Todas' || a.entity === teamFilter);
+  const high = alerts.filter((a) => a.severity === 'high').length;
+  const accelTeams = (DATA.rankings[league] || [])
+    .map((t) => {
+      const all = DATA.seriesRows
+        .filter((r) => r.league === league && r.team === t.team)
+        .sort((a, b) => String(a.date).localeCompare(String(b.date)))
+        .map((r) => Number(r.roll5_points))
+        .filter((x) => Number.isFinite(x));
+      if (all.length < 2) return null;
+      return { team: t.team, delta: all[all.length - 1] - all[all.length - 2] };
+    })
+    .filter((x) => x && x.delta > 0.4)
+    .slice(0, 3);
+  const topOpp = DATA.marketRows
+    .filter((r) => r.league === league && r.scope === 'Total' && (teamFilter === 'Todas' || r.team === teamFilter))
+    .map((r) => ({ ...r, opportunityScore: opportunityScore(r) }))
+    .sort((a, b) => Number(b.opportunityScore ?? -999) - Number(a.opportunityScore ?? -999))
+    .slice(0, 2);
+
+  byId('homeNarrative').innerHTML = `
+    <article class="item"><p class="title">Leitura rápida da semana</p><p class="meta">${accelTeams.length} equipas em aceleração (${accelTeams.map((x) => x.team).join(', ') || 'n/a'}).</p></article>
+    <article class="item"><p class="title">Convicção de mercado</p><p class="meta">${topOpp.length} mercados com maior edge relativo (${topOpp.map((x) => `${x.team} · ${x.market}`).join(' | ') || 'n/a'}).</p></article>
+    <article class="item"><p class="title">Risco imediato</p><p class="meta">${high} alertas críticos na liga selecionada.</p></article>
   `;
 }
 
@@ -298,11 +327,13 @@ function renderMarkets(league, teamFilter = 'Todas') {
   const rows = DATA.marketRows
     .filter((r) => r.league === league && r.scope === 'Total' && r.hit_rate != null && (teamFilter === 'Todas' || r.team === teamFilter))
     .sort((a, b) => Number(b.value_estimado ?? -999) - Number(a.value_estimado ?? -999))
-    .slice(0, 10);
+    .slice(0, 6);
 
   byId('marketsList').innerHTML = rows.map((m) => {
-    const good = (m.value_estimado ?? -999) >= 0;
-    return `<article class="item"><p class="title">${m.team} · ${m.market}</p><p class="meta">Hit: ${m.hit_rate != null ? fmtPct(m.hit_rate) : '—'} · ROI: ${m.roi_unid_por_aposta != null ? fmtNum(m.roi_unid_por_aposta, 3) : '—'} · Jogos: ${m.jogos}</p><span class="badge ${good ? 'good' : 'warn'}">${good ? 'value positivo' : 'value fraco'}</span></article>`;
+    const value = toNum(m.value_estimado);
+    const badge = value != null && value >= 0.08 ? 'Convicção Alta' : value != null && value >= 0 ? 'Convicção Média' : 'Observar';
+    const cls = value != null && value >= 0.08 ? 'good' : value != null && value >= 0 ? '' : 'warn';
+    return `<article class="item"><p class="title">${m.team} · ${m.market}</p><p class="meta">Hit ${m.hit_rate != null ? fmtPct(m.hit_rate) : '—'} · Edge ${toNum(m.edge_vs_liga) != null ? `${fmtNum(m.edge_vs_liga * 100, 1)} pp` : '—'} · Jogos ${m.jogos}</p><span class="badge ${cls}">${badge}</span></article>`;
   }).join('') || '<p class="meta">Sem mercados suficientes.</p>';
 }
 
@@ -320,9 +351,9 @@ function renderHomeScannerTop(league, teamFilter = 'Todas') {
     .filter((r) => r.league === league && r.scope === 'Total' && Number(r.jogos || 0) >= 8 && (teamFilter === 'Todas' || r.team === teamFilter))
     .map((r) => ({ ...r, opportunityScore: opportunityScore(r) }))
     .sort((a, b) => Number(b.opportunityScore ?? -999) - Number(a.opportunityScore ?? -999))
-    .slice(0, 10);
+    .slice(0, 6);
   byId('homeScannerTop').innerHTML = rows.length
-    ? rows.map((r) => `<article class="item"><p class="title">${r.team} · ${r.market}</p><p class="meta">Oportunidade: <strong>${r.opportunityScore}</strong> · Edge: ${toNum(r.edge_vs_liga) != null ? `${fmtNum(r.edge_vs_liga * 100, 1)} pp` : '—'} · Hit: ${toNum(r.hit_rate) != null ? fmtPct(r.hit_rate) : '—'}</p></article>`).join('')
+    ? rows.map((r) => `<article class="item"><p class="title">${r.team} · ${r.market}</p><p class="meta">Score <strong>${r.opportunityScore}</strong> · Edge ${toNum(r.edge_vs_liga) != null ? `${fmtNum(r.edge_vs_liga * 100, 1)} pp` : '—'} · Confiança ${scoreBadge(r.opportunityScore)}</p></article>`).join('')
     : '<p class="meta">Sem oportunidades para esta liga.</p>';
 }
 
@@ -395,10 +426,12 @@ function renderSosTable(league) {
 function renderOverview(league) {
   syncDashboardTeamOptions(league);
   const teamFilter = byId('dashboardTeamSelect')?.value || 'Todas';
+  renderHomeNarrative(league, teamFilter);
   renderMatchOfWeek(league);
   renderHomeKpis(league, teamFilter);
   renderMarkets(league, teamFilter);
   renderHomeScannerTop(league, teamFilter);
+  renderWeeklyAlerts(league);
 }
 
 function populateScannerFilters(leagues) {
@@ -927,10 +960,11 @@ function getSeries(league, team, venue, metric) {
 
 function drawFormLineChart(series, metric) {
   const svg = byId('formLineChart');
+  const t = chartTheme();
   if (!svg) return;
 
   if (!series.length) {
-    svg.innerHTML = '<text x="16" y="28" fill="#5f6a78" font-size="14">Sem dados suficientes para o gráfico.</text>';
+    svg.innerHTML = `<text x="16" y="28" fill="${t.muted}" font-size="14">Sem dados suficientes para o gráfico.</text>`;
     return;
   }
 
@@ -969,23 +1003,23 @@ function drawFormLineChart(series, metric) {
     const y = margin.top + t * chartH;
     const v = yMax - t * (yMax - yMin);
     const label = isRateMetric ? `${(v * 100).toFixed(0)}%` : v.toFixed(2);
-    grid += `<line x1="${margin.left}" y1="${y}" x2="${width - margin.right}" y2="${y}" stroke="#edf0f2" stroke-width="1" />`;
-    labels += `<text x="${margin.left - 8}" y="${y + 4}" text-anchor="end" fill="#5f6a78" font-size="11">${label}</text>`;
+    grid += `<line x1="${margin.left}" y1="${y}" x2="${width - margin.right}" y2="${y}" stroke="${t.grid}" stroke-width="1" />`;
+    labels += `<text x="${margin.left - 8}" y="${y + 4}" text-anchor="end" fill="${t.axis}" font-size="11">${label}</text>`;
   }
 
   const xStart = series[0].date ?? '';
   const xEnd = series[series.length - 1].date ?? '';
 
   svg.innerHTML = `
-    <rect x="0" y="0" width="${width}" height="${height}" fill="#ffffff" />
+    <rect x="0" y="0" width="${width}" height="${height}" fill="${t.bg}" />
     ${grid}
-    <line x1="${margin.left}" y1="${height - margin.bottom}" x2="${width - margin.right}" y2="${height - margin.bottom}" stroke="#d9dddf" />
-    <line x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${height - margin.bottom}" stroke="#d9dddf" />
+    <line x1="${margin.left}" y1="${height - margin.bottom}" x2="${width - margin.right}" y2="${height - margin.bottom}" stroke="${t.grid}" />
+    <line x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${height - margin.bottom}" stroke="${t.grid}" />
     ${labels}
-    <polyline fill="none" stroke="#0e7490" stroke-width="3" points="${points}" />
-    ${series.map((s, i) => `<circle cx="${xAt(i)}" cy="${yAt(s.value)}" r="3.2" fill="#0e7490" />`).join('')}
-    <text x="${margin.left}" y="${height - 8}" fill="#5f6a78" font-size="11">${xStart}</text>
-    <text x="${width - margin.right}" y="${height - 8}" text-anchor="end" fill="#5f6a78" font-size="11">${xEnd}</text>
+    <polyline fill="none" stroke="${t.main}" stroke-width="3" points="${points}" />
+    ${series.map((s, i) => `<circle cx="${xAt(i)}" cy="${yAt(s.value)}" r="3.2" fill="${t.main}" />`).join('')}
+    <text x="${margin.left}" y="${height - 8}" fill="${t.axis}" font-size="11">${xStart}</text>
+    <text x="${width - margin.right}" y="${height - 8}" text-anchor="end" fill="${t.axis}" font-size="11">${xEnd}</text>
   `;
 }
 
@@ -1318,9 +1352,10 @@ function renderChangelog() {
 
 function drawCapitalCurve(curve) {
   const svg = byId('capitalCurveChart');
+  const t = chartTheme();
   if (!svg) return;
   if (!curve || !curve.length) {
-    svg.innerHTML = '<text x="16" y="28" fill="#5f6a78" font-size="14">Sem bets temporais para curva de capital.</text>';
+    svg.innerHTML = `<text x="16" y="28" fill="${t.muted}" font-size="14">Sem bets temporais para curva de capital.</text>`;
     return;
   }
 
@@ -1342,24 +1377,25 @@ function drawCapitalCurve(curve) {
   const end = curve[curve.length - 1]?.date || '';
 
   svg.innerHTML = `
-    <rect x="0" y="0" width="${width}" height="${height}" fill="#ffffff" />
-    <line x1="${margin.left}" y1="${height - margin.bottom}" x2="${width - margin.right}" y2="${height - margin.bottom}" stroke="#d9dddf" />
-    <line x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${height - margin.bottom}" stroke="#d9dddf" />
-    <polyline fill="none" stroke="#0e7490" stroke-width="2.8" points="${pts}" />
-    <polyline fill="none" stroke="#c2410c" stroke-dasharray="5 4" stroke-width="1.8" points="${ddPts}" />
-    <text x="${margin.left}" y="14" fill="#0e7490" font-size="12">Capital</text>
-    <text x="${margin.left + 66}" y="14" fill="#c2410c" font-size="12">Drawdown path</text>
-    <text x="${margin.left}" y="${height - 8}" fill="#5f6a78" font-size="11">${start}</text>
-    <text x="${width - margin.right}" y="${height - 8}" text-anchor="end" fill="#5f6a78" font-size="11">${end}</text>
+    <rect x="0" y="0" width="${width}" height="${height}" fill="${t.bg}" />
+    <line x1="${margin.left}" y1="${height - margin.bottom}" x2="${width - margin.right}" y2="${height - margin.bottom}" stroke="${t.grid}" />
+    <line x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${height - margin.bottom}" stroke="${t.grid}" />
+    <polyline fill="none" stroke="${t.main}" stroke-width="2.8" points="${pts}" />
+    <polyline fill="none" stroke="${t.alt}" stroke-dasharray="5 4" stroke-width="1.8" points="${ddPts}" />
+    <text x="${margin.left}" y="14" fill="${t.main}" font-size="12">Capital</text>
+    <text x="${margin.left + 66}" y="14" fill="${t.alt}" font-size="12">Drawdown path</text>
+    <text x="${margin.left}" y="${height - 8}" fill="${t.axis}" font-size="11">${start}</text>
+    <text x="${width - margin.right}" y="${height - 8}" text-anchor="end" fill="${t.axis}" font-size="11">${end}</text>
   `;
 }
 
 function drawStakeCurve(staking) {
   const svg = byId('stakeCurveChart');
+  const t = chartTheme();
   if (!svg) return;
   const curve = staking?.curve || [];
   if (!curve.length) {
-    svg.innerHTML = '<text x="16" y="28" fill="#5f6a78" font-size="14">Sem dados de stake para comparar estratégias.</text>';
+    svg.innerHTML = `<text x="16" y="28" fill="${t.muted}" font-size="14">Sem dados de stake para comparar estratégias.</text>`;
     return;
   }
 
@@ -1381,9 +1417,9 @@ function drawStakeCurve(staking) {
   const xAt = (i) => margin.left + (i / Math.max(maxLen - 1, 1)) * chartW;
   const yAt = (v) => margin.top + (1 - ((v - yMin) / Math.max(yMax - yMin, 1e-9))) * chartH;
   const palette = {
-    flat_1u: '#0e7490',
-    kelly_q: '#7c3aed',
-    dynamic_c: '#c2410c'
+    flat_1u: t.main,
+    kelly_q: '#8f9dff',
+    dynamic_c: t.alt
   };
 
   const lines = strategies.map((s) => {
@@ -1401,13 +1437,13 @@ function drawStakeCurve(staking) {
   }).join('');
 
   svg.innerHTML = `
-    <rect x="0" y="0" width="${width}" height="${height}" fill="#ffffff" />
-    <line x1="${margin.left}" y1="${height - margin.bottom}" x2="${width - margin.right}" y2="${height - margin.bottom}" stroke="#d9dddf" />
-    <line x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${height - margin.bottom}" stroke="#d9dddf" />
+    <rect x="0" y="0" width="${width}" height="${height}" fill="${t.bg}" />
+    <line x1="${margin.left}" y1="${height - margin.bottom}" x2="${width - margin.right}" y2="${height - margin.bottom}" stroke="${t.grid}" />
+    <line x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${height - margin.bottom}" stroke="${t.grid}" />
     ${lines}
     ${legend}
-    <text x="${margin.left}" y="${height - 8}" fill="#5f6a78" font-size="11">${startDate}</text>
-    <text x="${width - margin.right}" y="${height - 8}" text-anchor="end" fill="#5f6a78" font-size="11">${endDate}</text>
+    <text x="${margin.left}" y="${height - 8}" fill="${t.axis}" font-size="11">${startDate}</text>
+    <text x="${width - margin.right}" y="${height - 8}" text-anchor="end" fill="${t.axis}" font-size="11">${endDate}</text>
   `;
 }
 
