@@ -148,6 +148,20 @@ function leagueLabel(code) {
   return LEAGUE_LABELS[code] || code;
 }
 
+function chartTheme() {
+  const css = getComputedStyle(document.documentElement);
+  const pick = (name, fallback) => css.getPropertyValue(name).trim() || fallback;
+  return {
+    bg: pick('--chart-bg', '#0f1a27'),
+    grid: pick('--chart-grid', '#2b3d52'),
+    axis: pick('--chart-axis', '#8ea1b4'),
+    main: pick('--chart-main', '#76a9ff'),
+    alt: pick('--chart-alt', '#c8a66a'),
+    text: pick('--text', '#e8edf3'),
+    muted: pick('--muted', '#95a6b8')
+  };
+}
+
 function leagueOptions(leagues) {
   return leagues.map((l) => `<option value="${l}">${leagueLabel(l)}</option>`).join('');
 }
@@ -188,7 +202,8 @@ function miniSparkline(row) {
   const xAt = (i) => 4 + (i / 4) * (width - 8);
   const yAt = (v) => 2 + (1 - clamp(v, 0, 1)) * (height - 6);
   const pts = series.map((v, i) => `${xAt(i)},${yAt(v)}`).join(' ');
-  return `<div class="spark-wrap"><svg viewBox="0 0 ${width} ${height}" class="spark"><polyline fill="none" stroke="#0e7490" stroke-width="2" points="${pts}" /></svg><span>${fmtPct(b)}</span></div>`;
+  const t = chartTheme();
+  return `<div class="spark-wrap"><svg viewBox="0 0 ${width} ${height}" class="spark"><polyline fill="none" stroke="${t.main}" stroke-width="2" points="${pts}" /></svg><span>${fmtPct(b)}</span></div>`;
 }
 
 function groupLabel(group) {
@@ -228,19 +243,31 @@ function renderSummaryChips(data) {
   byId('summaryChips').innerHTML = `<span class="chip">${leagues} ligas</span><span class="chip">${teams} equipas</span><span class="chip">${matches} jogos</span>`;
 }
 
-function renderHomeKpis(league) {
+function syncDashboardTeamOptions(league) {
+  const teamSelect = byId('dashboardTeamSelect');
+  if (!teamSelect) return;
+  const current = teamSelect.value || 'Todas';
+  const teams = (DATA.rankings[league] || []).map((x) => x.team);
+  teamSelect.innerHTML = ['Todas', ...teams].map((t) => `<option value="${t}">${t}</option>`).join('');
+  if (['Todas', ...teams].includes(current)) teamSelect.value = current;
+}
+
+function renderHomeKpis(league, teamFilter = 'Todas') {
   const ranking = DATA.rankings[league] || [];
-  const top = ranking[0];
-  const marketRows = DATA.marketRows.filter((r) => r.league === league && r.scope === 'Total');
+  const top = ranking[0] || null;
+  const selected = teamFilter !== 'Todas' ? ranking.find((x) => x.team === teamFilter) : null;
+  const marketRows = DATA.marketRows.filter((r) => r.league === league && r.scope === 'Total' && (teamFilter === 'Todas' || r.team === teamFilter));
   const positiveValue = marketRows.filter((r) => toNum(r.value_estimado) != null && Number(r.value_estimado) > 0).length;
   const avgHit = avg(marketRows.map((r) => toNum(r.hit_rate)).filter((x) => x != null));
   const alerts = ((DATA.weeklyAlerts?.byLeague || {})[league] || []);
-  const highAlerts = alerts.filter((a) => a.severity === 'high').length;
+  const highAlerts = alerts.filter((a) => a.severity === 'high' && (teamFilter === 'Todas' || a.entity === teamFilter)).length;
+  const anchorTeam = selected ? selected.team : (top ? top.team : '—');
+  const ppg = selected ? selected.ppg : (top ? top.ppg : null);
 
   byId('homeKpis').innerHTML = `
     <article class="kpi-card"><h3>Liga</h3><div class="kpi-row"><span>Selecionada</span><strong>${leagueLabel(league)}</strong></div></article>
-    <article class="kpi-card"><h3>Líder Atual</h3><div class="kpi-row"><span>Equipe</span><strong>${top ? top.team : '—'}</strong></div></article>
-    <article class="kpi-card"><h3>PPG Líder</h3><div class="kpi-row"><span>Rendimento</span><strong>${top ? fmtNum(top.ppg, 2) : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>Equipa foco</h3><div class="kpi-row"><span>Selecionada</span><strong>${anchorTeam}</strong></div></article>
+    <article class="kpi-card"><h3>PPG referência</h3><div class="kpi-row"><span>Rendimento</span><strong>${ppg != null ? fmtNum(ppg, 2) : '—'}</strong></div></article>
     <article class="kpi-card"><h3>Mercados com Value</h3><div class="kpi-row"><span>Total</span><strong>${positiveValue}</strong></div></article>
     <article class="kpi-card"><h3>Hit Rate Médio</h3><div class="kpi-row"><span>Mercados Total</span><strong>${avgHit != null ? fmtPct(avgHit) : '—'}</strong></div></article>
     <article class="kpi-card"><h3>Alertas High</h3><div class="kpi-row"><span>Esta liga</span><strong>${highAlerts}</strong></div></article>
@@ -267,9 +294,9 @@ function renderRanking(league) {
   applyExistingSort('rankingTable');
 }
 
-function renderMarkets(league) {
+function renderMarkets(league, teamFilter = 'Todas') {
   const rows = DATA.marketRows
-    .filter((r) => r.league === league && r.scope === 'Total' && r.hit_rate != null)
+    .filter((r) => r.league === league && r.scope === 'Total' && r.hit_rate != null && (teamFilter === 'Todas' || r.team === teamFilter))
     .sort((a, b) => Number(b.value_estimado ?? -999) - Number(a.value_estimado ?? -999))
     .slice(0, 10);
 
@@ -288,9 +315,9 @@ function renderLay(league) {
   byId('layList').innerHTML = rows.map((m) => `<article class="item"><p class="title">${m.team} · ${m.cenario_lay}</p><p class="meta">${m.descricao} · Hit: ${m.hit_rate != null ? fmtPct(m.hit_rate) : '—'} · Score: ${m.lay_score != null ? fmtNum(m.lay_score, 2) : '—'}</p><span class="badge ${m.flag_candidato ? 'good' : 'warn'}">${m.flag_candidato ? 'candidato' : 'observar'}</span></article>`).join('') || '<p class="meta">Sem cenários lay.</p>';
 }
 
-function renderHomeScannerTop(league) {
+function renderHomeScannerTop(league, teamFilter = 'Todas') {
   const rows = DATA.marketRows
-    .filter((r) => r.league === league && r.scope === 'Total' && Number(r.jogos || 0) >= 8)
+    .filter((r) => r.league === league && r.scope === 'Total' && Number(r.jogos || 0) >= 8 && (teamFilter === 'Todas' || r.team === teamFilter))
     .map((r) => ({ ...r, opportunityScore: opportunityScore(r) }))
     .sort((a, b) => Number(b.opportunityScore ?? -999) - Number(a.opportunityScore ?? -999))
     .slice(0, 10);
@@ -366,10 +393,12 @@ function renderSosTable(league) {
 }
 
 function renderOverview(league) {
+  syncDashboardTeamOptions(league);
+  const teamFilter = byId('dashboardTeamSelect')?.value || 'Todas';
   renderMatchOfWeek(league);
-  renderHomeKpis(league);
-  renderMarkets(league);
-  renderHomeScannerTop(league);
+  renderHomeKpis(league, teamFilter);
+  renderMarkets(league, teamFilter);
+  renderHomeScannerTop(league, teamFilter);
 }
 
 function populateScannerFilters(leagues) {
@@ -810,9 +839,10 @@ function renderCompareSection(league, home, away) {
 
 function drawCompareLineChart(homeSeries, awaySeries, homeName, awayName) {
   const svg = byId('compareLineChart');
+  const t = chartTheme();
   if (!svg) return;
   if (!homeSeries.length && !awaySeries.length) {
-    svg.innerHTML = '<text x="16" y="28" fill="#5f6a78" font-size="14">Sem séries para comparar.</text>';
+    svg.innerHTML = `<text x="16" y="28" fill="${t.muted}" font-size="14">Sem séries para comparar.</text>`;
     return;
   }
 
@@ -837,15 +867,15 @@ function drawCompareLineChart(homeSeries, awaySeries, homeName, awayName) {
   const aPts = awaySeries.length ? toPoints(awaySeries) : '';
 
   svg.innerHTML = `
-    <rect x="0" y="0" width="${width}" height="${height}" fill="#fff"/>
-    <line x1="${margin.left}" y1="${height - margin.bottom}" x2="${width - margin.right}" y2="${height - margin.bottom}" stroke="#d9dddf"/>
-    <line x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${height - margin.bottom}" stroke="#d9dddf"/>
-    ${hPts ? `<polyline fill="none" stroke="#0e7490" stroke-width="2.5" points="${hPts}" />` : ''}
-    ${aPts ? `<polyline fill="none" stroke="#c2410c" stroke-width="2.5" points="${aPts}" />` : ''}
-    <text x="${margin.left}" y="14" fill="#0e7490" font-size="12">${homeName} (Casa)</text>
-    <text x="${width - margin.right}" y="14" text-anchor="end" fill="#c2410c" font-size="12">${awayName} (Fora)</text>
-    <text x="${margin.left}" y="${height - 8}" fill="#5f6a78" font-size="11">Início</text>
-    <text x="${width - margin.right}" y="${height - 8}" text-anchor="end" fill="#5f6a78" font-size="11">Recente</text>
+    <rect x="0" y="0" width="${width}" height="${height}" fill="${t.bg}"/>
+    <line x1="${margin.left}" y1="${height - margin.bottom}" x2="${width - margin.right}" y2="${height - margin.bottom}" stroke="${t.grid}"/>
+    <line x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${height - margin.bottom}" stroke="${t.grid}"/>
+    ${hPts ? `<polyline fill="none" stroke="${t.main}" stroke-width="2.5" points="${hPts}" />` : ''}
+    ${aPts ? `<polyline fill="none" stroke="${t.alt}" stroke-width="2.5" points="${aPts}" />` : ''}
+    <text x="${margin.left}" y="14" fill="${t.main}" font-size="12">${homeName} (Casa)</text>
+    <text x="${width - margin.right}" y="14" text-anchor="end" fill="${t.alt}" font-size="12">${awayName} (Fora)</text>
+    <text x="${margin.left}" y="${height - 8}" fill="${t.axis}" font-size="11">Início</text>
+    <text x="${width - margin.right}" y="${height - 8}" text-anchor="end" fill="${t.axis}" font-size="11">Recente</text>
   `;
 }
 
@@ -1157,6 +1187,7 @@ function computeExpectedGoals(league, homeTeam, awayTeam, weightRecent = 0.35) {
 }
 
 function renderScoreHeatmap(pmfHome, pmfAway) {
+  const t = chartTheme();
   const maxGoals = 5;
   const cells = [];
   let maxP = 0;
@@ -1174,8 +1205,8 @@ function renderScoreHeatmap(pmfHome, pmfAway) {
 
   byId('scoreHeatmap').innerHTML = cells.map((c) => {
     const alpha = maxP > 0 ? (0.15 + 0.75 * (c.p / maxP)) : 0.15;
-    const border = top.has(`${c.h}-${c.a}`) ? '2px solid #0e7490' : '1px solid #e6ddd0';
-    return `<div class="heat-cell" style="background: rgba(14,116,144,${alpha.toFixed(3)}); border:${border}"><div class="score">${c.h} - ${c.a}</div><div class="prob">${(c.p * 100).toFixed(1)}%</div></div>`;
+    const border = top.has(`${c.h}-${c.a}`) ? `2px solid ${t.main}` : '1px solid var(--line)';
+    return `<div class="heat-cell" style="background: color-mix(in srgb, ${t.main} ${(alpha * 100).toFixed(1)}%, transparent); border:${border}"><div class="score">${c.h} - ${c.a}</div><div class="prob">${(c.p * 100).toFixed(1)}%</div></div>`;
   }).join('');
 }
 
@@ -1638,10 +1669,11 @@ function renderModel() {
 
 function drawCalibrationChart(bins) {
   const svg = byId('calibrationChart');
+  const t = chartTheme();
   if (!svg) return;
   const valid = (bins || []).filter((b) => toNum(b.p_pred) != null && toNum(b.p_obs) != null);
   if (!valid.length) {
-    svg.innerHTML = '<text x="16" y="28" fill="#5f6a78" font-size="14">Sem dados de calibração.</text>';
+    svg.innerHTML = `<text x="16" y="28" fill="${t.muted}" font-size="14">Sem dados de calibração.</text>`;
     return;
   }
 
@@ -1654,21 +1686,21 @@ function drawCalibrationChart(bins) {
   const yAt = (v) => margin.top + (1 - clamp(v, 0, 1)) * chartH;
 
   const pts = valid.map((b) => `${xAt(Number(b.p_pred))},${yAt(Number(b.p_obs))}`).join(' ');
-  const circles = valid.map((b) => `<circle cx="${xAt(Number(b.p_pred))}" cy="${yAt(Number(b.p_obs))}" r="4" fill="#0e7490" />`).join('');
-  const labels = valid.map((b) => `<text x="${xAt(Number(b.p_pred)) + 6}" y="${yAt(Number(b.p_obs)) - 6}" fill="#5f6a78" font-size="10">${b.bin}</text>`).join('');
+  const circles = valid.map((b) => `<circle cx="${xAt(Number(b.p_pred))}" cy="${yAt(Number(b.p_obs))}" r="4" fill="${t.main}" />`).join('');
+  const labels = valid.map((b) => `<text x="${xAt(Number(b.p_pred)) + 6}" y="${yAt(Number(b.p_obs)) - 6}" fill="${t.axis}" font-size="10">${b.bin}</text>`).join('');
 
   svg.innerHTML = `
-    <rect x="0" y="0" width="${width}" height="${height}" fill="#ffffff" />
-    <line x1="${margin.left}" y1="${height - margin.bottom}" x2="${width - margin.right}" y2="${height - margin.bottom}" stroke="#d9dddf" />
-    <line x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${height - margin.bottom}" stroke="#d9dddf" />
-    <line x1="${xAt(0)}" y1="${yAt(0)}" x2="${xAt(1)}" y2="${yAt(1)}" stroke="#94a3b8" stroke-dasharray="5 4" />
-    <polyline fill="none" stroke="#0e7490" stroke-width="2.6" points="${pts}" />
+    <rect x="0" y="0" width="${width}" height="${height}" fill="${t.bg}" />
+    <line x1="${margin.left}" y1="${height - margin.bottom}" x2="${width - margin.right}" y2="${height - margin.bottom}" stroke="${t.grid}" />
+    <line x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${height - margin.bottom}" stroke="${t.grid}" />
+    <line x1="${xAt(0)}" y1="${yAt(0)}" x2="${xAt(1)}" y2="${yAt(1)}" stroke="${t.axis}" stroke-dasharray="5 4" />
+    <polyline fill="none" stroke="${t.main}" stroke-width="2.6" points="${pts}" />
     ${circles}
     ${labels}
-    <text x="${margin.left}" y="14" fill="#0e7490" font-size="12">Curva observada</text>
-    <text x="${margin.left + 126}" y="14" fill="#94a3b8" font-size="12">Diagonal ideal</text>
-    <text x="${margin.left}" y="${height - 8}" fill="#5f6a78" font-size="11">P prevista</text>
-    <text x="${margin.left - 40}" y="${margin.top + 8}" fill="#5f6a78" font-size="11">P obs.</text>
+    <text x="${margin.left}" y="14" fill="${t.main}" font-size="12">Curva observada</text>
+    <text x="${margin.left + 126}" y="14" fill="${t.axis}" font-size="12">Diagonal ideal</text>
+    <text x="${margin.left}" y="${height - 8}" fill="${t.axis}" font-size="11">P prevista</text>
+    <text x="${margin.left - 40}" y="${margin.top + 8}" fill="${t.axis}" font-size="11">P obs.</text>
   `;
 }
 
@@ -1720,6 +1752,7 @@ async function main() {
 
   byId('leagueSelect').innerHTML = leagueOptions(leagues);
   byId('leagueSelect').addEventListener('change', (e) => renderOverview(e.target.value));
+  byId('dashboardTeamSelect')?.addEventListener('change', () => renderOverview(byId('leagueSelect').value));
   renderOverview(leagues[0]);
 
   populateScannerFilters(leagues);

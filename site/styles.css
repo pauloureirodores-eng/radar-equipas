@@ -11,6 +11,11 @@
   --ok: #56c1a7;
   --radius: 18px;
   --shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
+  --chart-bg: #0f1a27;
+  --chart-grid: #2b3d52;
+  --chart-axis: #8ea1b4;
+  --chart-main: #76a9ff;
+  --chart-alt: #c8a66a;
 }
 * { box-sizing: border-box; }
 body { margin: 0; color: var(--text); background: radial-gradient(1200px 600px at 10% -20%, #1a2a3c55, transparent 60%), linear-gradient(180deg, var(--bg-2), var(--bg)); font-family: 'Manrope', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -60,11 +65,17 @@ h1 { margin: 0.45rem 0 0.6rem; font-family: 'Fraunces', Georgia, 'Times New Roma
 .tab-panel.active { display: block; }
 .panel { background: linear-gradient(180deg, var(--surface), var(--surface-2)); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 1.1rem; margin-bottom: 1.2rem; }
 .panel.feature { background: radial-gradient(90% 120% at 20% 0%, #76a9ff1f, transparent 60%), linear-gradient(180deg, var(--surface), var(--surface-2)); }
+.tab-panel.active .panel { animation: panelIn 300ms ease both; }
+.tab-panel.active .panel:nth-of-type(2) { animation-delay: 40ms; }
+.tab-panel.active .panel:nth-of-type(3) { animation-delay: 80ms; }
+.tab-panel.active .panel:nth-of-type(4) { animation-delay: 120ms; }
 .panel.lite { box-shadow: none; margin-bottom: 0; }
 .panel-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 0.75rem; }
-.panel h2 { margin: 0; font-size: 1.05rem; letter-spacing: 0.01em; }
+.panel h2 { margin: 0; font-family: 'Fraunces', Georgia, 'Times New Roman', serif; font-size: 1.08rem; letter-spacing: 0.01em; font-weight: 650; }
 .league-picker { font-size: 0.85rem; color: var(--muted); display: inline-flex; align-items: center; gap: 0.5rem; }
 .controls-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 0.7rem; margin-bottom: 0.8rem; }
+.controls-grid-top { margin-bottom: 0; grid-template-columns: repeat(2, minmax(0,1fr)); max-width: 620px; }
+.panel-compact { padding: 0.68rem 0.9rem; }
 .controls-grid label { display: flex; flex-direction: column; font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); gap: 0.35rem; }
 select, input { border: 1px solid var(--line); border-radius: 11px; padding: 0.52rem 0.64rem; color: var(--text); background: #0f1a27; }
 .league-cards { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 0.75rem; }
@@ -104,7 +115,7 @@ tr:hover td { background: #76a9ff14; }
 .badge.warn { color: #e3b77c; border-color: #c8a66a66; background: #c8a66a22; }
 .watch-btn {
   border: 1px solid var(--line);
-  background: #fff;
+  background: #0f1a27;
   color: #9aa4b0;
   width: 1.7rem;
   height: 1.7rem;
@@ -131,6 +142,7 @@ tr:hover td { background: #76a9ff14; }
 .kpi-card h3 { margin: 0 0 0.5rem; font-size: 0.95rem; }
 .kpi-row { display: flex; justify-content: space-between; padding: 0.2rem 0; font-size: 0.86rem; border-bottom: 1px dashed #ffffff22; }
 .kpi-row:last-child { border-bottom: none; }
+.kpi-row strong { font-size: 1.08rem; letter-spacing: 0.01em; }
 .radar-block { border: 1px solid var(--line); border-radius: 12px; padding: 0.7rem; background: #0f1a27; }
 .radar-block h3 { margin: 0 0 0.4rem; font-size: 0.95rem; }
 .radar-block canvas { width: 100%; max-width: 380px; height: auto; display: block; }
@@ -158,6 +170,7 @@ tr:hover td { background: #76a9ff14; }
 .filters-panel { border: 1px solid var(--line); border-radius: 12px; background: #0f1a27; padding: 0.6rem 0.7rem; margin-bottom: 0.8rem; }
 .filters-panel > summary { cursor: pointer; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.7rem; }
 @keyframes reveal { from { opacity: 0; transform: translateY(8px);} to { opacity: 1; transform: translateY(0);} }
+@keyframes panelIn { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: translateY(0);} }
 @media (max-width: 980px) { .league-cards { grid-template-columns: repeat(2,minmax(0,1fr)); } .grid-2, .kpi-grid, .kpi-grid-6 { grid-template-columns: 1fr; } .controls-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 @media (max-width: 680px) {
   .league-cards { grid-template-columns: 1fr; }

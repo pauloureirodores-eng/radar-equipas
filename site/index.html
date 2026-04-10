@@ -30,6 +30,13 @@
 
   <main class="container">
     <section class="tab-panel active" id="panel-overview">
+      <section class="panel panel-compact">
+        <div class="controls-grid controls-grid-top">
+          <label>Liga<select id="leagueSelect"></select></label>
+          <label>Equipa<select id="dashboardTeamSelect"></select></label>
+        </div>
+      </section>
+
       <section class="panel">
         <div id="homeKpis" class="kpi-grid kpi-grid-6"></div>
       </section>
@@ -41,10 +48,7 @@
 
       <section class="grid-2">
         <article class="panel">
-          <div class="panel-head">
-            <h2>Mercados em Destaque</h2>
-            <label class="league-picker">Liga <select id="leagueSelect"></select></label>
-          </div>
+          <div class="panel-head"><h2>Mercados em Destaque</h2></div>
           <div id="marketsList" class="list"></div>
         </article>
         <article class="panel">
