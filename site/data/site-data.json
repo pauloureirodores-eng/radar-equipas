@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-04-10T11:31:55.138214+00:00",
+    "generatedAt": "2026-04-10T11:37:39.236740+00:00",
     "sourceFiles": [
       "D1.csv",
       "E0.csv",
@@ -568469,7 +568469,7 @@
       "date": "2026-04-10",
       "title": "Atualização automática semanal",
       "summary": "Dados e métricas recalculados a partir dos CSV mais recentes.",
-      "generatedAt": "2026-04-10T11:31:33.888401+00:00"
+      "generatedAt": "2026-04-10T11:37:19.772402+00:00"
     },
     {
       "date": "2026-04-08",
