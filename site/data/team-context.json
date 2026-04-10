@@ -1,12 +1,11 @@
 {
   "meta": {
     "provider": "api-football",
-    "generatedAt": "2026-04-10T14:27:16.183677+00:00",
+    "generatedAt": "2026-04-10T14:39:26.199572+00:00",
     "season": 2025,
-    "keyConfigured": false
+    "keyConfigured": true
   },
   "teamContextByLeague": {},
-  "errors": [
-    "Missing API_FOOTBALL_KEY. Team context not fetched."
-  ]
+  "errors": [],
+  "teamContextByLeagueNorm": {}
 }
