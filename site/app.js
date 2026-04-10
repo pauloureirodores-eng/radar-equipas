@@ -969,6 +969,50 @@ function drawCompareLineChart(homeSeries, awaySeries, homeName, awayName) {
 }
 
 function renderMatchOfWeek(league) {
+  const bestApi = DATA.matchOfWeekByLeague?.[league];
+  if (bestApi && bestApi.homeTeam && bestApi.awayTeam) {
+    const topMarkets = Array.isArray(bestApi.topMarkets) ? bestApi.topMarkets : [];
+    const marketsText = topMarkets.length
+      ? topMarkets.map((m) => `${m.market}${toNum(m.avg_edge) != null ? ` (${fmtNum(m.avg_edge * 100, 1)} pp)` : ''}`).join(' · ')
+      : 'Sem mercados convergentes fortes.';
+    const dt = bestApi.fixtureUtcDate
+      ? new Date(bestApi.fixtureUtcDate).toLocaleString('pt-PT', { timeZone: 'Europe/Lisbon' })
+      : (bestApi.fixtureDate || '—');
+    const conf = toNum(bestApi.confidenceScore);
+    const reading = conf != null && conf >= 70
+      ? 'Jogo real do fim de semana com sinais fortes de convergência.'
+      : 'Jogo real do fim de semana com leitura equilibrada e oportunidade monitorizada.';
+
+    byId('matchOfWeekCard').innerHTML = `
+      <article class="kpi-card">
+        <h3>Jogo real da jornada</h3>
+        <div class="kpi-row"><span>Jogo</span><strong>${bestApi.homeTeam} vs ${bestApi.awayTeam}</strong></div>
+        <div class="kpi-row"><span>Data/Hora</span><strong>${dt}</strong></div>
+        <p class="meta">${reading}</p>
+        <button id="homeOpenMatchupFromCard" class="ghost-btn">Abrir Matchup completo</button>
+      </article>
+      <article class="kpi-card">
+        <h3>Sinal principal</h3>
+        <div class="kpi-row"><span>Confiança</span><strong>${conf != null ? `${conf}/100` : '—'}</strong></div>
+        <div class="kpi-row"><span>Top edge</span><strong>${toNum(bestApi.topEdge) != null ? `${fmtNum(bestApi.topEdge * 100, 1)} pp` : '—'}</strong></div>
+        <div class="kpi-row"><span>Forma (delta)</span><strong>${toNum(bestApi.formDelta) != null ? `${bestApi.formDelta >= 0 ? '+' : ''}${fmtNum(bestApi.formDelta, 2)}` : '—'}</strong></div>
+      </article>
+      <article class="kpi-card">
+        <h3>Mercados sugeridos</h3>
+        <p class="meta">${marketsText}</p>
+      </article>
+      <article class="kpi-card">
+        <h3>Fonte</h3>
+        <div class="kpi-row"><span>Provider</span><strong>${bestApi.source || '—'}</strong></div>
+        <div class="kpi-row"><span>Liga</span><strong>${leagueLabel(league)}</strong></div>
+      </article>
+    `;
+    byId('homeOpenMatchupFromCard')?.addEventListener('click', () => {
+      openMatchupWithTeams(league, bestApi.homeTeam, bestApi.awayTeam);
+    });
+    return;
+  }
+
   const best = computeBestMatchOfWeek(league);
   if (!best) {
     byId('matchOfWeekCard').innerHTML = '<article class="kpi-card"><h3>Jogo da Semana</h3><p class="meta">Sem dados suficientes.</p></article>';
@@ -994,6 +1038,28 @@ function renderMatchOfWeek(league) {
     <article class="kpi-card"><h3>Mercados sugeridos</h3><div class="kpi-row"><span>Top edge</span><strong>${best.edgeTop ? `${fmtNum(best.edgeTop * 100, 1)} pp` : '—'}</strong></div><p class="meta">${markets}</p></article>
   `;
   byId('homeOpenMatchupFromCard')?.addEventListener('click', () => setActiveTab('confronto'));
+}
+
+function openMatchupWithTeams(league, home, away) {
+  setActiveTab('confronto');
+  const lg = byId('cfLeague');
+  const h = byId('cfHome');
+  const a = byId('cfAway');
+  if (!lg || !h || !a) return;
+
+  const applyTeams = () => {
+    if (Array.from(h.options).some((o) => o.value === home)) h.value = home;
+    if (Array.from(a.options).some((o) => o.value === away)) a.value = away;
+    renderConfronto();
+  };
+
+  if (lg.value !== league) {
+    lg.value = league;
+    lg.dispatchEvent(new Event('change'));
+    setTimeout(applyTeams, 0);
+    return;
+  }
+  applyTeams();
 }
 
 function computeBestMatchOfWeek(league) {
@@ -1847,7 +1913,7 @@ function exportPrejogoPdf() {
 }
 
 async function main() {
-  const res = await fetch('./data/site-data.json?v=20260410a', { cache: 'no-store' });
+  const res = await fetch('./data/site-data.json?v=20260410b', { cache: 'no-store' });
   DATA = await res.json();
   loadWatchlist();
 

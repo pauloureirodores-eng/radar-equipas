@@ -8,6 +8,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from datetime import datetime, timezone
+from difflib import SequenceMatcher
 
 import pandas as pd
 import numpy as np
@@ -971,11 +972,227 @@ def build_weekly_alerts(serie_full: pd.DataFrame, market_rows: pd.DataFrame) -> 
     }
 
 
+def normalize_team_name(name: str | None) -> str:
+    raw = str(name or "").lower().strip()
+    repl = {
+        "'": "",
+        ".": "",
+        "-": " ",
+        "_": " ",
+        " fc": "",
+        " cf": "",
+        " ac": "",
+        " sc": "",
+    }
+    for a, b in repl.items():
+        raw = raw.replace(a, b)
+    return " ".join(raw.split())
+
+
+def team_aliases() -> dict[str, str]:
+    return {
+        "manchester city": "Man City",
+        "manchester united": "Man United",
+        "nottingham forest": "Nott'm Forest",
+        "tottenham hotspur": "Tottenham",
+        "wolverhampton wanderers": "Wolves",
+        "paris saint germain": "Paris SG",
+        "athletic club": "Ath Bilbao",
+        "atletico de madrid": "Ath Madrid",
+        "borussia mgladbach": "M'gladbach",
+        "eintracht frankfurt": "Ein Frankfurt",
+        "1 fc koln": "FC Koln",
+        "sporting cp": "Sp Lisbon",
+        "sporting braga": "Sp Braga",
+        "rayo vallecano": "Vallecano",
+        "real sociedad": "Sociedad",
+        "psv": "PSV Eindhoven",
+        "az": "AZ Alkmaar",
+        "fortuna sittard": "For Sittard",
+        "fenerbahce sk": "Fenerbahce",
+        "galatasaray sk": "Galatasaray",
+    }
+
+
+def map_fixture_team_name(api_name: str | None, candidates: list[str]) -> str | None:
+    if not api_name or not candidates:
+        return None
+    aliases = team_aliases()
+    direct_alias = aliases.get(normalize_team_name(api_name))
+    if direct_alias and direct_alias in candidates:
+        return direct_alias
+
+    norm_candidates = {normalize_team_name(c): c for c in candidates}
+    n = normalize_team_name(api_name)
+    if n in norm_candidates:
+        return norm_candidates[n]
+
+    # Soft contains
+    for nk, original in norm_candidates.items():
+        if n in nk or nk in n:
+            return original
+
+    # Fuzzy fallback
+    best = None
+    best_ratio = 0.0
+    for nk, original in norm_candidates.items():
+        ratio = SequenceMatcher(None, n, nk).ratio()
+        if ratio > best_ratio:
+            best_ratio = ratio
+            best = original
+    if best_ratio >= 0.70:
+        return best
+    return None
+
+
+def latest_roll5_points(serie_full: pd.DataFrame, league: str, team: str, venue: str) -> float | None:
+    s = serie_full[
+        (serie_full["league"] == league)
+        & (serie_full["team"] == team)
+        & (serie_full["venue"] == venue)
+    ].copy()
+    if s.empty:
+        return None
+    s["date"] = pd.to_datetime(s["date"], errors="coerce")
+    s = s.dropna(subset=["date"]).sort_values("date")
+    if s.empty:
+        return None
+    vals = pd.to_numeric(s["roll5_points"], errors="coerce").dropna()
+    if vals.empty:
+        return None
+    return float(vals.iloc[-1])
+
+
+def build_match_of_week_from_fixtures(
+    fixtures_payload: dict,
+    resumo: pd.DataFrame,
+    market_rows: pd.DataFrame,
+    serie_full: pd.DataFrame,
+) -> dict:
+    fixtures = fixtures_payload.get("fixtures") or []
+    out_by_league: dict[str, dict] = {}
+    if not fixtures:
+        return out_by_league
+
+    teams_by_league = (
+        resumo[resumo["scope"] == "Total"]
+        .groupby("league")["team"]
+        .apply(list)
+        .to_dict()
+    )
+    rh = resumo[resumo["scope"] == "Casa"].copy()
+    ra = resumo[resumo["scope"] == "Fora"].copy()
+    rh = rh.set_index(["league", "team"], drop=False)
+    ra = ra.set_index(["league", "team"], drop=False)
+
+    for fx in fixtures:
+        league = str(fx.get("league") or "")
+        candidates = teams_by_league.get(league, [])
+        if not candidates:
+            continue
+        home_api = fx.get("homeTeamApi")
+        away_api = fx.get("awayTeamApi")
+        home = map_fixture_team_name(home_api, candidates)
+        away = map_fixture_team_name(away_api, candidates)
+        if not home or not away or home == away:
+            continue
+
+        key_home = (league, home)
+        key_away = (league, away)
+        if key_home not in rh.index or key_away not in ra.index:
+            continue
+        home_row = rh.loc[key_home]
+        away_row = ra.loc[key_away]
+
+        hm = market_rows[
+            (market_rows["league"] == league)
+            & (market_rows["team"] == home)
+            & (market_rows["scope"] == "Casa")
+        ][["market", "edge_vs_liga", "hit_rate"]].copy()
+        aw = market_rows[
+            (market_rows["league"] == league)
+            & (market_rows["team"] == away)
+            & (market_rows["scope"] == "Fora")
+        ][["market", "edge_vs_liga", "hit_rate"]].copy()
+        merged = hm.merge(aw, on="market", suffixes=("_h", "_a"), how="inner")
+        if merged.empty:
+            continue
+
+        merged["avg_edge"] = (
+            pd.to_numeric(merged["edge_vs_liga_h"], errors="coerce")
+            + pd.to_numeric(merged["edge_vs_liga_a"], errors="coerce")
+        ) / 2.0
+        merged["avg_hit"] = (
+            pd.to_numeric(merged["hit_rate_h"], errors="coerce")
+            + pd.to_numeric(merged["hit_rate_a"], errors="coerce")
+        ) / 2.0
+        merged = merged.dropna(subset=["avg_edge"]).sort_values("avg_edge", ascending=False)
+        if merged.empty:
+            continue
+
+        top_markets = [
+            {
+                "market": str(r["market"]),
+                "avg_edge": float(r["avg_edge"]),
+                "avg_hit": float(r["avg_hit"]) if pd.notna(r["avg_hit"]) else None,
+            }
+            for _, r in merged.head(3).iterrows()
+        ]
+        top_edge = float(merged.iloc[0]["avg_edge"])
+
+        home_form = latest_roll5_points(serie_full, league, home, "H")
+        away_form = latest_roll5_points(serie_full, league, away, "A")
+        form_delta = (home_form - away_form) if (home_form is not None and away_form is not None) else 0.0
+
+        games_home = float(pd.to_numeric(home_row.get("jogos"), errors="coerce"))
+        games_away = float(pd.to_numeric(away_row.get("jogos"), errors="coerce"))
+        sample_factor = clamp(min(games_home, games_away) / 19.0, 0.0, 1.0)
+        stability_factor = clamp(1.0 - (abs(form_delta) / 3.0), 0.0, 1.0)
+        confidence = (sample_factor * 0.6) + (stability_factor * 0.4)
+
+        o25_home = pd.to_numeric(home_row.get("O2.5%"), errors="coerce")
+        o25_away = pd.to_numeric(away_row.get("O2.5%"), errors="coerce")
+        btts_home = pd.to_numeric(home_row.get("BTTS%"), errors="coerce")
+        btts_away = pd.to_numeric(away_row.get("BTTS%"), errors="coerce")
+        tempo = np.nanmean([o25_home, o25_away, btts_home, btts_away])
+        tempo = float(tempo) if pd.notna(tempo) else 0.5
+
+        score = (
+            max(top_edge, 0.0) * 100.0 * 0.50
+            + abs(form_delta) * 20.0 * 0.15
+            + tempo * 100.0 * 0.20
+            + confidence * 100.0 * 0.15
+        )
+
+        candidate = {
+            "league": league,
+            "homeTeam": home,
+            "awayTeam": away,
+            "homeTeamApi": home_api,
+            "awayTeamApi": away_api,
+            "fixtureUtcDate": fx.get("utcDate"),
+            "fixtureDate": fx.get("date"),
+            "competitionName": fx.get("competitionName"),
+            "score": float(score),
+            "confidenceScore": int(round(confidence * 100)),
+            "topEdge": float(top_edge),
+            "formDelta": float(form_delta),
+            "topMarkets": top_markets,
+            "source": "football-data.org",
+        }
+        prev = out_by_league.get(league)
+        if prev is None or candidate["score"] > float(prev.get("score", -1e9)):
+            out_by_league[league] = candidate
+
+    return out_by_league
+
+
 def main() -> None:
     base = Path(__file__).resolve().parents[1]
     out = base / "output"
     site_data_path = base / "site" / "data" / "site-data.json"
     changelog_path = base / "site" / "data" / "changelog.json"
+    fixtures_path = base / "site" / "data" / "fixtures-upcoming.json"
     site_data_path.parent.mkdir(parents=True, exist_ok=True)
 
     resumo = pd.read_csv(out / "resumo_equipas.csv")
@@ -1141,6 +1358,18 @@ def main() -> None:
     phase23_staking = build_phase23_staking(temporal_backtest)
     phase24_profiles = build_phase24_profiles(phase23_staking)
     weekly_alerts = build_weekly_alerts(serie_full, market_rows)
+    fixtures_payload = {}
+    if fixtures_path.exists():
+        try:
+            fixtures_payload = json.loads(fixtures_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            fixtures_payload = {}
+    match_of_week_by_league = build_match_of_week_from_fixtures(
+        fixtures_payload,
+        resumo,
+        market_rows,
+        serie_full,
+    )
 
     changelog = []
     if changelog_path.exists():
@@ -1174,6 +1403,9 @@ def main() -> None:
         "phase23Staking": phase23_staking,
         "phase24Profiles": phase24_profiles,
         "weeklyAlerts": weekly_alerts,
+        "upcomingFixturesMeta": fixtures_payload.get("meta", {}),
+        "upcomingFixtures": fixtures_payload.get("fixtures", []),
+        "matchOfWeekByLeague": match_of_week_by_league,
         "dataQuality": data_quality,
         "changelog": changelog,
     }

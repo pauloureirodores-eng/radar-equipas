@@ -1,0 +1,13 @@
+{
+  "meta": {
+    "provider": "football-data.org",
+    "generatedAt": "2026-04-10T11:20:13.643220+00:00",
+    "windowDateFrom": "2026-04-10",
+    "windowDateTo": "2026-04-13",
+    "tokenConfigured": false
+  },
+  "fixtures": [],
+  "errors": [
+    "Missing FOOTBALL_DATA_API_TOKEN. Fixtures not fetched."
+  ]
+}

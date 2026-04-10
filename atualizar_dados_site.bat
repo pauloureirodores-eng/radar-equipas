@@ -35,14 +35,21 @@ if errorlevel 1 (
   exit /b 1
 )
 
-echo [3/4] Atualizar changelog semanal...
+echo [3/5] Recolher jogos futuros (API football-data)...
+%PY% scripts\fetch_fixtures.py
+if errorlevel 1 (
+  echo ERRO: fetch_fixtures.py falhou.
+  exit /b 1
+)
+
+echo [4/5] Atualizar changelog semanal...
 %PY% scripts\update_changelog.py
 if errorlevel 1 (
   echo ERRO: update_changelog.py falhou.
   exit /b 1
 )
 
-echo [4/4] Regenerar site/data/site-data.json...
+echo [5/5] Regenerar site/data/site-data.json...
 %PY% scripts\build_site_data.py
 if errorlevel 1 (
   echo ERRO: build_site_data.py falhou.
