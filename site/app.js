@@ -120,8 +120,14 @@ function downloadCSV(filename, headers, rows) {
 
 function setActiveTab(tabId) {
   document.querySelectorAll('.tab').forEach((b) => b.classList.toggle('active', b.dataset.tab === tabId));
-  document.querySelectorAll('.tab-panel').forEach((p) => p.classList.remove('active'));
-  byId(`panel-${tabId}`).classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach((p) => {
+    p.classList.remove('active');
+    p.hidden = true;
+  });
+  const panel = byId(`panel-${tabId}`);
+  if (!panel) return;
+  panel.classList.add('active');
+  panel.hidden = false;
 }
 
 function toNum(v) {
@@ -1841,7 +1847,7 @@ function exportPrejogoPdf() {
 }
 
 async function main() {
-  const res = await fetch('./data/site-data.json?v=20260409b', { cache: 'no-store' });
+  const res = await fetch('./data/site-data.json?v=20260410a', { cache: 'no-store' });
   DATA = await res.json();
   loadWatchlist();
 
