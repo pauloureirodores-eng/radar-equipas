@@ -1006,6 +1006,182 @@ function renderTeamContext(league, home, away) {
   `;
 }
 
+function styleVector(row) {
+  if (!row) return null;
+  const shots = toNum(row.remates) ?? 0;
+  const sot = toNum(row.SOT) ?? 0;
+  const conv = toNum(row.conversion_rate) ?? 0;
+  const corners = toNum(row.cantos) ?? 0;
+  const againstShots = toNum(row.remates_sofridos) ?? 0;
+  const againstSot = toNum(row.SOT_sofridos) ?? 0;
+  const gpm = toNum(row.golos_marcados) ?? 0;
+
+  const directness = clamp((conv * 2.2) + (gpm * 0.35) - (shots * 0.03), 0, 1);
+  const crossingBias = clamp(corners / 7.5, 0, 1);
+  const transitionBias = clamp((sot / Math.max(shots, 1)) * 2.2, 0, 1);
+  const pressProxy = clamp(1 - (againstShots / 16), 0, 1);
+  const ppdaProxy = Number.isFinite(againstSot) ? (againstShots / Math.max(againstSot, 0.5)) : null;
+  return { directness, crossingBias, transitionBias, pressProxy, ppdaProxy };
+}
+
+function styleLabel(v) {
+  if (!v) return 'Sem perfil';
+  const tags = [];
+  if (v.pressProxy >= 0.62) tags.push('pressão alta (proxy)');
+  if (v.directness >= 0.58) tags.push('jogo direto');
+  if (v.crossingBias >= 0.55) tags.push('dependência de cruzamentos');
+  if (v.transitionBias >= 0.56) tags.push('ataques rápidos');
+  if (!tags.length) tags.push('perfil equilibrado');
+  return tags.join(' · ');
+}
+
+function renderStyleMismatch(league, home, away) {
+  const el = byId('styleMismatchCards');
+  if (!el) return;
+  const h = getResumoRow(league, home, 'Casa');
+  const a = getResumoRow(league, away, 'Fora');
+  const hs = styleVector(h);
+  const as = styleVector(a);
+  if (!hs || !as) {
+    el.innerHTML = '<article class="kpi-card"><h3>Style Mismatch</h3><p class="meta">Sem dados suficientes para classificar estilos.</p></article>';
+    return;
+  }
+  const mismatch = Math.abs(hs.directness - as.directness)
+    + Math.abs(hs.crossingBias - as.crossingBias)
+    + Math.abs(hs.transitionBias - as.transitionBias)
+    + Math.abs(hs.pressProxy - as.pressProxy);
+  const mismatchScore = Math.round((mismatch / 4) * 100);
+  const verdict = mismatchScore >= 55 ? 'choque elevado de estilos' : mismatchScore >= 35 ? 'choque moderado' : 'encaixe mais neutro';
+
+  el.innerHTML = `
+    <article class="kpi-card">
+      <h3>${home} estilo (Casa)</h3>
+      <div class="kpi-row"><span>Perfil</span><strong>${styleLabel(hs)}</strong></div>
+      <div class="kpi-row"><span>PPDA proxy*</span><strong>${hs.ppdaProxy != null ? fmtNum(hs.ppdaProxy, 2) : '—'}</strong></div>
+    </article>
+    <article class="kpi-card">
+      <h3>${away} estilo (Fora)</h3>
+      <div class="kpi-row"><span>Perfil</span><strong>${styleLabel(as)}</strong></div>
+      <div class="kpi-row"><span>PPDA proxy*</span><strong>${as.ppdaProxy != null ? fmtNum(as.ppdaProxy, 2) : '—'}</strong></div>
+    </article>
+    <article class="kpi-card">
+      <h3>Leitura de mismatch</h3>
+      <div class="kpi-row"><span>Score 0-100</span><strong>${mismatchScore}</strong></div>
+      <p class="meta">${verdict}. Melhor usar junto com mercados convergentes e forma recente.</p>
+      <p class="meta">*PPDA proxy: estimativa por remates permitidos vs remates à baliza sofridos (não é PPDA oficial).</p>
+    </article>
+  `;
+}
+
+function nearestFixtureDateForTeam(league, team) {
+  const target = normalizeTeamName(team);
+  const list = Array.isArray(DATA.upcomingFixtures) ? DATA.upcomingFixtures : [];
+  const hits = list
+    .filter((f) => f.league === league)
+    .filter((f) => {
+      const h = normalizeTeamName(f.homeTeamApi || f.homeTeamNorm);
+      const a = normalizeTeamName(f.awayTeamApi || f.awayTeamNorm);
+      return h === target || a === target || h.includes(target) || a.includes(target) || target.includes(h) || target.includes(a);
+    })
+    .map((f) => new Date(f.utcDate || f.fixtureUtcDate || f.date))
+    .filter((d) => !Number.isNaN(d.getTime()))
+    .sort((x, y) => x.getTime() - y.getTime());
+  return hits[0] || null;
+}
+
+function lastMatchDateForTeam(league, team) {
+  const rows = (DATA.seriesRows || [])
+    .filter((r) => r.league === league && r.team === team)
+    .map((r) => new Date(r.date))
+    .filter((d) => !Number.isNaN(d.getTime()))
+    .sort((a, b) => a.getTime() - b.getTime());
+  return rows.length ? rows[rows.length - 1] : null;
+}
+
+function gamesInWindow(league, team, endDate, daysBack) {
+  if (!endDate) return 0;
+  const start = new Date(endDate);
+  start.setDate(start.getDate() - daysBack);
+  return (DATA.seriesRows || [])
+    .filter((r) => r.league === league && r.team === team)
+    .map((r) => new Date(r.date))
+    .filter((d) => !Number.isNaN(d.getTime()) && d >= start && d < endDate)
+    .length;
+}
+
+function rotationRiskLabel(unavailable, daysRest, games8) {
+  let score = 0;
+  if ((unavailable || 0) >= 4) score += 2;
+  else if ((unavailable || 0) >= 2) score += 1;
+  if ((daysRest ?? 99) <= 3) score += 2;
+  else if ((daysRest ?? 99) <= 5) score += 1;
+  if ((games8 || 0) >= 2) score += 2;
+  if (score >= 5) return 'Alta';
+  if (score >= 3) return 'Média';
+  return 'Baixa';
+}
+
+function renderFatigueRotation(league, home, away) {
+  const el = byId('fatigueRotationCards');
+  if (!el) return;
+  const homeCtx = teamContextFor(league, home) || {};
+  const awayCtx = teamContextFor(league, away) || {};
+
+  const build = (team, ctx) => {
+    const nextFx = nearestFixtureDateForTeam(league, team);
+    const lastFx = lastMatchDateForTeam(league, team);
+    const daysRest = (nextFx && lastFx) ? Math.max(0, Math.round((nextFx - lastFx) / 86400000)) : null;
+    const games8 = nextFx ? gamesInWindow(league, team, nextFx, 8) : 0;
+    const thirdIn8 = games8 >= 2 ? 'Sim' : 'Não';
+    const risk = rotationRiskLabel(ctx.unavailableCount || 0, daysRest, games8);
+    return `<article class="kpi-card">
+      <h3>${team}</h3>
+      <div class="kpi-row"><span>Dias de descanso</span><strong>${daysRest != null ? daysRest : '—'}</strong></div>
+      <div class="kpi-row"><span>Jogos nos últimos 8 dias</span><strong>${games8}</strong></div>
+      <div class="kpi-row"><span>3.º jogo em 8 dias</span><strong>${thirdIn8}</strong></div>
+      <div class="kpi-row"><span>Risco de rotação</span><strong>${risk}</strong></div>
+      <p class="meta">Deslocação longa / jogo europeu / prolongamento: N/D sem feed multi-competição.</p>
+    </article>`;
+  };
+
+  el.innerHTML = `
+    ${build(home, homeCtx)}
+    ${build(away, awayCtx)}
+  `;
+}
+
+function renderSetPiecesModule(league, home, away) {
+  const el = byId('setPiecesCards');
+  if (!el) return;
+  const h = getResumoRow(league, home, 'Casa');
+  const a = getResumoRow(league, away, 'Fora');
+  if (!h || !a) {
+    el.innerHTML = '<article class="kpi-card"><h3>Bolas paradas</h3><p class="meta">Sem dados suficientes.</p></article>';
+    return;
+  }
+
+  const card = (team, row) => {
+    const cornersFor = toNum(row.cantos);
+    const cornersAgainst = toNum(row.cantos_sofridos);
+    const yellows = toNum(row.amarelos);
+    const yellowsAgainst = toNum(row.amarelos_sofridos);
+    const setPieceThreat = ((cornersFor ?? 0) * 0.65) + ((toNum(row.SOT) ?? 0) * 0.35);
+    return `<article class="kpi-card">
+      <h3>${team}</h3>
+      <div class="kpi-row"><span>Cantos a favor (90')</span><strong>${cornersFor != null ? fmtNum(cornersFor, 2) : '—'}</strong></div>
+      <div class="kpi-row"><span>Cantos contra (90')</span><strong>${cornersAgainst != null ? fmtNum(cornersAgainst, 2) : '—'}</strong></div>
+      <div class="kpi-row"><span>Cartões (proxy 90')</span><strong>${yellows != null ? fmtNum(yellows, 2) : '—'}</strong></div>
+      <div class="kpi-row"><span>Set-piece threat (proxy)</span><strong>${fmtNum(setPieceThreat, 2)}</strong></div>
+      <p class="meta">Faltas, árbitro e tendência penalties: N/D sem feed dedicado.</p>
+    </article>`;
+  };
+
+  el.innerHTML = `
+    ${card(home, h)}
+    ${card(away, a)}
+  `;
+}
+
 function populateConfronto(leagues) {
   const leagueSel = byId('cfLeague');
   leagueSel.innerHTML = leagueOptions(leagues);
@@ -1035,9 +1211,12 @@ function renderConfronto() {
   renderRadarSection(league, home, away);
   renderCompareSection(league, home, away);
   renderProcessLayer(league, home, away);
+  renderStyleMismatch(league, home, away);
   renderConfrontoMarkets(league, home, away);
   renderConfrontoInsights(league, home, away);
   renderTeamContext(league, home, away);
+  renderFatigueRotation(league, home, away);
+  renderSetPiecesModule(league, home, away);
   renderH2H(league, home, away);
 }
 
@@ -2056,7 +2235,7 @@ function exportPrejogoPdf() {
 }
 
 async function main() {
-  const res = await fetch('./data/site-data.json?v=20260410e', { cache: 'no-store' });
+  const res = await fetch('./data/site-data.json?v=20260410f', { cache: 'no-store' });
   DATA = await res.json();
   loadWatchlist();
 
