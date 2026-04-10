@@ -42,14 +42,21 @@ if errorlevel 1 (
   exit /b 1
 )
 
-echo [4/5] Atualizar changelog semanal...
+echo [4/6] Recolher contexto de equipa (lesoes/suspensoes/XI)...
+%PY% scripts\fetch_team_context.py
+if errorlevel 1 (
+  echo ERRO: fetch_team_context.py falhou.
+  exit /b 1
+)
+
+echo [5/6] Atualizar changelog semanal...
 %PY% scripts\update_changelog.py
 if errorlevel 1 (
   echo ERRO: update_changelog.py falhou.
   exit /b 1
 )
 
-echo [5/5] Regenerar site/data/site-data.json...
+echo [6/6] Regenerar site/data/site-data.json...
 %PY% scripts\build_site_data.py
 if errorlevel 1 (
   echo ERRO: build_site_data.py falhou.

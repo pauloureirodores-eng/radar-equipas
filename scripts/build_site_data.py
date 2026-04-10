@@ -1193,6 +1193,7 @@ def main() -> None:
     site_data_path = base / "site" / "data" / "site-data.json"
     changelog_path = base / "site" / "data" / "changelog.json"
     fixtures_path = base / "site" / "data" / "fixtures-upcoming.json"
+    team_context_path = base / "site" / "data" / "team-context.json"
     site_data_path.parent.mkdir(parents=True, exist_ok=True)
 
     resumo = pd.read_csv(out / "resumo_equipas.csv")
@@ -1364,6 +1365,12 @@ def main() -> None:
             fixtures_payload = json.loads(fixtures_path.read_text(encoding="utf-8"))
         except json.JSONDecodeError:
             fixtures_payload = {}
+    team_context_payload = {}
+    if team_context_path.exists():
+        try:
+            team_context_payload = json.loads(team_context_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            team_context_payload = {}
     match_of_week_by_league = build_match_of_week_from_fixtures(
         fixtures_payload,
         resumo,
@@ -1406,6 +1413,9 @@ def main() -> None:
         "upcomingFixturesMeta": fixtures_payload.get("meta", {}),
         "upcomingFixtures": fixtures_payload.get("fixtures", []),
         "matchOfWeekByLeague": match_of_week_by_league,
+        "teamContextMeta": team_context_payload.get("meta", {}),
+        "teamContextByLeague": team_context_payload.get("teamContextByLeague", {}),
+        "teamContextByLeagueNorm": team_context_payload.get("teamContextByLeagueNorm", {}),
         "dataQuality": data_quality,
         "changelog": changelog,
     }

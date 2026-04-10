@@ -881,6 +881,131 @@ function renderConfrontoInsights(league, home, away) {
     : '<li>Sem sinais fortes para este matchup com os dados atuais.</li>';
 }
 
+function processMetricsFromResumoRow(row) {
+  if (!row) return null;
+  const shots = toNum(row.remates);
+  const sot = toNum(row.SOT);
+  const shotsA = toNum(row.remates_sofridos);
+  const sotA = toNum(row.SOT_sofridos);
+  const gf = toNum(row.golos_marcados);
+  const ga = toNum(row.golos_sofridos);
+  if ([shots, sot, shotsA, sotA, gf, ga].some((x) => x == null)) return null;
+
+  const xg = (shots * 0.10) + (sot * 0.20);
+  const xga = (shotsA * 0.10) + (sotA * 0.20);
+  const xgPerShot = shots > 0 ? xg / shots : null;
+  const xgaPerShot = shotsA > 0 ? xga / shotsA : null;
+  const goalsMinusXg = gf - xg;
+  const goalsConcededMinusXga = ga - xga;
+  const bigChancesProxy = sot * 0.65;
+  const boxShotsProxy = shots * 0.55;
+  return {
+    xg,
+    xga,
+    xgPerShot,
+    xgaPerShot,
+    goalsMinusXg,
+    goalsConcededMinusXga,
+    bigChancesProxy,
+    boxShotsProxy
+  };
+}
+
+function renderProcessLayer(league, home, away) {
+  const h = getResumoRow(league, home, 'Casa');
+  const a = getResumoRow(league, away, 'Fora');
+  const hm = processMetricsFromResumoRow(h);
+  const am = processMetricsFromResumoRow(a);
+  const el = byId('processLayerCards');
+  if (!el) return;
+  if (!hm || !am) {
+    el.innerHTML = '<article class="kpi-card"><h3>Processo</h3><p class="meta">Sem dados suficientes para calcular a camada de processo.</p></article>';
+    return;
+  }
+  el.innerHTML = `
+    <article class="kpi-card">
+      <h3>${home} (Casa)</h3>
+      <div class="kpi-row"><span>xG proxy</span><strong>${fmtNum(hm.xg, 2)}</strong></div>
+      <div class="kpi-row"><span>xGA proxy</span><strong>${fmtNum(hm.xga, 2)}</strong></div>
+      <div class="kpi-row"><span>Golos - xG</span><strong>${hm.goalsMinusXg >= 0 ? '+' : ''}${fmtNum(hm.goalsMinusXg, 2)}</strong></div>
+      <div class="kpi-row"><span>Big chances (proxy)</span><strong>${fmtNum(hm.bigChancesProxy, 2)}</strong></div>
+    </article>
+    <article class="kpi-card">
+      <h3>${away} (Fora)</h3>
+      <div class="kpi-row"><span>xG proxy</span><strong>${fmtNum(am.xg, 2)}</strong></div>
+      <div class="kpi-row"><span>xGA proxy</span><strong>${fmtNum(am.xga, 2)}</strong></div>
+      <div class="kpi-row"><span>Golos - xG</span><strong>${am.goalsMinusXg >= 0 ? '+' : ''}${fmtNum(am.goalsMinusXg, 2)}</strong></div>
+      <div class="kpi-row"><span>Big chances (proxy)</span><strong>${fmtNum(am.bigChancesProxy, 2)}</strong></div>
+    </article>
+    <article class="kpi-card">
+      <h3>Comparação direta</h3>
+      <div class="kpi-row"><span>xG diff (Casa-Fora)</span><strong>${fmtNum(hm.xg - am.xg, 2)}</strong></div>
+      <div class="kpi-row"><span>xGA diff (Casa-Fora)</span><strong>${fmtNum(hm.xga - am.xga, 2)}</strong></div>
+      <div class="kpi-row"><span>xG/remate (Casa)</span><strong>${hm.xgPerShot != null ? fmtNum(hm.xgPerShot, 3) : '—'}</strong></div>
+      <div class="kpi-row"><span>xG/remate (Fora)</span><strong>${am.xgPerShot != null ? fmtNum(am.xgPerShot, 3) : '—'}</strong></div>
+    </article>
+    <article class="kpi-card">
+      <h3>Leitura de eficiência</h3>
+      <div class="kpi-row"><span>${home} golos - xG</span><strong>${hm.goalsMinusXg >= 0 ? '+' : ''}${fmtNum(hm.goalsMinusXg, 2)}</strong></div>
+      <div class="kpi-row"><span>${away} golos - xG</span><strong>${am.goalsMinusXg >= 0 ? '+' : ''}${fmtNum(am.goalsMinusXg, 2)}</strong></div>
+      <div class="kpi-row"><span>${home} golos sofridos - xGA</span><strong>${hm.goalsConcededMinusXga >= 0 ? '+' : ''}${fmtNum(hm.goalsConcededMinusXga, 2)}</strong></div>
+      <div class="kpi-row"><span>${away} golos sofridos - xGA</span><strong>${am.goalsConcededMinusXga >= 0 ? '+' : ''}${fmtNum(am.goalsConcededMinusXga, 2)}</strong></div>
+    </article>
+  `;
+}
+
+function normalizeTeamName(s) {
+  return String(s || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[.'’-]/g, '')
+    .replace(/\b(fc|cf|ac|sc)\b/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function teamContextFor(league, team) {
+  const byLeague = DATA.teamContextByLeague?.[league] || {};
+  if (byLeague[team]) return byLeague[team];
+  const normMap = DATA.teamContextByLeagueNorm?.[league] || {};
+  return normMap[normalizeTeamName(team)] || null;
+}
+
+function renderTeamContext(league, home, away) {
+  const el = byId('teamContextCards');
+  if (!el) return;
+  const h = teamContextFor(league, home);
+  const a = teamContextFor(league, away);
+
+  const card = (team, ctx) => {
+    if (!ctx) {
+      return `<article class="kpi-card"><h3>${team}</h3><p class="meta">Sem dados de disponibilidade (lesões/suspensões/XI provável) para esta equipa.</p></article>`;
+    }
+    const abs = (ctx.keyAbsences || []).slice(0, 3);
+    return `<article class="kpi-card">
+      <h3>${team}</h3>
+      <div class="kpi-row"><span>Indisponíveis</span><strong>${ctx.unavailableCount ?? 0}</strong></div>
+      <div class="kpi-row"><span>Lesionados</span><strong>${ctx.injuryCount ?? 0}</strong></div>
+      <div class="kpi-row"><span>Suspensos</span><strong>${ctx.suspensionCount ?? 0}</strong></div>
+      <div class="kpi-row"><span>XI provável (formação)</span><strong>${ctx.probableFormation || '—'}</strong></div>
+      <p class="meta">${abs.length ? `Baixas chave: ${abs.map((x) => x.player).join(', ')}` : 'Sem baixas chave mapeadas.'}</p>
+    </article>`;
+  };
+
+  const meta = DATA.teamContextMeta || {};
+  el.innerHTML = `
+    ${card(home, h)}
+    ${card(away, a)}
+    <article class="kpi-card">
+      <h3>Fonte e atualização</h3>
+      <div class="kpi-row"><span>Provider</span><strong>${meta.provider || '—'}</strong></div>
+      <div class="kpi-row"><span>Atualizado</span><strong>${meta.generatedAt ? String(meta.generatedAt).slice(0, 16).replace('T', ' ') : '—'}</strong></div>
+      <div class="kpi-row"><span>Chave API</span><strong>${meta.keyConfigured ? 'Configurada' : 'Não configurada'}</strong></div>
+      <p class="meta">Quando disponível, o XI provável é inferido da formação prevista no próximo jogo.</p>
+    </article>
+  `;
+}
+
 function populateConfronto(leagues) {
   const leagueSel = byId('cfLeague');
   leagueSel.innerHTML = leagueOptions(leagues);
@@ -909,8 +1034,10 @@ function renderConfronto() {
   renderConfrontoKpis(league, home, away);
   renderRadarSection(league, home, away);
   renderCompareSection(league, home, away);
+  renderProcessLayer(league, home, away);
   renderConfrontoMarkets(league, home, away);
   renderConfrontoInsights(league, home, away);
+  renderTeamContext(league, home, away);
   renderH2H(league, home, away);
 }
 
@@ -1929,7 +2056,7 @@ function exportPrejogoPdf() {
 }
 
 async function main() {
-  const res = await fetch('./data/site-data.json?v=20260410d', { cache: 'no-store' });
+  const res = await fetch('./data/site-data.json?v=20260410e', { cache: 'no-store' });
   DATA = await res.json();
   loadWatchlist();
 
