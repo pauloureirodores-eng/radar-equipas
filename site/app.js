@@ -252,25 +252,6 @@ function syncDashboardTeamOptions(league) {
   if (['Todas', ...teams].includes(current)) teamSelect.value = current;
 }
 
-function renderHomeKpis(league, teamFilter = 'Todas') {
-  const ranking = DATA.rankings[league] || [];
-  const marketRows = DATA.marketRows.filter((r) => r.league === league && r.scope === 'Total' && (teamFilter === 'Todas' || r.team === teamFilter));
-  const activeOpps = marketRows.filter((r) => toNum(r.edge_vs_liga) != null && Number(r.edge_vs_liga) > 0).length;
-  const topOpp = marketRows
-    .map((r) => ({ ...r, opportunityScore: opportunityScore(r) }))
-    .sort((a, b) => Number(b.opportunityScore ?? -999) - Number(a.opportunityScore ?? -999))[0];
-  const alerts = ((DATA.weeklyAlerts?.byLeague || {})[league] || []);
-  const activeAlerts = alerts.filter((a) => a.severity === 'high' && (teamFilter === 'Todas' || a.entity === teamFilter)).length;
-  const bestMatch = computeBestMatchOfWeek(league);
-
-  byId('homeKpis').innerHTML = `
-    <article class="kpi-card"><h3>Melhor Jogo da Semana</h3><div class="kpi-row"><span>${leagueLabel(league)}</span><strong>${bestMatch ? `${bestMatch.home} vs ${bestMatch.away}` : '—'}</strong></div></article>
-    <article class="kpi-card"><h3>Oportunidades Ativas</h3><div class="kpi-row"><span>Com edge positivo</span><strong>${activeOpps}</strong></div></article>
-    <article class="kpi-card"><h3>Maior Edge Médio</h3><div class="kpi-row"><span>${topOpp ? `${topOpp.team} · ${topOpp.market}` : '—'}</span><strong>${topOpp && toNum(topOpp.edge_vs_liga) != null ? `${fmtNum(topOpp.edge_vs_liga * 100, 1)} pp` : '—'}</strong></div></article>
-    <article class="kpi-card"><h3>Alertas Ativos</h3><div class="kpi-row"><span>Severidade alta</span><strong>${activeAlerts}</strong></div></article>
-  `;
-}
-
 function renderHomeNarrative(league, teamFilter = 'Todas') {
   const alerts = ((DATA.weeklyAlerts?.byLeague || {})[league] || []).filter((a) => teamFilter === 'Todas' || a.entity === teamFilter);
   const high = alerts.filter((a) => a.severity === 'high').length;
@@ -385,11 +366,8 @@ function renderHomeOpsMeta() {
   const formatted = generatedAt
     ? new Date(generatedAt).toLocaleString('pt-PT', { timeZone: 'Europe/Lisbon' })
     : '—';
-  byId('homeLastUpdate').textContent = `Última atualização de dados: ${formatted}`;
-  const entries = (DATA.changelog || []).slice(0, 3);
-  byId('homeChangelogCompact').innerHTML = entries.length
-    ? entries.map((c) => `<article class="item"><p class="title">${c.date || '—'} · ${c.title || 'Atualização semanal'}</p><p class="meta">${c.summary || 'Refresh automático de dados e métricas.'}</p></article>`).join('')
-    : '<p class="meta">Sem changelog disponível nesta atualização.</p>';
+  const changes = (DATA.changelog || []).length;
+  byId('homeLastUpdate').textContent = `Última atualização de dados: ${formatted} · changelog semanal: ${changes} registos.`;
 }
 
 function renderWeeklyVariation(league) {
@@ -462,7 +440,6 @@ function renderOverview(league) {
   syncDashboardTeamOptions(league);
   const teamFilter = byId('dashboardTeamSelect')?.value || 'Todas';
   renderMatchOfWeek(league);
-  renderHomeKpis(league, teamFilter);
   renderMarkets(league, teamFilter);
   renderHomeScannerTop(league, teamFilter);
   renderHomeScannerSummary(league, teamFilter);
