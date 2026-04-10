@@ -1702,7 +1702,7 @@ async function main() {
 
   populateConfronto(leagues);
   populateForma(leagues);
-  renderPerformance();
+  if (byId('panel-performance')) renderPerformance();
   populateModel(leagues);
   populatePrejogo(leagues);
 

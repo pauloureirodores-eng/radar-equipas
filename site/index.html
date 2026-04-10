@@ -25,7 +25,6 @@
     <button class="tab" data-tab="scanner">Scanner</button>
     <button class="tab" data-tab="confronto">Confronto</button>
     <button class="tab" data-tab="forma">Forma</button>
-    <button class="tab" data-tab="performance">Performance</button>
     <button class="tab" data-tab="modelo">Modelo</button>
     <button class="tab" data-tab="prejogo">Pré-jogo</button>
   </nav>
@@ -221,88 +220,6 @@
               <tbody></tbody>
             </table>
           </div>
-        </div>
-      </section>
-    </section>
-
-    <section class="tab-panel" id="panel-performance">
-      <section class="panel">
-        <div class="panel-head"><h2>Como Ler Esta Tab</h2></div>
-        <div id="performanceGuideCards" class="kpi-grid"></div>
-        <p id="performanceGuideNote" class="lead"></p>
-        <div id="performanceSelectionFlow" class="list"></div>
-      </section>
-
-      <section class="panel">
-        <div class="panel-head"><h2>Monitorização de Estratégias</h2></div>
-        <div id="perfCards" class="kpi-grid"></div>
-      </section>
-
-      <section class="panel">
-        <div class="panel-head"><h2>Backtesting por Mercado</h2></div>
-        <div class="table-wrap">
-          <table id="perfMarketTable">
-            <thead><tr><th>Liga</th><th>Grupo</th><th>Mercados</th><th>Apostas</th><th>Hit Rate</th><th>ROI médio (simulado)</th><th>EV médio (simulado)</th><th>Queda máx (proxy)</th><th>Erro calibração (proxy)</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="panel">
-        <div class="panel-head"><h2>Backtesting Temporal (Fase 1.1)</h2></div>
-        <div class="linechart-wrap">
-          <svg id="capitalCurveChart" viewBox="0 0 980 320" preserveAspectRatio="none"></svg>
-        </div>
-        <div class="table-wrap">
-          <table id="weeklyBacktestTable">
-            <thead><tr><th>Semana</th><th>Bets</th><th>Wins</th><th>Hit Rate</th><th>ROI</th><th>Profit</th><th>Capital final</th><th>Max DD semana</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="panel">
-        <div class="panel-head"><h2>Gestão de Stake e Risco (Fase 2.3)</h2></div>
-        <div id="stakeCards" class="kpi-grid"></div>
-        <div class="linechart-wrap">
-          <svg id="stakeCurveChart" viewBox="0 0 980 320" preserveAspectRatio="none"></svg>
-        </div>
-        <div class="table-wrap">
-          <table id="stakeTable">
-            <thead><tr><th>Estratégia</th><th>Capital final (simulado)</th><th>Lucro total (simulado)</th><th>ROI sobre stake</th><th>Queda máx</th><th>Hit rate</th><th>Bets</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="panel">
-        <div class="panel-head">
-          <h2>Perfis de Estratégia (Fase 2.4)</h2>
-          <label class="league-picker">Perfil
-            <select id="strategyProfileSelect">
-              <option value="conservador">Conservador</option>
-              <option value="balanceado">Balanceado</option>
-              <option value="agressivo">Agressivo</option>
-            </select>
-          </label>
-        </div>
-        <div id="strategyProfileCards" class="kpi-grid"></div>
-        <div class="table-wrap">
-          <table id="strategyProfileTable">
-            <thead><tr><th>Estratégia</th><th>Score perfil</th><th>ROI stake</th><th>Profit %</th><th>Drawdown máx</th><th>Volatilidade semanal</th><th>Hit rate</th><th>Bets</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="panel">
-        <div class="panel-head"><h2>Qualidade de Dados</h2></div>
-        <div id="qualityCards" class="kpi-grid"></div>
-        <div class="table-wrap">
-          <table id="qualityChecksTable">
-            <thead><tr><th>Check</th><th>Estado</th><th>Detalhe</th></tr></thead>
-            <tbody></tbody>
-          </table>
         </div>
       </section>
     </section>
