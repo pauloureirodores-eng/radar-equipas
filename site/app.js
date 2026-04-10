@@ -249,6 +249,22 @@ function renderSummaryChips(data) {
   byId('summaryChips').innerHTML = `<span class="chip">${leagues} ligas</span><span class="chip">${teams} equipas</span><span class="chip">${matches} jogos</span>`;
 }
 
+function renderHomeKpis(league, teamFilter = 'Todas') {
+  const marketRows = DATA.marketRows.filter((r) => r.league === league && r.scope === 'Total' && (teamFilter === 'Todas' || r.team === teamFilter));
+  const alerts = ((DATA.weeklyAlerts?.byLeague || {})[league] || []).filter((a) => teamFilter === 'Todas' || a.entity === teamFilter);
+  const topOpp = marketRows
+    .map((r) => ({ ...r, opportunityScore: opportunityScore(r) }))
+    .sort((a, b) => Number(b.opportunityScore ?? -999) - Number(a.opportunityScore ?? -999))[0];
+  const bestMatch = DATA.matchOfWeekByLeague?.[league];
+
+  byId('homeKpis').innerHTML = `
+    <article class="kpi-card"><h3>Melhor jogo da semana</h3><div class="kpi-row"><span>${leagueLabel(league)}</span><strong>${bestMatch ? `${bestMatch.homeTeam} vs ${bestMatch.awayTeam}` : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>Oportunidades ativas</h3><div class="kpi-row"><span>Edge positivo</span><strong>${marketRows.filter((r) => toNum(r.edge_vs_liga) != null && Number(r.edge_vs_liga) > 0).length}</strong></div></article>
+    <article class="kpi-card"><h3>Maior edge médio</h3><div class="kpi-row"><span>${topOpp ? `${topOpp.team} · ${topOpp.market}` : '—'}</span><strong>${topOpp && toNum(topOpp.edge_vs_liga) != null ? `${fmtNum(topOpp.edge_vs_liga * 100, 1)} pp` : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>Alertas ativos</h3><div class="kpi-row"><span>Alta severidade</span><strong>${alerts.filter((a) => a.severity === 'high').length}</strong></div></article>
+  `;
+}
+
 function syncDashboardTeamOptions(league) {
   const teamSelect = byId('dashboardTeamSelect');
   if (!teamSelect) return;
@@ -445,6 +461,7 @@ function renderSosTable(league) {
 function renderOverview(league) {
   syncDashboardTeamOptions(league);
   const teamFilter = byId('dashboardTeamSelect')?.value || 'Todas';
+  renderHomeKpis(league, teamFilter);
   renderMatchOfWeek(league);
   renderMarkets(league, teamFilter);
   renderHomeScannerTop(league, teamFilter);
@@ -895,6 +912,7 @@ function renderConfronto() {
   renderCompareSection(league, home, away);
   renderConfrontoMarkets(league, home, away);
   renderConfrontoInsights(league, home, away);
+  renderH2H(league, home, away);
 }
 
 function renderCompareSection(league, home, away) {
@@ -1432,7 +1450,6 @@ function renderPrejogo() {
   byId('prejogoShortlistTable').querySelector('tbody').innerHTML = shortlist.map((r) => `<tr><td>${r.market}</td><td>${fmtNum(r.homeEdge * 100, 1)} pp</td><td>${fmtNum(r.awayEdge * 100, 1)} pp</td><td>${fmtNum(r.avg * 100, 1)} pp</td><td>${r.hitAvg != null ? fmtPct(r.hitAvg) : '—'}</td></tr>`).join('') || '<tr><td colspan="5">Sem shortlist para este jogo.</td></tr>';
   applyExistingSort('prejogoShortlistTable');
 
-  renderH2H(league, home, away);
 }
 
 function populatePrejogo(leagues) {
@@ -1913,7 +1930,7 @@ function exportPrejogoPdf() {
 }
 
 async function main() {
-  const res = await fetch('./data/site-data.json?v=20260410b', { cache: 'no-store' });
+  const res = await fetch('./data/site-data.json?v=20260410c', { cache: 'no-store' });
   DATA = await res.json();
   loadWatchlist();
 

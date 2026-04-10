@@ -41,6 +41,10 @@
         </div>
       </section>
 
+      <section class="panel">
+        <div id="homeKpis" class="kpi-grid kpi-grid-4"></div>
+      </section>
+
       <section class="panel feature panel-priority">
         <div class="panel-head"><h2>Jogo da Semana</h2></div>
         <div id="matchOfWeekCard" class="kpi-grid"></div>
@@ -172,6 +176,17 @@
         <div class="panel-head"><h2>Insights Automáticos do Matchup</h2></div>
         <ul class="insights" id="confrontoInsights"></ul>
       </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Histórico Direto (H2H)</h2></div>
+        <div class="kpi-grid" id="h2hSummary"></div>
+        <div class="table-wrap">
+          <table id="h2hTable">
+            <thead><tr><th>Data</th><th>Contexto</th><th>Resultado</th><th>Total Golos</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
     </section>
 
     <section class="tab-panel" id="panel-modelo" hidden>
@@ -288,23 +303,12 @@
       </section>
 
       <section class="panel">
-        <div class="panel-head"><h2>Histórico Direto (H2H)</h2><button id="exportPrejogoPdfBtn" class="ghost-btn">Export PDF</button></div>
-        <div class="kpi-grid" id="h2hSummary"></div>
-        <div class="table-wrap">
-          <table id="h2hTable">
-            <thead><tr><th>Data</th><th>Contexto</th><th>Resultado</th><th>Total Golos</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="panel">
-        <div class="panel-head"><h2>Changelog semanal</h2></div>
-        <div id="changelogList" class="list"></div>
+        <div class="panel-head"><h2>Relatório</h2><button id="exportPrejogoPdfBtn" class="ghost-btn">Export PDF</button></div>
+        <p class="lead">Exporta o relatório pré-jogo da combinação atual de equipas.</p>
       </section>
     </section>
   </main>
 
-  <script src="app.js?v=20260410b" defer></script>
+  <script src="app.js?v=20260410c" defer></script>
 </body>
 </html>
