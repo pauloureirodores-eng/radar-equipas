@@ -701,6 +701,41 @@ function renderConfrontoKpis(league, home, away) {
   byId('confrontoKpis').innerHTML = makeCard(`${home} (Casa)`, h) + makeCard(`${away} (Fora)`, a);
 }
 
+function renderMatchupExecutive(league, home, away) {
+  const el = byId('matchupExecutive');
+  if (!el) return;
+  const h = getResumoRow(league, home, 'Casa');
+  const a = getResumoRow(league, away, 'Fora');
+  if (!h || !a) {
+    el.innerHTML = '<p class="meta">Sem dados suficientes para resumo executivo do matchup.</p>';
+    return;
+  }
+
+  const ppgDelta = Number(h.ppg) - Number(a.ppg);
+  const overAvg = avg([Number(h['O2.5%']), Number(a['O2.5%'])]);
+  const merged = buildConfrontoMerged(league, home, away).sort((x, y) => Number(y.avg) - Number(x.avg));
+  const topMarket = merged[0] || null;
+  const conf = matchConfidence(league, home, away);
+
+  const direction = ppgDelta >= 0
+    ? `vantagem estrutural da casa (${home})`
+    : `vantagem estrutural visitante (${away})`;
+  const rhythm = overAvg != null && overAvg >= 0.57
+    ? 'ritmo projetado alto'
+    : 'ritmo projetado controlado';
+
+  el.innerHTML = `
+    <p class="title">Resumo Executivo: ${direction}</p>
+    <p class="meta">${leagueLabel(league)} · ${rhythm} · leitura rápida para decisão pré-jogo.</p>
+    <div class="chips">
+      <span class="chip">Delta PPG: ${ppgDelta >= 0 ? '+' : ''}${fmtNum(ppgDelta, 2)}</span>
+      <span class="chip">Confiança: ${conf ? conf.score : '—'}/100</span>
+      <span class="chip">Top mercado: ${topMarket ? topMarket.market : '—'}</span>
+      <span class="chip">Edge médio topo: ${topMarket ? `${fmtNum(topMarket.avg * 100, 1)} pp` : '—'}</span>
+    </div>
+  `;
+}
+
 function buildConfrontoMerged(league, home, away) {
   const hm = DATA.marketRows.filter((r) => r.league === league && r.team === home && r.scope === 'Casa');
   const aw = DATA.marketRows.filter((r) => r.league === league && r.team === away && r.scope === 'Fora');
@@ -834,6 +869,7 @@ function renderConfronto() {
   const home = byId('cfHome').value;
   const away = byId('cfAway').value;
   if (!league || !home || !away || home === away) return;
+  renderMatchupExecutive(league, home, away);
   renderConfrontoKpis(league, home, away);
   renderRadarSection(league, home, away);
   renderCompareSection(league, home, away);
