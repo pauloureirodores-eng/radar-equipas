@@ -228,6 +228,25 @@ function renderSummaryChips(data) {
   byId('summaryChips').innerHTML = `<span class="chip">${leagues} ligas</span><span class="chip">${teams} equipas</span><span class="chip">${matches} jogos</span>`;
 }
 
+function renderHomeKpis(league) {
+  const ranking = DATA.rankings[league] || [];
+  const top = ranking[0];
+  const marketRows = DATA.marketRows.filter((r) => r.league === league && r.scope === 'Total');
+  const positiveValue = marketRows.filter((r) => toNum(r.value_estimado) != null && Number(r.value_estimado) > 0).length;
+  const avgHit = avg(marketRows.map((r) => toNum(r.hit_rate)).filter((x) => x != null));
+  const alerts = ((DATA.weeklyAlerts?.byLeague || {})[league] || []);
+  const highAlerts = alerts.filter((a) => a.severity === 'high').length;
+
+  byId('homeKpis').innerHTML = `
+    <article class="kpi-card"><h3>Liga</h3><div class="kpi-row"><span>Selecionada</span><strong>${leagueLabel(league)}</strong></div></article>
+    <article class="kpi-card"><h3>Líder Atual</h3><div class="kpi-row"><span>Equipe</span><strong>${top ? top.team : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>PPG Líder</h3><div class="kpi-row"><span>Rendimento</span><strong>${top ? fmtNum(top.ppg, 2) : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>Mercados com Value</h3><div class="kpi-row"><span>Total</span><strong>${positiveValue}</strong></div></article>
+    <article class="kpi-card"><h3>Hit Rate Médio</h3><div class="kpi-row"><span>Mercados Total</span><strong>${avgHit != null ? fmtPct(avgHit) : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>Alertas High</h3><div class="kpi-row"><span>Esta liga</span><strong>${highAlerts}</strong></div></article>
+  `;
+}
+
 function renderLeagueCards(data, selectedLeague) {
   byId('leagueCards').innerHTML = data.overview.map((lg) => {
     const activeStyle = lg.league === selectedLeague ? 'style="border-color:#0e7490"' : '';
@@ -267,6 +286,17 @@ function renderLay(league) {
     .slice(0, 10);
 
   byId('layList').innerHTML = rows.map((m) => `<article class="item"><p class="title">${m.team} · ${m.cenario_lay}</p><p class="meta">${m.descricao} · Hit: ${m.hit_rate != null ? fmtPct(m.hit_rate) : '—'} · Score: ${m.lay_score != null ? fmtNum(m.lay_score, 2) : '—'}</p><span class="badge ${m.flag_candidato ? 'good' : 'warn'}">${m.flag_candidato ? 'candidato' : 'observar'}</span></article>`).join('') || '<p class="meta">Sem cenários lay.</p>';
+}
+
+function renderHomeScannerTop(league) {
+  const rows = DATA.marketRows
+    .filter((r) => r.league === league && r.scope === 'Total' && Number(r.jogos || 0) >= 8)
+    .map((r) => ({ ...r, opportunityScore: opportunityScore(r) }))
+    .sort((a, b) => Number(b.opportunityScore ?? -999) - Number(a.opportunityScore ?? -999))
+    .slice(0, 10);
+  byId('homeScannerTop').innerHTML = rows.length
+    ? rows.map((r) => `<article class="item"><p class="title">${r.team} · ${r.market}</p><p class="meta">Oportunidade: <strong>${r.opportunityScore}</strong> · Edge: ${toNum(r.edge_vs_liga) != null ? `${fmtNum(r.edge_vs_liga * 100, 1)} pp` : '—'} · Hit: ${toNum(r.hit_rate) != null ? fmtPct(r.hit_rate) : '—'}</p></article>`).join('')
+    : '<p class="meta">Sem oportunidades para esta liga.</p>';
 }
 
 function renderWeeklyVariation(league) {
@@ -337,13 +367,9 @@ function renderSosTable(league) {
 
 function renderOverview(league) {
   renderMatchOfWeek(league);
-  renderLeagueCards(DATA, league);
-  renderRanking(league);
+  renderHomeKpis(league);
   renderMarkets(league);
-  renderLay(league);
-  renderWeeklyVariation(league);
-  renderWeeklyAlerts(league);
-  renderSosTable(league);
+  renderHomeScannerTop(league);
 }
 
 function populateScannerFilters(leagues) {
@@ -1701,14 +1727,13 @@ async function main() {
   renderScanner();
 
   populateConfronto(leagues);
-  populateForma(leagues);
   if (byId('panel-performance')) renderPerformance();
   populateModel(leagues);
   populatePrejogo(leagues);
 
   document.querySelectorAll('.tab').forEach((btn) => btn.addEventListener('click', () => setActiveTab(btn.dataset.tab)));
 
-  ['rankingTable', 'scannerTable', 'confrontoMarketTable', 'compareDeltaTable', 'formTable', 'sosTable', 'perfMarketTable', 'qualityChecksTable', 'weeklyBacktestTable', 'stakeTable', 'strategyProfileTable', 'modelTable', 'calibrationBinsTable', 'calibrationGroupTable', 'prejogoShortlistTable', 'evKellyTable', 'h2hTable'].forEach(enableTableSorting);
+  ['scannerTable', 'confrontoMarketTable', 'compareDeltaTable', 'perfMarketTable', 'qualityChecksTable', 'weeklyBacktestTable', 'stakeTable', 'strategyProfileTable', 'modelTable', 'calibrationBinsTable', 'calibrationGroupTable', 'prejogoShortlistTable', 'evKellyTable', 'h2hTable'].forEach(enableTableSorting);
   byId('strategyProfileSelect')?.addEventListener('change', renderStrategyProfiles);
   byId('exportPrejogoPdfBtn')?.addEventListener('click', exportPrejogoPdf);
   byId('scannerResetBtn')?.addEventListener('click', resetScannerFilters);
