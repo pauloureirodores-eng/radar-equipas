@@ -17,6 +17,10 @@
     <p class="eyebrow">Análise de Futebol</p>
     <h1>Radar de Equipas e Mercados</h1>
     <p class="lead">Insights multi-liga para decisão pré-jogo, matchup e leitura de mercado.</p>
+    <div class="hero-actions">
+      <button id="heroOpenScanner" class="ghost-btn hero-btn">Abrir Scanner</button>
+      <button id="heroOpenMatchup" class="ghost-btn hero-btn">Ver Matchup</button>
+    </div>
     <div class="chips" id="summaryChips"></div>
   </header>
 
@@ -37,10 +41,6 @@
         </div>
       </section>
 
-      <section class="panel panel-priority">
-        <div id="homeNarrative" class="list"></div>
-      </section>
-
       <section class="panel">
         <div id="homeKpis" class="kpi-grid kpi-grid-4"></div>
       </section>
@@ -56,15 +56,34 @@
           <div id="marketsList" class="list"></div>
         </article>
         <article class="panel panel-priority">
-          <div class="panel-head"><h2>Top Oportunidades / Scanner</h2></div>
-          <div id="homeScannerTop" class="list"></div>
+          <div class="panel-head"><h2>Alertas Semanais</h2></div>
+          <p id="weeklyAlertsMeta" class="lead"></p>
+          <div id="weeklyAlertsList" class="list"></div>
         </article>
       </section>
 
       <section class="panel panel-priority">
-        <div class="panel-head"><h2>Alertas Semanais</h2></div>
-        <p id="weeklyAlertsMeta" class="lead"></p>
-        <div id="weeklyAlertsList" class="list"></div>
+        <div class="panel-head"><h2>Top Oportunidades</h2><button id="homeOpenScannerTop" class="ghost-btn">Abrir Scanner completo</button></div>
+        <div id="homeScannerTop" class="list"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Resumo do Scanner</h2><button id="homeOpenScannerSummary" class="ghost-btn">Ir para Scanner</button></div>
+        <div id="homeScannerSummary" class="list"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Watchlist (compacta)</h2><button id="homeOpenWatchlist" class="ghost-btn">Ver Watchlist completa</button></div>
+        <div id="homeWatchlistCompact" class="list"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Atualização</h2></div>
+        <p id="homeLastUpdate" class="lead"></p>
+        <details class="filters-panel">
+          <summary>Changelog semanal</summary>
+          <div id="homeChangelogCompact" class="list"></div>
+        </details>
       </section>
     </section>
 

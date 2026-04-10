@@ -254,24 +254,20 @@ function syncDashboardTeamOptions(league) {
 
 function renderHomeKpis(league, teamFilter = 'Todas') {
   const ranking = DATA.rankings[league] || [];
-  const top = ranking[0] || null;
-  const selected = teamFilter !== 'Todas' ? ranking.find((x) => x.team === teamFilter) : null;
   const marketRows = DATA.marketRows.filter((r) => r.league === league && r.scope === 'Total' && (teamFilter === 'Todas' || r.team === teamFilter));
-  const positiveValue = marketRows.filter((r) => toNum(r.value_estimado) != null && Number(r.value_estimado) > 0).length;
-  const avgHit = avg(marketRows.map((r) => toNum(r.hit_rate)).filter((x) => x != null));
+  const activeOpps = marketRows.filter((r) => toNum(r.edge_vs_liga) != null && Number(r.edge_vs_liga) > 0).length;
   const topOpp = marketRows
     .map((r) => ({ ...r, opportunityScore: opportunityScore(r) }))
     .sort((a, b) => Number(b.opportunityScore ?? -999) - Number(a.opportunityScore ?? -999))[0];
   const alerts = ((DATA.weeklyAlerts?.byLeague || {})[league] || []);
-  const highAlerts = alerts.filter((a) => a.severity === 'high' && (teamFilter === 'Todas' || a.entity === teamFilter)).length;
-  const anchorTeam = selected ? selected.team : (top ? top.team : '—');
-  const ppg = selected ? selected.ppg : (top ? top.ppg : null);
+  const activeAlerts = alerts.filter((a) => a.severity === 'high' && (teamFilter === 'Todas' || a.entity === teamFilter)).length;
+  const bestMatch = computeBestMatchOfWeek(league);
 
   byId('homeKpis').innerHTML = `
-    <article class="kpi-card"><h3>Equipa Foco</h3><div class="kpi-row"><span>${leagueLabel(league)}</span><strong>${anchorTeam}</strong></div></article>
-    <article class="kpi-card"><h3>PPG de Referência</h3><div class="kpi-row"><span>Rendimento atual</span><strong>${ppg != null ? fmtNum(ppg, 2) : '—'}</strong></div></article>
-    <article class="kpi-card"><h3>Melhor Oportunidade</h3><div class="kpi-row"><span>Score</span><strong>${topOpp ? topOpp.opportunityScore : '—'}</strong></div></article>
-    <article class="kpi-card"><h3>Alertas Críticos</h3><div class="kpi-row"><span>High severity</span><strong>${highAlerts}</strong></div></article>
+    <article class="kpi-card"><h3>Melhor Jogo da Semana</h3><div class="kpi-row"><span>${leagueLabel(league)}</span><strong>${bestMatch ? `${bestMatch.home} vs ${bestMatch.away}` : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>Oportunidades Ativas</h3><div class="kpi-row"><span>Com edge positivo</span><strong>${activeOpps}</strong></div></article>
+    <article class="kpi-card"><h3>Maior Edge Médio</h3><div class="kpi-row"><span>${topOpp ? `${topOpp.team} · ${topOpp.market}` : '—'}</span><strong>${topOpp && toNum(topOpp.edge_vs_liga) != null ? `${fmtNum(topOpp.edge_vs_liga * 100, 1)} pp` : '—'}</strong></div></article>
+    <article class="kpi-card"><h3>Alertas Ativos</h3><div class="kpi-row"><span>Severidade alta</span><strong>${activeAlerts}</strong></div></article>
   `;
 }
 
@@ -351,10 +347,49 @@ function renderHomeScannerTop(league, teamFilter = 'Todas') {
     .filter((r) => r.league === league && r.scope === 'Total' && Number(r.jogos || 0) >= 8 && (teamFilter === 'Todas' || r.team === teamFilter))
     .map((r) => ({ ...r, opportunityScore: opportunityScore(r) }))
     .sort((a, b) => Number(b.opportunityScore ?? -999) - Number(a.opportunityScore ?? -999))
-    .slice(0, 6);
+    .slice(0, 5);
   byId('homeScannerTop').innerHTML = rows.length
-    ? rows.map((r) => `<article class="item"><p class="title">${r.team} · ${r.market}</p><p class="meta">Score <strong>${r.opportunityScore}</strong> · Edge ${toNum(r.edge_vs_liga) != null ? `${fmtNum(r.edge_vs_liga * 100, 1)} pp` : '—'} · Confiança ${scoreBadge(r.opportunityScore)}</p></article>`).join('')
+    ? rows.map((r) => `<article class="item"><p class="title">${r.team} · ${r.market}</p><p class="meta">Score <strong>${r.opportunityScore}</strong> · Edge ${toNum(r.edge_vs_liga) != null ? `${fmtNum(r.edge_vs_liga * 100, 1)} pp` : '—'} · ${scoreBadge(r.opportunityScore)}</p></article>`).join('')
     : '<p class="meta">Sem oportunidades para esta liga.</p>';
+}
+
+function renderHomeScannerSummary(league, teamFilter = 'Todas') {
+  const rows = DATA.marketRows
+    .filter((r) => r.league === league && r.scope === 'Total' && Number(r.jogos || 0) >= 8 && (teamFilter === 'Todas' || r.team === teamFilter))
+    .map((r) => ({ ...r, opportunityScore: opportunityScore(r) }))
+    .sort((a, b) => Number(b.opportunityScore ?? -999) - Number(a.opportunityScore ?? -999))
+    .slice(0, 5);
+  byId('homeScannerSummary').innerHTML = rows.length
+    ? rows.map((r) => `<article class="item"><p class="title">${r.team} · ${r.market}</p><p class="meta">Hit ${toNum(r.hit_rate) != null ? fmtPct(r.hit_rate) : '—'} · Jogos ${r.jogos} · Edge ${toNum(r.edge_vs_liga) != null ? `${fmtNum(r.edge_vs_liga * 100, 1)} pp` : '—'}</p></article>`).join('')
+    : '<p class="meta">Sem sinais suficientes para resumo do scanner.</p>';
+}
+
+function renderHomeWatchlistCompact(league) {
+  const keys = Array.from(WATCHLIST);
+  const rows = keys.map((k) => parseWatchKey(k))
+    .filter((x) => x && x.league === league)
+    .map((x) => {
+      const row = DATA.marketRows.find((r) => r.league === x.league && r.team === x.team && r.scope === x.scope && r.market === x.market);
+      if (!row) return null;
+      return row;
+    })
+    .filter(Boolean)
+    .slice(0, 5);
+  byId('homeWatchlistCompact').innerHTML = rows.length
+    ? rows.map((r) => `<article class="item"><p class="title">${r.team} · ${r.market}</p><p class="meta">${r.scope} · Hit ${toNum(r.hit_rate) != null ? fmtPct(r.hit_rate) : '—'} · Edge ${toNum(r.edge_vs_liga) != null ? `${fmtNum(r.edge_vs_liga * 100, 1)} pp` : '—'}</p></article>`).join('')
+    : '<p class="meta">Sem itens na watchlist desta liga.</p>';
+}
+
+function renderHomeOpsMeta() {
+  const generatedAt = DATA.meta?.generatedAt ? String(DATA.meta.generatedAt) : '';
+  const formatted = generatedAt
+    ? new Date(generatedAt).toLocaleString('pt-PT', { timeZone: 'Europe/Lisbon' })
+    : '—';
+  byId('homeLastUpdate').textContent = `Última atualização de dados: ${formatted}`;
+  const entries = (DATA.changelog || []).slice(0, 3);
+  byId('homeChangelogCompact').innerHTML = entries.length
+    ? entries.map((c) => `<article class="item"><p class="title">${c.date || '—'} · ${c.title || 'Atualização semanal'}</p><p class="meta">${c.summary || 'Refresh automático de dados e métricas.'}</p></article>`).join('')
+    : '<p class="meta">Sem changelog disponível nesta atualização.</p>';
 }
 
 function renderWeeklyVariation(league) {
@@ -426,11 +461,13 @@ function renderSosTable(league) {
 function renderOverview(league) {
   syncDashboardTeamOptions(league);
   const teamFilter = byId('dashboardTeamSelect')?.value || 'Todas';
-  renderHomeNarrative(league, teamFilter);
   renderMatchOfWeek(league);
   renderHomeKpis(league, teamFilter);
   renderMarkets(league, teamFilter);
   renderHomeScannerTop(league, teamFilter);
+  renderHomeScannerSummary(league, teamFilter);
+  renderHomeWatchlistCompact(league);
+  renderHomeOpsMeta();
   renderWeeklyAlerts(league);
 }
 
@@ -949,11 +986,36 @@ function drawCompareLineChart(homeSeries, awaySeries, homeName, awayName) {
 }
 
 function renderMatchOfWeek(league) {
-  const teams = (DATA.rankings[league] || []).map((x) => x.team).slice(0, 8);
-  if (teams.length < 2) {
-    byId('matchOfWeekCard').innerHTML = '<article class="kpi-card"><h3>Jogo da Semana</h3><p class="meta">Sem equipas suficientes.</p></article>';
+  const best = computeBestMatchOfWeek(league);
+  if (!best) {
+    byId('matchOfWeekCard').innerHTML = '<article class="kpi-card"><h3>Jogo da Semana</h3><p class="meta">Sem dados suficientes.</p></article>';
     return;
   }
+
+  const merged = buildConfrontoMerged(league, best.home, best.away).slice(0, 3);
+  const markets = merged.length ? merged.map((m) => m.market).join(' · ') : 'Sem mercados convergentes fortes';
+  const reading = best.conf.score >= 70
+    ? 'Cenário com boa convergência entre forma, amostra e edge de mercado.'
+    : 'Cenário equilibrado, com sinais úteis mas exigindo gestão de risco.';
+
+  byId('matchOfWeekCard').innerHTML = `
+    <article class="kpi-card">
+      <h3>Matchup em foco</h3>
+      <div class="kpi-row"><span>Jogo</span><strong>${best.home} vs ${best.away}</strong></div>
+      <div class="kpi-row"><span>Liga</span><strong>${leagueLabel(league)}</strong></div>
+      <p class="meta">${reading}</p>
+      <button id="homeOpenMatchupFromCard" class="ghost-btn">Abrir Matchup completo</button>
+    </article>
+    <article class="kpi-card"><h3>Probabilidades-chave</h3><div class="kpi-row"><span>1 / X / 2</span><strong>${fmtPct(best.probs.p1)} / ${fmtPct(best.probs.px)} / ${fmtPct(best.probs.p2)}</strong></div><div class="kpi-row"><span>Over 2.5</span><strong>${fmtPct(best.probs.over25)}</strong></div><div class="kpi-row"><span>BTTS</span><strong>${fmtPct(best.probs.btts)}</strong></div></article>
+    <article class="kpi-card"><h3>Confiança e estrutura</h3><div class="kpi-row"><span>Score</span><strong>${best.conf.score}</strong></div><div class="kpi-row"><span>Estabilidade</span><strong>${fmtPct(best.conf.stabilityFactor)}</strong></div><div class="kpi-row"><span>Amostra</span><strong>${best.conf.gamesHome}/${best.conf.gamesAway}</strong></div></article>
+    <article class="kpi-card"><h3>Mercados sugeridos</h3><div class="kpi-row"><span>Top edge</span><strong>${best.edgeTop ? `${fmtNum(best.edgeTop * 100, 1)} pp` : '—'}</strong></div><p class="meta">${markets}</p></article>
+  `;
+  byId('homeOpenMatchupFromCard')?.addEventListener('click', () => setActiveTab('confronto'));
+}
+
+function computeBestMatchOfWeek(league) {
+  const teams = (DATA.rankings[league] || []).map((x) => x.team).slice(0, 8);
+  if (teams.length < 2) return null;
 
   let best = null;
   for (let i = 0; i < teams.length; i += 1) {
@@ -973,18 +1035,7 @@ function renderMatchOfWeek(league) {
       }
     }
   }
-
-  if (!best) {
-    byId('matchOfWeekCard').innerHTML = '<article class="kpi-card"><h3>Jogo da Semana</h3><p class="meta">Sem dados suficientes.</p></article>';
-    return;
-  }
-
-  byId('matchOfWeekCard').innerHTML = `
-    <article class="kpi-card"><h3>Matchup em foco</h3><div class="kpi-row"><span>Jogo</span><strong>${best.home} vs ${best.away}</strong></div><div class="kpi-row"><span>Liga</span><strong>${leagueLabel(league)}</strong></div></article>
-    <article class="kpi-card"><h3>Probabilidades</h3><div class="kpi-row"><span>1 / X / 2</span><strong>${fmtPct(best.probs.p1)} / ${fmtPct(best.probs.px)} / ${fmtPct(best.probs.p2)}</strong></div><div class="kpi-row"><span>Over 2.5</span><strong>${fmtPct(best.probs.over25)}</strong></div></article>
-    <article class="kpi-card"><h3>Confiança</h3><div class="kpi-row"><span>Score</span><strong>${best.conf.score}</strong></div><div class="kpi-row"><span>Estabilidade</span><strong>${fmtPct(best.conf.stabilityFactor)}</strong></div></article>
-    <article class="kpi-card"><h3>Mercado</h3><div class="kpi-row"><span>Melhor edge</span><strong>${best.edgeTop ? `${fmtNum(best.edgeTop * 100, 1)} pp` : '—'}</strong></div><div class="kpi-row"><span>Prioridade</span><strong>${best.score.toFixed(0)}</strong></div></article>
-  `;
+  return best;
 }
 
 function getSeries(league, team, venue, metric) {
@@ -1843,6 +1894,11 @@ async function main() {
   byId('exportPrejogoPdfBtn')?.addEventListener('click', exportPrejogoPdf);
   byId('scannerResetBtn')?.addEventListener('click', resetScannerFilters);
   byId('prejogoResetBtn')?.addEventListener('click', resetPrejogoFilters);
+  byId('heroOpenScanner')?.addEventListener('click', () => setActiveTab('scanner'));
+  byId('heroOpenMatchup')?.addEventListener('click', () => setActiveTab('confronto'));
+  byId('homeOpenScannerTop')?.addEventListener('click', () => setActiveTab('scanner'));
+  byId('homeOpenScannerSummary')?.addEventListener('click', () => setActiveTab('scanner'));
+  byId('homeOpenWatchlist')?.addEventListener('click', () => setActiveTab('scanner'));
 
   byId('scannerExportBtn')?.addEventListener('click', () => {
     const league = byId('scanLeague').value;

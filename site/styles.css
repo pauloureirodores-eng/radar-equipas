@@ -34,6 +34,8 @@ body { margin: 0; color: var(--text); background: radial-gradient(1200px 600px a
 h1 { margin: 0.45rem 0 0.6rem; font-family: 'Fraunces', Georgia, 'Times New Roman', serif; font-size: clamp(2rem, 4.3vw, 3.6rem); line-height: 1.05; letter-spacing: -0.01em; }
 .lead { margin: 0; color: var(--muted); max-width: 70ch; font-size: 0.94rem; }
 .chips { margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.hero-actions { margin-top: 0.9rem; display: flex; gap: 0.55rem; flex-wrap: wrap; }
+.hero-btn { background: #111f2f; color: #d7e3f0; border-color: #3a4e66; }
 .chip { background: #76a9ff1c; color: #a9c7ff; border: 1px solid #76a9ff55; padding: 0.42rem 0.78rem; border-radius: 999px; font-size: 0.82rem; }
 .tabs {
   position: sticky;
