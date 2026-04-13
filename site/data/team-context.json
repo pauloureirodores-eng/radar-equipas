@@ -1,13 +1,14 @@
 {
   "meta": {
     "provider": "api-football",
-    "generatedAt": "2026-04-13T13:44:44.098752+00:00",
+    "generatedAt": "2026-04-13T15:13:58.674333+00:00",
     "season": 2025,
     "keyConfigured": true,
     "fixturesInputCount": 59,
     "teamsSearched": 118,
     "teamsResolved": 0,
-    "fatigueBuilt": 0
+    "fatigueBuilt": 0,
+    "leagueTeamMapSizes": {}
   },
   "teamContextByLeague": {
     "E0": {
@@ -1204,7 +1205,27 @@
     }
   },
   "errors": [
-    "Sem bloco de fadiga multi-competição gerado; verificar cobertura da API para fixtures por equipa."
+    "E0: injuries unavailable (/injuries -> token: Error/Missing application key. Go to https://www.api-football.com/documentation-v3 to learn how to get your API application key.)",
+    "E1: injuries unavailable (/injuries -> token: Error/Missing application key. Go to https://www.api-football.com/documentation-v3 to learn how to get your API application key.)",
+    "F1: injuries unavailable (/injuries -> token: Error/Missing application key. Go to https://www.api-football.com/documentation-v3 to learn how to get your API application key.)",
+    "I1: injuries unavailable (/injuries -> token: Error/Missing application key. Go to https://www.api-football.com/documentation-v3 to learn how to get your API application key.)",
+    "P1: injuries unavailable (/injuries -> token: Error/Missing application key. Go to https://www.api-football.com/documentation-v3 to learn how to get your API application key.)",
+    "D1: injuries unavailable (/injuries -> token: Error/Missing application key. Go to https://www.api-football.com/documentation-v3 to learn how to get your API application key.)",
+    "SP1: injuries unavailable (/injuries -> token: Error/Missing application key. Go to https://www.api-football.com/documentation-v3 to learn how to get your API application key.)",
+    "SC0: injuries unavailable (/injuries -> token: Error/Missing application key. Go to https://www.api-football.com/documentation-v3 to learn how to get your API application key.)",
+    "N1: injuries unavailable (/injuries -> token: Error/Missing application key. Go to https://www.api-football.com/documentation-v3 to learn how to get your API application key.)",
+    "T1: injuries unavailable (/injuries -> token: Error/Missing application key. Go to https://www.api-football.com/documentation-v3 to learn how to get your API application key.)",
+    "E0: fixtures/predictions unavailable (/fixtures -> token: Error/Missing application key. Go to https://www.api-football.com/documentation-v3 to learn how to get your API application key.)",
+    "E1: fixtures/predictions unavailable (/fixtures -> token: Error/Missing application key. Go to https://www.api-football.com/documentation-v3 to learn how to get your API application key.)",
+    "F1: fixtures/predictions unavailable (/fixtures -> token: Error/Missing application key. Go to https://www.api-football.com/documentation-v3 to learn how to get your API application key.)",
+    "I1: fixtures/predictions unavailable (/fixtures -> token: Error/Missing application key. Go to https://www.api-football.com/documentation-v3 to learn how to get your API application key.)",
+    "P1: fixtures/predictions unavailable (/fixtures -> token: Error/Missing application key. Go to https://www.api-football.com/documentation-v3 to learn how to get your API application key.)",
+    "D1: fixtures/predictions unavailable (/fixtures -> token: Error/Missing application key. Go to https://www.api-football.com/documentation-v3 to learn how to get your API application key.)",
+    "SP1: fixtures/predictions unavailable (/fixtures -> token: Error/Missing application key. Go to https://www.api-football.com/documentation-v3 to learn how to get your API application key.)",
+    "SC0: fixtures/predictions unavailable (/fixtures -> token: Error/Missing application key. Go to https://www.api-football.com/documentation-v3 to learn how to get your API application key.)",
+    "N1: fixtures/predictions unavailable (/fixtures -> token: Error/Missing application key. Go to https://www.api-football.com/documentation-v3 to learn how to get your API application key.)",
+    "T1: fixtures/predictions unavailable (/fixtures -> token: Error/Missing application key. Go to https://www.api-football.com/documentation-v3 to learn how to get your API application key.)",
+    "Nenhuma equipa foi resolvida para team_id; validar plano/cobertura da API_FOOTBALL."
   ],
   "teamContextByLeagueNorm": {
     "E0": {
@@ -1278,7 +1299,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "brighton & hove albion": {
+      "brighton hove albion": {
         "team": "Brighton & Hove Albion FC",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -1338,7 +1359,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "sunderland afc": {
+      "sunderland": {
         "team": "Sunderland AFC",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -1510,7 +1531,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "hull city afc": {
+      "hull city": {
         "team": "Hull City AFC",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -1570,7 +1591,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "swansea city afc": {
+      "swansea city": {
         "team": "Swansea City AFC",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -1610,7 +1631,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "wrexham afc": {
+      "wrexham": {
         "team": "Wrexham AFC",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -1652,7 +1673,7 @@
       }
     },
     "F1": {
-      "racing club de lens": {
+      "racing lens": {
         "team": "Racing Club de Lens",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -1682,7 +1703,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "olympique de marseille": {
+      "olympique marseille": {
         "team": "Olympique de Marseille",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -1732,7 +1753,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "as monaco": {
+      "monaco": {
         "team": "AS Monaco FC",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -1792,7 +1813,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "rc strasbourg alsace": {
+      "strasbourg alsace": {
         "team": "RC Strasbourg Alsace",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -1834,7 +1855,7 @@
       }
     },
     "I1": {
-      "us sassuolo calcio": {
+      "sassuolo": {
         "team": "US Sassuolo Calcio",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -1864,7 +1885,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "cagliari calcio": {
+      "cagliari": {
         "team": "Cagliari Calcio",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -1874,7 +1895,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "udinese calcio": {
+      "udinese": {
         "team": "Udinese Calcio",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -1884,7 +1905,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "parma calcio 1913": {
+      "parma 1913": {
         "team": "Parma Calcio 1913",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -1894,7 +1915,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "ssc napoli": {
+      "napoli": {
         "team": "SSC Napoli",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -1904,7 +1925,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "ss lazio": {
+      "lazio": {
         "team": "SS Lazio",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -1914,7 +1935,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "as roma": {
+      "roma": {
         "team": "AS Roma",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -1934,7 +1955,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "us cremonese": {
+      "cremonese": {
         "team": "US Cremonese",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -2014,7 +2035,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "us lecce": {
+      "lecce": {
         "team": "US Lecce",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -2056,7 +2077,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "cd nacional": {
+      "nacional": {
         "team": "CD Nacional",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -2086,7 +2107,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "cd santa clara": {
+      "santa clara": {
         "team": "CD Santa Clara",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -2106,7 +2127,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "vitória": {
+      "vitoria": {
         "team": "Vitória SC",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -2126,7 +2147,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "cf estrela da amadora": {
+      "cf estrela amadora": {
         "team": "CF Estrela da Amadora",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -2136,7 +2157,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "sporting clube de portugal": {
+      "sporting clube portugal": {
         "team": "Sporting Clube de Portugal",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -2166,7 +2187,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "cd tondela": {
+      "tondela": {
         "team": "CD Tondela",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -2176,7 +2197,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "sporting clube de braga": {
+      "sporting clube braga": {
         "team": "Sporting Clube de Braga",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -2186,7 +2207,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "fc famalicão": {
+      "fc famalicao": {
         "team": "FC Famalicão",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -2206,7 +2227,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "gd estoril praia": {
+      "estoril praia": {
         "team": "GD Estoril Praia",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -2228,7 +2249,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "1 köln": {
+      "1 koln": {
         "team": "1. FC Köln",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -2238,7 +2259,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "sv werder bremen": {
+      "werder bremen": {
         "team": "SV Werder Bremen",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -2248,7 +2269,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "hamburger sv": {
+      "hamburger": {
         "team": "Hamburger SV",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -2278,7 +2299,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "tsg 1899 hoffenheim": {
+      "1899 hoffenheim": {
         "team": "TSG 1899 Hoffenheim",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -2308,7 +2329,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "vfl wolfsburg": {
+      "wolfsburg": {
         "team": "VfL Wolfsburg",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -2358,7 +2379,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "fc bayern münchen": {
+      "fc bayern munchen": {
         "team": "FC Bayern München",
         "unavailableCount": 0,
         "injuryCount": 0,
@@ -2378,7 +2399,7 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "borussia mönchengladbach": {
+      "borussia monchengladbach": {
         "team": "Borussia Mönchengladbach",
         "unavailableCount": 0,
         "injuryCount": 0,
