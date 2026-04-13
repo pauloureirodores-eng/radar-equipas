@@ -95,8 +95,15 @@ def resolve_team_id(api_key: str, league_id: int, season: int, team_name: str) -
     try:
         resp = api_get("/teams", {"league": league_id, "season": season, "search": team_name}, api_key)
     except (HTTPError, URLError):
-        return None, None
+        resp = {}
     rows = resp.get("response", []) or []
+    if not rows:
+        # Fallback: global search without league/season (some plans/datasets respond better this way).
+        try:
+            resp2 = api_get("/teams", {"search": team_name}, api_key)
+            rows = resp2.get("response", []) or []
+        except (HTTPError, URLError):
+            rows = []
     if not rows:
         return None, None
     target = normalize_team_name(team_name)
@@ -193,7 +200,16 @@ def main() -> None:
     now_iso = datetime.now(timezone.utc).isoformat()
 
     payload = {
-        "meta": {"provider": "api-football", "generatedAt": now_iso, "season": season, "keyConfigured": bool(api_key)},
+        "meta": {
+            "provider": "api-football",
+            "generatedAt": now_iso,
+            "season": season,
+            "keyConfigured": bool(api_key),
+            "fixturesInputCount": 0,
+            "teamsSearched": 0,
+            "teamsResolved": 0,
+            "fatigueBuilt": 0,
+        },
         "teamContextByLeague": {},
         "errors": [],
     }
@@ -211,6 +227,7 @@ def main() -> None:
         except json.JSONDecodeError:
             fixtures_payload = {}
     fixtures = fixtures_payload.get("fixtures", []) or []
+    payload["meta"]["fixturesInputCount"] = len(fixtures)
 
     try:
         # 1) injuries/suspensions by league
@@ -282,14 +299,20 @@ def main() -> None:
                 key = (league_code, normalize_team_name(tname))
                 if key in team_cache:
                     continue
+                payload["meta"]["teamsSearched"] += 1
                 team_id, api_name = resolve_team_id(api_key, league_id, season, str(tname))
                 team_cache[key] = (team_id, api_name or str(tname))
 
                 if not team_id:
+                    # keep a placeholder entry to avoid completely empty team maps
+                    upsert_team(payload["teamContextByLeague"], league_code, str(api_name or tname))
                     continue
+                payload["meta"]["teamsResolved"] += 1
                 fatigue = build_fatigue_for_team(api_key, int(team_id), str(api_name or tname), league_id)
                 item = upsert_team(payload["teamContextByLeague"], league_code, str(api_name or tname))
                 item["fatigue"] = fatigue
+                if fatigue:
+                    payload["meta"]["fatigueBuilt"] += 1
 
         # normalized map
         norm_by_league = {}
@@ -302,6 +325,8 @@ def main() -> None:
         total = sum(len(v) for v in payload["teamContextByLeague"].values())
         if total == 0:
             payload["errors"].append("API_FOOTBALL respondeu sem contexto de equipas para os parâmetros atuais.")
+        elif payload["meta"]["fatigueBuilt"] == 0:
+            payload["errors"].append("Sem bloco de fadiga multi-competição gerado; verificar cobertura da API para fixtures por equipa.")
 
     except Exception as ex:
         payload["errors"].append(f"Unexpected error: {type(ex).__name__}: {ex}")
