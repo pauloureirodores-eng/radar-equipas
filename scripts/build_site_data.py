@@ -1414,6 +1414,7 @@ def main() -> None:
         "upcomingFixtures": fixtures_payload.get("fixtures", []),
         "matchOfWeekByLeague": match_of_week_by_league,
         "teamContextMeta": team_context_payload.get("meta", {}),
+        "teamContextErrors": team_context_payload.get("errors", []),
         "teamContextByLeague": team_context_payload.get("teamContextByLeague", {}),
         "teamContextByLeagueNorm": team_context_payload.get("teamContextByLeagueNorm", {}),
         "dataQuality": data_quality,

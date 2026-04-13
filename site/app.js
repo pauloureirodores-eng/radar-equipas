@@ -976,10 +976,27 @@ function renderTeamContext(league, home, away) {
   if (!el) return;
   const h = teamContextFor(league, home);
   const a = teamContextFor(league, away);
+  const meta = DATA.teamContextMeta || {};
+  const errors = Array.isArray(DATA.teamContextErrors) ? DATA.teamContextErrors : [];
+
+  if (!h && !a) {
+    const reason = !meta.keyConfigured
+      ? 'API_FOOTBALL_KEY não configurada.'
+      : (errors.length ? errors.join(' | ') : 'A API devolveu sem registos para esta janela/competições.');
+    el.innerHTML = `
+      <article class="kpi-card">
+        <h3>Disponibilidade indisponível nesta atualização</h3>
+        <div class="kpi-row"><span>Provider</span><strong>${meta.provider || 'api-football'}</strong></div>
+        <div class="kpi-row"><span>Chave API</span><strong>${meta.keyConfigured ? 'Configurada' : 'Não configurada'}</strong></div>
+        <p class="meta">${reason}</p>
+      </article>
+    `;
+    return;
+  }
 
   const card = (team, ctx) => {
     if (!ctx) {
-      return `<article class="kpi-card"><h3>${team}</h3><p class="meta">Sem dados de disponibilidade (lesões/suspensões/XI provável) para esta equipa.</p></article>`;
+      return `<article class="kpi-card"><h3>${team}</h3><p class="meta">Sem disponibilidade específica para esta equipa na resposta atual.</p></article>`;
     }
     const abs = (ctx.keyAbsences || []).slice(0, 3);
     return `<article class="kpi-card">
@@ -992,7 +1009,6 @@ function renderTeamContext(league, home, away) {
     </article>`;
   };
 
-  const meta = DATA.teamContextMeta || {};
   el.innerHTML = `
     ${card(home, h)}
     ${card(away, a)}
@@ -1053,22 +1069,28 @@ function renderStyleMismatch(league, home, away) {
   const mismatchScore = Math.round((mismatch / 4) * 100);
   const verdict = mismatchScore >= 55 ? 'choque elevado de estilos' : mismatchScore >= 35 ? 'choque moderado' : 'encaixe mais neutro';
 
+  const clashes = [];
+  if (hs.pressProxy - as.pressProxy >= 0.16) clashes.push(`${home} tende a pressionar mais alto do que ${away}.`);
+  else if (as.pressProxy - hs.pressProxy >= 0.16) clashes.push(`${away} tende a pressionar mais alto do que ${home}.`);
+  if (Math.abs(hs.directness - as.directness) >= 0.18) clashes.push('Diferença relevante entre jogo direto e construção.');
+  if (Math.abs(hs.crossingBias - as.crossingBias) >= 0.18) clashes.push('Assimetria no uso de cruzamentos e bolas laterais.');
+  if (Math.abs(hs.transitionBias - as.transitionBias) >= 0.18) clashes.push('Ritmo de transição ofensiva em conflito.');
+  if (!clashes.length) clashes.push('Perfis relativamente próximos; matchup tende a ser mais tático e menos caótico.');
+
   el.innerHTML = `
     <article class="kpi-card">
-      <h3>${home} estilo (Casa)</h3>
-      <div class="kpi-row"><span>Perfil</span><strong>${styleLabel(hs)}</strong></div>
-      <div class="kpi-row"><span>PPDA proxy*</span><strong>${hs.ppdaProxy != null ? fmtNum(hs.ppdaProxy, 2) : '—'}</strong></div>
-    </article>
-    <article class="kpi-card">
-      <h3>${away} estilo (Fora)</h3>
-      <div class="kpi-row"><span>Perfil</span><strong>${styleLabel(as)}</strong></div>
-      <div class="kpi-row"><span>PPDA proxy*</span><strong>${as.ppdaProxy != null ? fmtNum(as.ppdaProxy, 2) : '—'}</strong></div>
-    </article>
-    <article class="kpi-card">
-      <h3>Leitura de mismatch</h3>
-      <div class="kpi-row"><span>Score 0-100</span><strong>${mismatchScore}</strong></div>
-      <p class="meta">${verdict}. Melhor usar junto com mercados convergentes e forma recente.</p>
+      <h3>Leitura executiva de estilos</h3>
+      <div class="kpi-row"><span>Mismatch score</span><strong>${mismatchScore}/100</strong></div>
+      <div class="kpi-row"><span>Diagnóstico</span><strong>${verdict}</strong></div>
+      <p class="meta">${clashes.slice(0, 2).join(' ')}</p>
       <p class="meta">*PPDA proxy: estimativa por remates permitidos vs remates à baliza sofridos (não é PPDA oficial).</p>
+    </article>
+    <article class="kpi-card">
+      <h3>Comparação de perfil</h3>
+      <div class="kpi-row"><span>${home}</span><strong>${styleLabel(hs)}</strong></div>
+      <div class="kpi-row"><span>${away}</span><strong>${styleLabel(as)}</strong></div>
+      <div class="kpi-row"><span>PPDA proxy (${home})</span><strong>${hs.ppdaProxy != null ? fmtNum(hs.ppdaProxy, 2) : '—'}</strong></div>
+      <div class="kpi-row"><span>PPDA proxy (${away})</span><strong>${as.ppdaProxy != null ? fmtNum(as.ppdaProxy, 2) : '—'}</strong></div>
     </article>
   `;
 }
@@ -1134,19 +1156,32 @@ function renderFatigueRotation(league, home, away) {
     const games8 = nextFx ? gamesInWindow(league, team, nextFx, 8) : 0;
     const thirdIn8 = games8 >= 2 ? 'Sim' : 'Não';
     const risk = rotationRiskLabel(ctx.unavailableCount || 0, daysRest, games8);
-    return `<article class="kpi-card">
-      <h3>${team}</h3>
-      <div class="kpi-row"><span>Dias de descanso</span><strong>${daysRest != null ? daysRest : '—'}</strong></div>
-      <div class="kpi-row"><span>Jogos nos últimos 8 dias</span><strong>${games8}</strong></div>
-      <div class="kpi-row"><span>3.º jogo em 8 dias</span><strong>${thirdIn8}</strong></div>
-      <div class="kpi-row"><span>Risco de rotação</span><strong>${risk}</strong></div>
-      <p class="meta">Deslocação longa / jogo europeu / prolongamento: N/D sem feed multi-competição.</p>
-    </article>`;
+    return { team, daysRest, games8, thirdIn8, risk };
   };
 
+  const h = build(home, homeCtx);
+  const a = build(away, awayCtx);
+  const riskSummary = (h.risk === 'Alta' || a.risk === 'Alta')
+    ? 'Risco elevado de rotação em pelo menos uma equipa.'
+    : (h.risk === 'Média' || a.risk === 'Média')
+      ? 'Risco moderado de rotação; confirmar onze inicial.'
+      : 'Carga competitiva controlada para as duas equipas.';
+
   el.innerHTML = `
-    ${build(home, homeCtx)}
-    ${build(away, awayCtx)}
+    <article class="kpi-card">
+      <h3>Resumo de carga competitiva</h3>
+      <div class="kpi-row"><span>${home}</span><strong>${h.risk} (descanso ${h.daysRest != null ? h.daysRest : '—'}d)</strong></div>
+      <div class="kpi-row"><span>${away}</span><strong>${a.risk} (descanso ${a.daysRest != null ? a.daysRest : '—'}d)</strong></div>
+      <p class="meta">${riskSummary}</p>
+      <p class="meta">Deslocação longa / jogo europeu / prolongamento: N/D sem feed multi-competição.</p>
+    </article>
+    <article class="kpi-card">
+      <h3>Detalhe por equipa</h3>
+      <div class="kpi-row"><span>${home}: jogos últimos 8d</span><strong>${h.games8}</strong></div>
+      <div class="kpi-row"><span>${home}: 3.º jogo em 8d</span><strong>${h.thirdIn8}</strong></div>
+      <div class="kpi-row"><span>${away}: jogos últimos 8d</span><strong>${a.games8}</strong></div>
+      <div class="kpi-row"><span>${away}: 3.º jogo em 8d</span><strong>${a.thirdIn8}</strong></div>
+    </article>
   `;
 }
 
@@ -2235,7 +2270,7 @@ function exportPrejogoPdf() {
 }
 
 async function main() {
-  const res = await fetch('./data/site-data.json?v=20260410f', { cache: 'no-store' });
+  const res = await fetch('./data/site-data.json?v=20260413a', { cache: 'no-store' });
   DATA = await res.json();
   loadWatchlist();
 

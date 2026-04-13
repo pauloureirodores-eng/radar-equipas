@@ -184,6 +184,11 @@ def main() -> None:
             for team_name, entry in teams.items():
                 norm_by_league[league_code][normalize_team_name(team_name)] = entry
         payload["teamContextByLeagueNorm"] = norm_by_league
+        total = sum(len(v) for v in payload["teamContextByLeague"].values())
+        if total == 0:
+            payload["errors"].append(
+                "API_FOOTBALL respondeu sem contexto de equipas para os parametros atuais (league/season/plan)."
+            )
 
     except Exception as ex:
         payload["errors"].append(f"Unexpected error: {type(ex).__name__}: {ex}")
@@ -194,4 +199,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
