@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import json
 import os
+import re
+import unicodedata
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.error import HTTPError, URLError
@@ -44,15 +46,53 @@ def api_get(path: str, params: dict, api_key: str) -> dict:
         headers={"x-apisports-key": api_key, "User-Agent": "radar-equipas/1.0"},
     )
     with urlopen(req, timeout=35) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+        payload = json.loads(resp.read().decode("utf-8"))
+
+    errs = payload.get("errors")
+    if isinstance(errs, dict) and errs:
+        err_text = "; ".join(f"{k}: {v}" for k, v in errs.items() if v)
+        if err_text:
+            raise ValueError(f"{path} -> {err_text}")
+    return payload
 
 
 def normalize_team_name(name: str | None) -> str:
     raw = str(name or "").strip().lower()
-    repl = {"'": "", ".": "", "-": " ", "_": " ", " fc": "", " cf": "", " ac": "", " sc": ""}
+    raw = unicodedata.normalize("NFKD", raw)
+    raw = "".join(ch for ch in raw if not unicodedata.combining(ch))
+    repl = {
+        "'": "",
+        ".": "",
+        "-": " ",
+        "_": " ",
+        "&": " ",
+        "/": " ",
+        " fc": "",
+        " cf": "",
+        " ac": "",
+        " sc": "",
+        " afc": "",
+        " cfc": "",
+        " calcio": "",
+        " clube de futebol": "",
+        " futebol clube": "",
+    }
     for a, b in repl.items():
         raw = raw.replace(a, b)
+    raw = re.sub(r"\b(the|club|de|do|da|sv|vfl|tsg|rc|as|us|ssc|ss|cd|gd)\b", " ", raw)
+    raw = re.sub(r"[^a-z0-9 ]", " ", raw)
     return " ".join(raw.split())
+
+
+def add_team_alias(team_map: dict[str, dict], team_name: str | None, team_id: int | None) -> None:
+    if not team_name or not team_id:
+        return
+    norm = normalize_team_name(team_name)
+    if not norm:
+        return
+    item = {"id": int(team_id), "name": str(team_name)}
+    team_map[norm] = item
+    team_map[norm.replace(" ", "")] = item
 
 
 def upsert_team(ctx: dict, league: str, team_name: str) -> dict:
@@ -94,15 +134,14 @@ def is_european_comp(name: str | None) -> bool:
 def resolve_team_id(api_key: str, league_id: int, season: int, team_name: str) -> tuple[int | None, str | None]:
     try:
         resp = api_get("/teams", {"league": league_id, "season": season, "search": team_name}, api_key)
-    except (HTTPError, URLError):
+    except (HTTPError, URLError, ValueError):
         resp = {}
     rows = resp.get("response", []) or []
     if not rows:
-        # Fallback: global search without league/season (some plans/datasets respond better this way).
         try:
             resp2 = api_get("/teams", {"search": team_name}, api_key)
             rows = resp2.get("response", []) or []
-        except (HTTPError, URLError):
+        except (HTTPError, URLError, ValueError):
             rows = []
     if not rows:
         return None, None
@@ -117,10 +156,24 @@ def resolve_team_id(api_key: str, league_id: int, season: int, team_name: str) -
     return team_obj.get("id"), team_obj.get("name")
 
 
+def lookup_team_id_from_map(team_map: dict, team_name: str) -> tuple[int | None, str | None]:
+    n = normalize_team_name(team_name)
+    if n in team_map:
+        t = team_map[n]
+        return t.get("id"), t.get("name")
+    ns = n.replace(" ", "")
+    if ns in team_map:
+        t = team_map[ns]
+        return t.get("id"), t.get("name")
+    for k, t in team_map.items():
+        if k in n or n in k:
+            return t.get("id"), t.get("name")
+    return None, None
+
+
 def build_fatigue_for_team(
     api_key: str,
     team_id: int,
-    team_name: str,
     local_league_id: int,
 ) -> dict:
     now = datetime.now(timezone.utc)
@@ -129,7 +182,7 @@ def build_fatigue_for_team(
 
     try:
         fx = api_get("/fixtures", {"team": team_id, "from": d_from, "to": d_to}, api_key)
-    except (HTTPError, URLError):
+    except (HTTPError, URLError, ValueError):
         return {}
 
     fixtures = fx.get("response", []) or []
@@ -230,8 +283,11 @@ def main() -> None:
     payload["meta"]["fixturesInputCount"] = len(fixtures)
 
     try:
+        league_team_id_map: dict[str, dict[str, dict]] = {}
+
         # 1) injuries/suspensions by league
         for league_code, league_id in LEAGUE_ID_MAP.items():
+            league_map = league_team_id_map.setdefault(league_code, {})
             try:
                 inj = api_get("/injuries", {"league": league_id, "season": season}, api_key)
                 for row in inj.get("response", []) or []:
@@ -249,14 +305,21 @@ def main() -> None:
                         item["injuryCount"] += 1
                     if len(item["keyAbsences"]) < 5:
                         item["keyAbsences"].append({"player": player, "type": kind, "reason": reason})
-            except (HTTPError, URLError) as ex:
+                    add_team_alias(league_map, team, (row.get("team") or {}).get("id"))
+            except (HTTPError, URLError, ValueError) as ex:
                 payload["errors"].append(f"{league_code}: injuries unavailable ({ex})")
 
-        # 2) probable formation from upcoming domestic fixtures
+        # 2) probable formation + map from domestic fixtures
         for league_code, league_id in LEAGUE_ID_MAP.items():
+            league_map = league_team_id_map.setdefault(league_code, {})
             try:
-                fx = api_get("/fixtures", {"league": league_id, "season": season, "next": 20}, api_key)
-                for f in (fx.get("response", []) or [])[:12]:
+                fx = api_get("/fixtures", {"league": league_id, "season": season, "next": 30}, api_key)
+                for f in (fx.get("response", []) or [])[:20]:
+                    teams_block = f.get("teams") or {}
+                    for side in ("home", "away"):
+                        tob = teams_block.get(side) or {}
+                        add_team_alias(league_map, tob.get("name"), tob.get("id"))
+
                     fixture_id = ((f.get("fixture") or {}).get("id"))
                     fixture_date = ((f.get("fixture") or {}).get("date"))
                     if not fixture_id:
@@ -281,10 +344,22 @@ def main() -> None:
                             if item.get("probableFormation") is None:
                                 item["probableFormation"] = str(lineups.get("away"))
                                 item["formationFixtureDate"] = fixture_date
-                    except (HTTPError, URLError):
+                    except (HTTPError, URLError, ValueError):
                         continue
-            except (HTTPError, URLError) as ex:
+            except (HTTPError, URLError, ValueError) as ex:
                 payload["errors"].append(f"{league_code}: fixtures/predictions unavailable ({ex})")
+
+            # Fallback ID map from standings
+            try:
+                st = api_get("/standings", {"league": league_id, "season": season}, api_key)
+                for row in st.get("response", []) or []:
+                    standings = ((row.get("league") or {}).get("standings")) or []
+                    for group in standings:
+                        for line in group or []:
+                            t = line.get("team") or {}
+                            add_team_alias(league_map, t.get("name"), t.get("id"))
+            except (HTTPError, URLError, ValueError):
+                pass
 
         # 3) fatigue/rotation multi-competition for teams in upcoming fixtures
         team_cache = {}
@@ -299,17 +374,22 @@ def main() -> None:
                 key = (league_code, normalize_team_name(tname))
                 if key in team_cache:
                     continue
+
                 payload["meta"]["teamsSearched"] += 1
-                team_id, api_name = resolve_team_id(api_key, league_id, season, str(tname))
+                team_id, api_name = lookup_team_id_from_map(
+                    league_team_id_map.get(league_code, {}),
+                    str(tname),
+                )
+                if not team_id:
+                    team_id, api_name = resolve_team_id(api_key, league_id, season, str(tname))
                 team_cache[key] = (team_id, api_name or str(tname))
 
-                if not team_id:
-                    # keep a placeholder entry to avoid completely empty team maps
-                    upsert_team(payload["teamContextByLeague"], league_code, str(api_name or tname))
-                    continue
-                payload["meta"]["teamsResolved"] += 1
-                fatigue = build_fatigue_for_team(api_key, int(team_id), str(api_name or tname), league_id)
                 item = upsert_team(payload["teamContextByLeague"], league_code, str(api_name or tname))
+                if not team_id:
+                    continue
+
+                payload["meta"]["teamsResolved"] += 1
+                fatigue = build_fatigue_for_team(api_key, int(team_id), league_id)
                 item["fatigue"] = fatigue
                 if fatigue:
                     payload["meta"]["fatigueBuilt"] += 1
@@ -322,9 +402,15 @@ def main() -> None:
                 norm_by_league[league_code][normalize_team_name(team_name)] = entry
         payload["teamContextByLeagueNorm"] = norm_by_league
 
+        payload["meta"]["leagueTeamMapSizes"] = {
+            lg: len(mp) for lg, mp in league_team_id_map.items() if mp
+        }
+
         total = sum(len(v) for v in payload["teamContextByLeague"].values())
         if total == 0:
             payload["errors"].append("API_FOOTBALL respondeu sem contexto de equipas para os parâmetros atuais.")
+        elif payload["meta"]["teamsResolved"] == 0:
+            payload["errors"].append("Nenhuma equipa foi resolvida para team_id; validar plano/cobertura da API_FOOTBALL.")
         elif payload["meta"]["fatigueBuilt"] == 0:
             payload["errors"].append("Sem bloco de fadiga multi-competição gerado; verificar cobertura da API para fixtures por equipa.")
 
@@ -337,4 +423,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
