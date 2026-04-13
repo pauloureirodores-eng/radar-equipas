@@ -968,7 +968,13 @@ function teamContextFor(league, team) {
   const byLeague = DATA.teamContextByLeague?.[league] || {};
   if (byLeague[team]) return byLeague[team];
   const normMap = DATA.teamContextByLeagueNorm?.[league] || {};
-  return normMap[normalizeTeamName(team)] || null;
+  const n = normalizeTeamName(team);
+  if (normMap[n]) return normMap[n];
+  const keys = Object.keys(normMap);
+  for (const k of keys) {
+    if (k === n || k.includes(n) || n.includes(k)) return normMap[k];
+  }
+  return null;
 }
 
 function renderTeamContext(league, home, away) {
@@ -1150,13 +1156,26 @@ function renderFatigueRotation(league, home, away) {
   const awayCtx = teamContextFor(league, away) || {};
 
   const build = (team, ctx) => {
-    const nextFx = nearestFixtureDateForTeam(league, team);
+    const apiFatigue = ctx?.fatigue || {};
+    const hasApiFatigue = apiFatigue && Object.keys(apiFatigue).length > 0;
+    const nextFx = hasApiFatigue && apiFatigue.referenceFixtureDate
+      ? new Date(apiFatigue.referenceFixtureDate)
+      : nearestFixtureDateForTeam(league, team);
     const lastFx = lastMatchDateForTeam(league, team);
-    const daysRest = (nextFx && lastFx) ? Math.max(0, Math.round((nextFx - lastFx) / 86400000)) : null;
-    const games8 = nextFx ? gamesInWindow(league, team, nextFx, 8) : 0;
-    const thirdIn8 = games8 >= 2 ? 'Sim' : 'Não';
+    const daysRest = hasApiFatigue
+      ? (toNum(apiFatigue.daysRest) != null ? Number(apiFatigue.daysRest) : null)
+      : ((nextFx && lastFx) ? Math.max(0, Math.round((nextFx - lastFx) / 86400000)) : null);
+    const games8 = hasApiFatigue
+      ? Number(apiFatigue.gamesLast8d || 0)
+      : (nextFx ? gamesInWindow(league, team, nextFx, 8) : 0);
+    const thirdIn8 = hasApiFatigue
+      ? (apiFatigue.thirdGameIn8d ? 'Sim' : 'Não')
+      : (games8 >= 2 ? 'Sim' : 'Não');
+    const euroBefore = hasApiFatigue ? !!apiFatigue.europeanBefore : false;
+    const euroAfter = hasApiFatigue ? !!apiFatigue.europeanAfter : false;
+    const extraTimeRecent = hasApiFatigue ? !!apiFatigue.extraTimeRecent : false;
     const risk = rotationRiskLabel(ctx.unavailableCount || 0, daysRest, games8);
-    return { team, daysRest, games8, thirdIn8, risk };
+    return { team, daysRest, games8, thirdIn8, risk, euroBefore, euroAfter, extraTimeRecent, hasApiFatigue };
   };
 
   const h = build(home, homeCtx);
@@ -1173,7 +1192,8 @@ function renderFatigueRotation(league, home, away) {
       <div class="kpi-row"><span>${home}</span><strong>${h.risk} (descanso ${h.daysRest != null ? h.daysRest : '—'}d)</strong></div>
       <div class="kpi-row"><span>${away}</span><strong>${a.risk} (descanso ${a.daysRest != null ? a.daysRest : '—'}d)</strong></div>
       <p class="meta">${riskSummary}</p>
-      <p class="meta">Deslocação longa / jogo europeu / prolongamento: N/D sem feed multi-competição.</p>
+      <p class="meta">Jogo europeu antes/depois: ${home} ${h.euroBefore ? 'Sim' : 'Não'}/${h.euroAfter ? 'Sim' : 'Não'} · ${away} ${a.euroBefore ? 'Sim' : 'Não'}/${a.euroAfter ? 'Sim' : 'Não'}.</p>
+      <p class="meta">Prolongamento recente: ${home} ${h.extraTimeRecent ? 'Sim' : 'Não'} · ${away} ${a.extraTimeRecent ? 'Sim' : 'Não'}.</p>
     </article>
     <article class="kpi-card">
       <h3>Detalhe por equipa</h3>
@@ -1181,6 +1201,7 @@ function renderFatigueRotation(league, home, away) {
       <div class="kpi-row"><span>${home}: 3.º jogo em 8d</span><strong>${h.thirdIn8}</strong></div>
       <div class="kpi-row"><span>${away}: jogos últimos 8d</span><strong>${a.games8}</strong></div>
       <div class="kpi-row"><span>${away}: 3.º jogo em 8d</span><strong>${a.thirdIn8}</strong></div>
+      <p class="meta">Fonte de fadiga: ${(h.hasApiFatigue || a.hasApiFatigue) ? 'API multi-competição' : 'Fallback doméstico local'}</p>
     </article>
   `;
 }
@@ -2270,7 +2291,7 @@ function exportPrejogoPdf() {
 }
 
 async function main() {
-  const res = await fetch('./data/site-data.json?v=20260413a', { cache: 'no-store' });
+  const res = await fetch('./data/site-data.json?v=20260413b', { cache: 'no-store' });
   DATA = await res.json();
   loadWatchlist();
 
