@@ -1,4 +1,4 @@
-﻿const fmtPct = (n) => `${(Number(n) * 100).toFixed(1)}%`;
+const fmtPct = (n) => `${(Number(n) * 100).toFixed(1)}%`;
 const fmtNum = (n, d = 2) => Number(n).toFixed(d);
 const byId = (id) => document.getElementById(id);
 
@@ -390,6 +390,13 @@ function renderHomeOpsMeta() {
     : '—';
   const changes = (DATA.changelog || []).length;
   byId('homeLastUpdate').textContent = `Última atualização de dados: ${formatted} · changelog semanal: ${changes} registos.`;
+  const mini = byId('homeChangelogMini');
+  if (mini) {
+    const items = (DATA.changelog || []).slice(0, 2);
+    mini.innerHTML = items.length
+      ? items.map((c) => `<article class="item"><p class="title">${c.date || '—'} · ${c.title || 'Atualização'}</p><p class="meta">${c.summary || 'Atualização semanal de dados.'}</p></article>`).join('')
+      : '<p class="meta">Sem entradas recentes de changelog.</p>';
+  }
 }
 
 function renderWeeklyVariation(league) {
@@ -2359,7 +2366,7 @@ function exportPrejogoPdf() {
 }
 
 async function main() {
-  const res = await fetch('./data/site-data.json?v=20260414c', { cache: 'no-store' });
+  const res = await fetch('./data/site-data.json?v=20260414d', { cache: 'no-store' });
   DATA = await res.json();
   loadWatchlist();
 
