@@ -204,6 +204,66 @@ tr:hover td { background: #76a9ff14; }
 }
 .kpi-card { border: 1px solid #ffffff14; border-radius: 18px; padding: 1rem; background: #0b1728cf; }
 .kpi-card h3 { margin: 0 0 0.5rem; font-size: 0.95rem; }
+.metric-card {
+  border-radius: 22px;
+  background: #ffffff0d;
+  backdrop-filter: blur(8px);
+}
+.kpi-label {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #ffffff75;
+}
+.kpi-value {
+  margin: 0.45rem 0 0;
+  font-size: 2.05rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+.kpi-sub {
+  margin: 0.35rem 0 0;
+  color: #c4d0dd;
+  font-size: 0.86rem;
+}
+.flagship-card {
+  border-radius: 28px;
+  border-color: #ffffff26;
+  background: linear-gradient(145deg, #10233c, #0b1424);
+  padding: 1.2rem;
+}
+.flagship-card h3 {
+  margin: 0.7rem 0 0.45rem;
+  font-size: 1.35rem;
+  line-height: 1.22;
+}
+.kpi-mini-grid {
+  margin-top: 0.65rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 0.6rem;
+}
+.kpi-mini-grid > div {
+  border: 1px solid #ffffff1a;
+  border-radius: 14px;
+  padding: 0.55rem 0.65rem;
+  background: #ffffff0a;
+}
+.kpi-mini-grid span {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #b9c8d8;
+}
+.kpi-mini-grid strong {
+  display: block;
+  margin-top: 0.28rem;
+  font-size: 0.95rem;
+  color: #fff;
+}
 .kpi-row { display: flex; justify-content: space-between; padding: 0.2rem 0; font-size: 0.86rem; border-bottom: 1px dashed #ffffff22; }
 .kpi-row:last-child { border-bottom: none; }
 .kpi-row strong { font-size: 1.08rem; letter-spacing: 0.01em; }
@@ -271,4 +331,5 @@ tr:hover td { background: #76a9ff14; }
   #formLineChart { height: 280px; }
   #capitalCurveChart { height: 250px; }
   table { min-width: 760px; }
+  .kpi-mini-grid { grid-template-columns: 1fr; }
 }
