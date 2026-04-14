@@ -23,7 +23,7 @@ let PREJOGO_STATE = { league: null, home: null, away: null, probs: null, shortli
 let WATCHLIST = new Set();
 
 function hasMojibake(text) {
-  return /(\u00C3.|\u00C2.|\u00E2[\u0080-\u00BF]|\uFFFD)/.test(text || "");
+  return /(\u00C3.|\u00C2.|\u00E2[\u0080-\u00BF]|\uFFFD|[ÃÂÆÐØÞßðþƒœž€¢£¥¦§¨©ª«¬®¯°±²³´µ¶·¸¹º»¼½¾¿])/.test(text || "");
 }
 
 function mojibakeScore(text) {
@@ -68,8 +68,11 @@ function sanitizeUiText(text) {
   if (!text) return text;
   const decoded = fixMojibakeText(text);
   const cleaned = decoded
+    .replace(/[ÃÂÆÐØÞßðþƒœž€¢£¥¦§¨©ª«¬®¯°±²³´µ¶·¸¹º»¼½¾¿]/g, '')
     .replace(/\uFFFD/g, '')
     .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
+    .replace(/\b[Aa]{6,}\b/g, '')
+    .replace(/\b(?:Aa){4,}\b/g, '')
     .replace(/\s{2,}/g, ' ');
   const tokens = cleaned.split(/(\s+)/);
   const pruned = tokens.map((tk) => {
@@ -88,9 +91,9 @@ function sanitizeUiText(text) {
       const maxFreq = Math.max(...Object.values(freq));
       if (maxFreq / Math.max(1, letters) >= 0.45) return '';
     }
-    if (/[ÃÂâï¿½]/.test(tk)) {
+    if (/[ÃÂÆÐØÞßðþƒœž€¢£¥¦§¨©ª«¬®¯°±²³´µ¶·¸¹º»¼½¾¿âï¿½]/.test(tk)) {
       if (letters >= 6) return '';
-      return tk.replace(/[ÃÂâï¿½]/g, '');
+      return tk.replace(/[ÃÂÆÐØÞßðþƒœž€¢£¥¦§¨©ª«¬®¯°±²³´µ¶·¸¹º»¼½¾¿âï¿½]/g, '');
     }
     return tk;
   }).join('');
@@ -2507,7 +2510,7 @@ function exportPrejogoPdf() {
 }
 
 async function main() {
-  const res = await fetch('./data/site-data.json?v=20260414p', { cache: 'no-store' });
+  const res = await fetch('./data/site-data.json?v=20260414q', { cache: 'no-store' });
   DATA = await res.json();
   loadWatchlist();
 
