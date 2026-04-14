@@ -429,11 +429,11 @@ function renderWeeklyVariation(league) {
 function renderWeeklyAlerts(league) {
   const payload = DATA.weeklyAlerts || { summary: { total: 0, high: 0, medium: 0 }, byLeague: {} };
   const leagueAlerts = (payload.byLeague && payload.byLeague[league]) ? payload.byLeague[league] : [];
-  const top = leagueAlerts.slice(0, 12);
+  const top = leagueAlerts.slice(0, 3);
   const high = top.filter((a) => a.severity === 'high').length;
   const medium = top.filter((a) => a.severity === 'medium').length;
   byId('weeklyAlertsMeta').textContent = top.length
-    ? `${top.length} alertas nesta liga · ${high} high · ${medium} medium`
+    ? `${top.length} alertas principais · ${high} high · ${medium} medium`
     : 'Sem alertas relevantes para esta liga na atualização atual.';
 
   byId('weeklyAlertsList').innerHTML = top.length
@@ -2148,6 +2148,15 @@ function modelConfidenceBadge(score) {
   return '<span class="badge warn">Baixa</span>';
 }
 
+function modelInterpretationBadge(edge, evModel) {
+  const e = toNum(edge);
+  const ev = toNum(evModel);
+  if (e != null && ev != null && e > 0.02 && ev > 0) return '<span class="badge good">Valor encontrado</span>';
+  if (e != null && e > 0 && (ev == null || ev >= -0.005)) return '<span class="badge">Leve valor</span>';
+  if (e != null && e < -0.01) return '<span class="badge warn">Sem valor</span>';
+  return '<span class="badge">Neutro</span>';
+}
+
 function renderModel() {
   const league = byId('modelLeague')?.value || 'Todas';
   const scope = byId('modelScope')?.value || 'Todos';
@@ -2199,9 +2208,10 @@ function renderModel() {
       <td>${toNum(r.odds_avg) != null ? fmtNum(r.odds_avg, 2) : '—'}</td>
       <td>${toNum(r.edge_vs_odds) != null ? `${fmtNum(r.edge_vs_odds * 100, 2)} pp` : '—'}</td>
       <td>${toNum(r.ev_model) != null ? `${fmtNum(r.ev_model * 100, 2)}%` : '—'}</td>
+      <td>${modelInterpretationBadge(r.edge_vs_odds, r.ev_model)}</td>
       <td>${r.confidence_score ?? 0} ${modelConfidenceBadge(r.confidence_score)}</td>
     </tr>`;
-  }).join('') || '<tr><td colspan="13">Sem dados para os filtros escolhidos.</td></tr>';
+  }).join('') || '<tr><td colspan="14">Sem dados para os filtros escolhidos.</td></tr>';
   applyExistingSort('modelTable');
 
   const cal = DATA.phase2Calibration || { summary: {}, bins: [], by_group: [] };
@@ -2312,7 +2322,7 @@ function exportPrejogoPdf() {
 }
 
 async function main() {
-  const res = await fetch('./data/site-data.json?v=20260413b', { cache: 'no-store' });
+  const res = await fetch('./data/site-data.json?v=20260414a', { cache: 'no-store' });
   DATA = await res.json();
   loadWatchlist();
 

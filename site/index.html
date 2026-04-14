@@ -16,7 +16,8 @@
   <header class="hero container">
     <p class="eyebrow">Análise de Futebol</p>
     <h1>Radar de Equipas e Mercados</h1>
-    <p class="lead">Insights multi-liga para decisão pré-jogo, matchup e leitura de mercado.</p>
+    <p class="lead">Plataforma para apostadores sérios: leitura de valor pré-jogo, matchup e execução com critério.</p>
+    <p class="audience-tag">Foco: decisão prática com profundidade analítica.</p>
     <div class="hero-actions">
       <button id="heroOpenScanner" class="ghost-btn hero-btn">Abrir Scanner</button>
       <button id="heroOpenMatchup" class="ghost-btn hero-btn">Ver Matchup</button>
@@ -48,13 +49,13 @@
 
       <section class="grid-2">
         <article class="panel panel-priority">
-          <div class="panel-head"><h2>Mercados em Destaque</h2></div>
-          <div id="marketsList" class="list"></div>
-        </article>
-        <article class="panel panel-priority">
           <div class="panel-head"><h2>Alertas Semanais</h2></div>
           <p id="weeklyAlertsMeta" class="lead"></p>
           <div id="weeklyAlertsList" class="list"></div>
+        </article>
+        <article class="panel panel-priority">
+          <div class="panel-head"><h2>Mercados em Destaque</h2></div>
+          <div id="marketsList" class="list"></div>
         </article>
       </section>
 
@@ -63,20 +64,23 @@
         <div id="homeScannerTop" class="list"></div>
       </section>
 
-      <section class="panel">
-        <div class="panel-head"><h2>Resumo do Scanner</h2><button id="homeOpenScannerSummary" class="ghost-btn">Ir para Scanner</button></div>
-        <div id="homeScannerSummary" class="list"></div>
-      </section>
+      <details class="filters-panel dashboard-more" id="dashboardMore">
+        <summary>Ver mais no Dashboard</summary>
+        <section class="panel panel-secondary">
+          <div class="panel-head"><h2>Resumo do Scanner</h2><button id="homeOpenScannerSummary" class="ghost-btn">Ir para Scanner</button></div>
+          <div id="homeScannerSummary" class="list"></div>
+        </section>
 
-      <section class="panel">
-        <div class="panel-head"><h2>Watchlist (compacta)</h2><button id="homeOpenWatchlist" class="ghost-btn">Ver Watchlist completa</button></div>
-        <div id="homeWatchlistCompact" class="list"></div>
-      </section>
+        <section class="panel panel-secondary">
+          <div class="panel-head"><h2>Watchlist (compacta)</h2><button id="homeOpenWatchlist" class="ghost-btn">Ver Watchlist completa</button></div>
+          <div id="homeWatchlistCompact" class="list"></div>
+        </section>
 
-      <section class="panel">
-        <div class="panel-head"><h2>Atualização</h2></div>
-        <p id="homeLastUpdate" class="lead"></p>
-      </section>
+        <section class="panel panel-secondary">
+          <div class="panel-head"><h2>Atualização</h2></div>
+          <p id="homeLastUpdate" class="lead"></p>
+        </section>
+      </details>
     </section>
 
     <section class="tab-panel" id="panel-scanner" hidden>
@@ -157,18 +161,6 @@
       </section>
 
       <section class="panel">
-        <div class="panel-head"><h2>Camada de Processo (xG/xGA proxy)</h2></div>
-        <p class="lead">Estimativa de qualidade de processo ofensivo/defensivo baseada em volume e qualidade de remates. (proxy)</p>
-        <div id="processLayerCards" class="kpi-grid"></div>
-      </section>
-
-      <section class="panel">
-        <div class="panel-head"><h2>Motor de estilos / Style Mismatch</h2></div>
-        <p class="lead">Leitura de choque/encaixe entre perfis de jogo (proxy, sem tracking posicional).</p>
-        <div id="styleMismatchCards" class="kpi-grid"></div>
-      </section>
-
-      <section class="panel">
         <div class="panel-head"><h2>Mercados Convergentes</h2></div>
         <div class="table-wrap">
           <table id="confrontoMarketTable">
@@ -180,36 +172,52 @@
         </div>
       </section>
 
-      <section class="panel">
-        <div class="panel-head"><h2>Insights Automáticos do Matchup</h2></div>
-        <ul class="insights" id="confrontoInsights"></ul>
-      </section>
+      <details class="filters-panel matchup-more" id="matchupAdvanced">
+        <summary>Análise avançada do Matchup</summary>
 
-      <section class="panel">
-        <div class="panel-head"><h2>Notícias de Equipa / Disponibilidade</h2></div>
-        <div id="teamContextCards" class="kpi-grid"></div>
-      </section>
+        <section class="panel panel-secondary">
+          <div class="panel-head"><h2>Insights Automáticos do Matchup</h2></div>
+          <ul class="insights" id="confrontoInsights"></ul>
+        </section>
 
-      <section class="panel">
-        <div class="panel-head"><h2>Agenda, fadiga e rotação</h2></div>
-        <div id="fatigueRotationCards" class="kpi-grid"></div>
-      </section>
+        <section class="panel panel-secondary">
+          <div class="panel-head"><h2>Camada de Processo (xG/xGA proxy)</h2></div>
+          <p class="lead">Estimativa de qualidade de processo ofensivo/defensivo baseada em volume e qualidade de remates. (proxy)</p>
+          <div id="processLayerCards" class="kpi-grid"></div>
+        </section>
 
-      <section class="panel">
-        <div class="panel-head"><h2>Bolas paradas, cantos e cartões</h2></div>
-        <div id="setPiecesCards" class="kpi-grid"></div>
-      </section>
+        <section class="panel panel-secondary">
+          <div class="panel-head"><h2>Motor de estilos / Style Mismatch</h2></div>
+          <p class="lead">Leitura de choque/encaixe entre perfis de jogo (proxy, sem tracking posicional).</p>
+          <div id="styleMismatchCards" class="kpi-grid"></div>
+        </section>
 
-      <section class="panel">
-        <div class="panel-head"><h2>Histórico Direto (H2H)</h2></div>
-        <div class="kpi-grid" id="h2hSummary"></div>
-        <div class="table-wrap">
-          <table id="h2hTable">
-            <thead><tr><th>Data</th><th>Contexto</th><th>Resultado</th><th>Total Golos</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </section>
+        <section class="panel panel-secondary">
+          <div class="panel-head"><h2>Notícias de Equipa / Disponibilidade</h2></div>
+          <div id="teamContextCards" class="kpi-grid"></div>
+        </section>
+
+        <section class="panel panel-secondary">
+          <div class="panel-head"><h2>Agenda, fadiga e rotação</h2></div>
+          <div id="fatigueRotationCards" class="kpi-grid"></div>
+        </section>
+
+        <section class="panel panel-secondary">
+          <div class="panel-head"><h2>Bolas paradas, cantos e cartões</h2></div>
+          <div id="setPiecesCards" class="kpi-grid"></div>
+        </section>
+
+        <section class="panel panel-secondary">
+          <div class="panel-head"><h2>Histórico Direto (H2H)</h2></div>
+          <div class="kpi-grid" id="h2hSummary"></div>
+          <div class="table-wrap">
+            <table id="h2hTable">
+              <thead><tr><th>Data</th><th>Contexto</th><th>Resultado</th><th>Total Golos</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+      </details>
     </section>
 
     <section class="tab-panel" id="panel-modelo" hidden>
@@ -236,7 +244,7 @@
         <div class="panel-head"><h2>Mercados Modelados</h2></div>
         <div class="table-wrap">
           <table id="modelTable">
-            <thead><tr><th>Liga</th><th>Equipa</th><th>Contexto</th><th>Mercado</th><th>Amostra</th><th>P empírica</th><th>P modelo</th><th>CI 95%</th><th>Odds justas</th><th>Odds média</th><th>Edge vs odds</th><th>EV modelo</th><th>Confiança</th></tr></thead>
+            <thead><tr><th>Liga</th><th>Equipa</th><th>Contexto</th><th>Mercado</th><th>Amostra</th><th title="Probabilidade histórica observada">P empírica</th><th title="Probabilidade estimada pelo modelo">P modelo</th><th title="Intervalo provável do resultado real">CI 95%</th><th>Odds justas</th><th>Odds média</th><th title="Diferença entre modelo e odds">Edge vs odds</th><th title="Valor esperado do mercado">EV modelo</th><th>Leitura</th><th>Confiança</th></tr></thead>
             <tbody></tbody>
           </table>
         </div>
@@ -328,6 +336,6 @@
     </section>
   </main>
 
-  <script src="app.js?v=20260413b" defer></script>
+  <script src="app.js?v=20260414a" defer></script>
 </body>
 </html>
