@@ -77,6 +77,21 @@ function sanitizeUiText(text) {
     const letters = (tk.match(/[A-Za-z]/g) || []).length;
     const aOnly = (tk.match(/[Aa]/g) || []).length;
     if (letters >= 8 && aOnly / Math.max(1, letters) >= 0.75) return '';
+    if (/[Aa]{6,}/.test(tk)) return '';
+    if (letters >= 12) {
+      const uniq = new Set((tk.match(/[A-Za-z]/g) || []).map((c) => c.toLowerCase()));
+      if (uniq.size <= 5) return '';
+      const freq = {};
+      for (const ch of (tk.match(/[A-Za-z]/g) || []).map((c) => c.toLowerCase())) {
+        freq[ch] = (freq[ch] || 0) + 1;
+      }
+      const maxFreq = Math.max(...Object.values(freq));
+      if (maxFreq / Math.max(1, letters) >= 0.45) return '';
+    }
+    if (/[ÃÂâï¿½]/.test(tk)) {
+      if (letters >= 6) return '';
+      return tk.replace(/[ÃÂâï¿½]/g, '');
+    }
     return tk;
   }).join('');
   return pruned.replace(/\s{2,}/g, ' ').trimStart();
@@ -2492,7 +2507,7 @@ function exportPrejogoPdf() {
 }
 
 async function main() {
-  const res = await fetch('./data/site-data.json?v=20260414n', { cache: 'no-store' });
+  const res = await fetch('./data/site-data.json?v=20260414p', { cache: 'no-store' });
   DATA = await res.json();
   loadWatchlist();
 
@@ -2562,6 +2577,8 @@ main().catch((err) => {
   console.error(err);
   alert('NÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o foi possÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­vel carregar os dados do site.');
 });
+
+
 
 
 
