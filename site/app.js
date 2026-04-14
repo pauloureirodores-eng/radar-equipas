@@ -16,12 +16,42 @@ const LEAGUE_LABELS = {
   T1: 'Turkish Superleague'
 };
 const WATCHLIST_KEY = 'radar_watchlist_v1';
+const SIMPLE_MODE_KEY = 'radar_simple_mode_v1';
 
 let DATA = null;
 const TABLE_SORT_STATE = {};
 let PREJOGO_STATE = { league: null, home: null, away: null, probs: null, shortlist: [] };
 let WATCHLIST = new Set();
 const BAD_GLYPHS_RE = /[ÃÂÆÐØÞßðþƒœž€¢£¥¦§¨©ª«¬®¯°±²³´µ¶·¸¹º»¼½¾¿€™ŠšŒœŽžŸ‚„…†‡‰‹›ˆ˜]/g;
+const CP1252_EXTRA = {
+  0x20AC: 0x80,
+  0x201A: 0x82,
+  0x0192: 0x83,
+  0x201E: 0x84,
+  0x2026: 0x85,
+  0x2020: 0x86,
+  0x2021: 0x87,
+  0x02C6: 0x88,
+  0x2030: 0x89,
+  0x0160: 0x8A,
+  0x2039: 0x8B,
+  0x0152: 0x8C,
+  0x017D: 0x8E,
+  0x2018: 0x91,
+  0x2019: 0x92,
+  0x201C: 0x93,
+  0x201D: 0x94,
+  0x2022: 0x95,
+  0x2013: 0x96,
+  0x2014: 0x97,
+  0x02DC: 0x98,
+  0x2122: 0x99,
+  0x0161: 0x9A,
+  0x203A: 0x9B,
+  0x0153: 0x9C,
+  0x017E: 0x9E,
+  0x0178: 0x9F
+};
 
 function hasMojibake(text) {
   return /(\u00C3.|\u00C2.|\u00E2[\u0080-\u00BF]|\uFFFD|[ÃÂÆÐØÞßðþƒœž€¢£¥¦§¨©ª«¬®¯°±²³´µ¶·¸¹º»¼½¾¿€™ŠšŒœŽžŸ‚„…†‡‰‹›ˆ˜])/.test(text || "");
@@ -45,21 +75,41 @@ function decodeLatin1AsUtf8(text) {
   return new TextDecoder('utf-8', { fatal: false }).decode(bytes);
 }
 
+function decodeCp1252AsUtf8(text) {
+  const bytes = new Uint8Array(text.length);
+  for (let i = 0; i < text.length; i += 1) {
+    const code = text.charCodeAt(i);
+    if (code <= 0xff) {
+      bytes[i] = code;
+    } else {
+      bytes[i] = CP1252_EXTRA[code] ?? 0x20;
+    }
+  }
+  return new TextDecoder('utf-8', { fatal: false }).decode(bytes);
+}
+
 function fixMojibakeText(text) {
   if (!hasMojibake(text)) return text;
   let best = text;
   let bestScore = mojibakeScore(text);
-  let current = text;
+  const queue = [text];
+  const seen = new Set([text]);
 
-  for (let i = 0; i < 3; i += 1) {
-    const decoded = decodeLatin1AsUtf8(current);
-    const score = mojibakeScore(decoded);
-    if (score < bestScore) {
-      best = decoded;
-      bestScore = score;
+  for (let i = 0; i < 8 && queue.length; i += 1) {
+    const current = queue.shift();
+    const candidates = [decodeLatin1AsUtf8(current), decodeCp1252AsUtf8(current)];
+    for (const decoded of candidates) {
+      if (!decoded || seen.has(decoded)) continue;
+      seen.add(decoded);
+      const score = mojibakeScore(decoded);
+      if (score < bestScore) {
+        best = decoded;
+        bestScore = score;
+      }
+      if (score > 0 && decoded !== current) {
+        queue.push(decoded);
+      }
     }
-    if (decoded === current) break;
-    current = decoded;
   }
 
   return best;
@@ -67,14 +117,11 @@ function fixMojibakeText(text) {
 
 function sanitizeUiText(text) {
   if (!text) return text;
-  const decoded = fixMojibakeText(text);
+  const decoded = fixMojibakeText(String(text));
   const cleaned = decoded
-    .replace(BAD_GLYPHS_RE, '')
     .replace(/\uFFFD/g, '')
     .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
-    .replace(/\b[Aa]{6,}\b/g, '')
-    .replace(/\b(?:Aa){4,}\b/g, '')
-    .replace(/[,;:.]{3,}/g, ' ')
+    .replace(/[,;:.]{4,}/g, ' ')
     .replace(/\s{2,}/g, ' ');
   const tokens = cleaned.split(/(\s+)/);
   const pruned = tokens.map((tk) => {
@@ -95,7 +142,7 @@ function sanitizeUiText(text) {
     }
     if (/[ÃÂÆÐØÞßðþƒœž€¢£¥¦§¨©ª«¬®¯°±²³´µ¶·¸¹º»¼½¾¿€™ŠšŒœŽžŸ‚„…†‡‰‹›ˆ˜âï¿½]/.test(tk)) {
       if (letters >= 6) return '';
-      return tk.replace(/[ÃÂÆÐØÞßðþƒœž€¢£¥¦§¨©ª«¬®¯°±²³´µ¶·¸¹º»¼½¾¿€™ŠšŒœŽžŸ‚„…†‡‰‹›ˆ˜âï¿½]/g, '');
+      return tk.replace(BAD_GLYPHS_RE, '');
     }
     const punctuationCount = (tk.match(/[,;:.`'"~_^|\\/]/g) || []).length;
     if (punctuationCount >= 4 && letters <= 4) {
@@ -154,6 +201,9 @@ function startMojibakeObserver() {
     }
   });
   textFixObserver.observe(document.body, { childList: true, subtree: true, characterData: true });
+  normalizeTextInNode(document.body);
+  setTimeout(() => normalizeTextInNode(document.body), 150);
+  setTimeout(() => normalizeTextInNode(document.body), 600);
 }
 function parseSortableNumber(raw) {
   const text = String(raw ?? '').trim();
@@ -260,6 +310,35 @@ function setActiveTab(tabId) {
   if (!panel) return;
   panel.classList.add('active');
   panel.hidden = false;
+}
+
+function setSimpleMode(enabled) {
+  document.body.classList.toggle('simple-mode', !!enabled);
+  const toggle = byId('simpleModeToggle');
+  if (toggle) {
+    toggle.classList.toggle('active', !!enabled);
+    toggle.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+    toggle.textContent = enabled ? 'Modo pro' : 'Modo simples';
+  }
+  try {
+    localStorage.setItem(SIMPLE_MODE_KEY, enabled ? '1' : '0');
+  } catch (err) {
+    // no-op if storage is unavailable
+  }
+}
+
+function initSimpleModeToggle() {
+  let enabled = false;
+  try {
+    enabled = localStorage.getItem(SIMPLE_MODE_KEY) === '1';
+  } catch (err) {
+    enabled = false;
+  }
+  setSimpleMode(enabled);
+  byId('simpleModeToggle')?.addEventListener('click', () => {
+    const isOn = document.body.classList.contains('simple-mode');
+    setSimpleMode(!isOn);
+  });
 }
 
 function toNum(v) {
@@ -2555,7 +2634,8 @@ async function main() {
   populateModel(leagues);
   populatePrejogo(leagues);
 
-  document.querySelectorAll('.tab').forEach((btn) => btn.addEventListener('click', () => setActiveTab(btn.dataset.tab)));
+  document.querySelectorAll('.tab[data-tab]').forEach((btn) => btn.addEventListener('click', () => setActiveTab(btn.dataset.tab)));
+  initSimpleModeToggle();
 
   ['scannerTable', 'confrontoMarketTable', 'compareDeltaTable', 'perfMarketTable', 'qualityChecksTable', 'weeklyBacktestTable', 'stakeTable', 'strategyProfileTable', 'modelTable', 'calibrationBinsTable', 'calibrationGroupTable', 'prejogoShortlistTable', 'evKellyTable', 'h2hTable'].forEach(enableTableSorting);
   byId('strategyProfileSelect')?.addEventListener('change', renderStrategyProfiles);
