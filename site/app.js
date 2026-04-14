@@ -103,7 +103,12 @@ function sanitizeUiText(text) {
     }
     return tk;
   }).join('');
-  return pruned.replace(/\s{2,}/g, ' ').trimStart();
+  const whitelistClean = pruned
+    // Keep only letters (incl. accents), numbers, whitespace and common punctuation/symbols used in UI.
+    .replace(/[^\p{L}\p{N}\s.,:;!?%+\-()\/|[\]{}'"&@#=<>°]/gu, '')
+    .replace(/\s{2,}/g, ' ')
+    .trimStart();
+  return whitelistClean;
 }
 function normalizeTextInNode(root) {
   if (!root) return;
@@ -2516,7 +2521,7 @@ function exportPrejogoPdf() {
 }
 
 async function main() {
-  const res = await fetch('./data/site-data.json?v=20260414r', { cache: 'no-store' });
+  const res = await fetch('./data/site-data.json?v=20260414s', { cache: 'no-store' });
   DATA = await res.json();
   loadWatchlist();
 
