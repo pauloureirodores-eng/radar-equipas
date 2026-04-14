@@ -170,7 +170,21 @@ function sanitizeUiText(text) {
     .replace(/\s*\/\s*\/\s*/g, ' / ')
     .replace(/\s{2,}/g, ' ')
     .trimStart();
-  return whitelistClean;
+  const repairedPt = whitelistClean
+    .replace(/\bConfigura["']?\s*o\b/gi, 'Configuração')
+    .replace(/\bConfian["']?\s*a\b/gi, 'Confiança')
+    .replace(/\bAtualiza["']?\s*o\b/gi, 'Atualização')
+    .replace(/\bValida["']?\s*o\b/gi, 'Validação')
+    .replace(/\bCalibra["']?\s*o\b/gi, 'Calibração')
+    .replace(/\bVaria["']?\s*o\b/gi, 'Variação')
+    .replace(/\bCompara["']?\s*o\b/gi, 'Comparação')
+    .replace(/\bExecu["']?\s*o\b/gi, 'Execução')
+    .replace(/\bPr["']?\s*jogo\b/gi, 'Pré-jogo')
+    .replace(/\bHist["']?\s*rico\b/gi, 'Histórico')
+    .replace(/\bm["']?\s*dia\b/gi, 'média')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+  return repairedPt;
 }
 function normalizeTextInNode(root) {
   if (!root) return;
