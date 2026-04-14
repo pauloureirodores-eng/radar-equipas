@@ -16,36 +16,11 @@ const LEAGUE_LABELS = {
   T1: 'Turkish Superleague'
 };
 const WATCHLIST_KEY = 'radar_watchlist_v1';
-const UI_MODE_KEY = 'radar_ui_mode_v1';
 
 let DATA = null;
 const TABLE_SORT_STATE = {};
 let PREJOGO_STATE = { league: null, home: null, away: null, probs: null, shortlist: [] };
 let WATCHLIST = new Set();
-let UI_MODE = 'simple';
-
-function applyUiMode(mode) {
-  UI_MODE = mode === 'pro' ? 'pro' : 'simple';
-  document.body.classList.toggle('mode-simple', UI_MODE === 'simple');
-  document.body.classList.toggle('mode-pro', UI_MODE === 'pro');
-  const btn = byId('uiModeToggle');
-  if (btn) btn.textContent = UI_MODE === 'simple' ? 'Modo simples' : 'Modo pro';
-}
-
-function loadUiMode() {
-  try {
-    const raw = localStorage.getItem(UI_MODE_KEY);
-    applyUiMode(raw === 'pro' ? 'pro' : 'simple');
-  } catch {
-    applyUiMode('simple');
-  }
-}
-
-function toggleUiMode() {
-  const next = UI_MODE === 'simple' ? 'pro' : 'simple';
-  applyUiMode(next);
-  localStorage.setItem(UI_MODE_KEY, next);
-}
 
 function parseSortableNumber(raw) {
   const text = String(raw ?? '').trim();
@@ -1819,6 +1794,7 @@ function renderPrejogo() {
     byId('prejogoConfidenceCards').innerHTML = '<article class="kpi-card"><h3>Confiança</h3><p class="meta">Sem dados suficientes.</p></article>';
     byId('evKellyTable').querySelector('tbody').innerHTML = '<tr><td colspan="5">Insere odds para calcular EV/Kelly.</td></tr>';
     byId('prejogoShortlistTable').querySelector('tbody').innerHTML = '<tr><td colspan="5">Sem shortlist para este jogo.</td></tr>';
+    byId('strategyPlanCard').innerHTML = '<article class="kpi-card"><h3>Plano</h3><p class="meta">Sem dados suficientes para construir plano de aposta.</p></article>';
     byId('scoreHeatmap').innerHTML = '<p class="meta">Sem dados de heatmap.</p>';
     byId('h2hSummary').innerHTML = '<article class="kpi-card"><h3>H2H</h3><p class="meta">Sem dados.</p></article>';
     byId('h2hTable').querySelector('tbody').innerHTML = '<tr><td colspan="4">Sem histórico direto.</td></tr>';
@@ -1856,7 +1832,43 @@ function renderPrejogo() {
 
   byId('prejogoShortlistTable').querySelector('tbody').innerHTML = shortlist.map((r) => `<tr><td>${r.market}</td><td>${fmtNum(r.homeEdge * 100, 1)} pp</td><td>${fmtNum(r.awayEdge * 100, 1)} pp</td><td>${fmtNum(r.avg * 100, 1)} pp</td><td>${r.hitAvg != null ? fmtPct(r.hitAvg) : '—'}</td></tr>`).join('') || '<tr><td colspan="5">Sem shortlist para este jogo.</td></tr>';
   applyExistingSort('prejogoShortlistTable');
+  renderStrategyPlan(conf, shortlist, home, away, league);
 
+}
+
+function renderStrategyPlan(conf, shortlist, home, away, league) {
+  const el = byId('strategyPlanCard');
+  if (!el) return;
+  const top = shortlist?.[0] || null;
+  const confScore = Number(conf?.score || 0);
+  const risk = confScore >= 72 ? 'Controlado' : confScore >= 58 ? 'Moderado' : 'Elevado';
+  const stake = confScore >= 72 ? '0.75u (base)' : confScore >= 58 ? '0.50u (conservador)' : '0.25u ou passar';
+  const market = top ? `${top.market} (${fmtNum((top.avg || 0) * 100, 1)} pp)` : 'Sem mercado com edge consistente';
+  const plan = top
+    ? `Priorizar ${top.market} com edge médio positivo. Confirmar odds e disponibilidade antes do jogo.`
+    : 'Sem edge claro. Melhor decisão: aguardar preço ou passar no jogo.';
+
+  el.innerHTML = `
+    <article class="kpi-card">
+      <h3>Probabilidade-base</h3>
+      <div class="kpi-row"><span>Matchup</span><strong>${home} vs ${away}</strong></div>
+      <div class="kpi-row"><span>Liga</span><strong>${leagueLabel(league)}</strong></div>
+    </article>
+    <article class="kpi-card">
+      <h3>Edge + mercado</h3>
+      <div class="kpi-row"><span>Top leitura</span><strong>${market}</strong></div>
+      <div class="kpi-row"><span>Confiança</span><strong>${confScore || '—'}/100</strong></div>
+    </article>
+    <article class="kpi-card">
+      <h3>Stake sugerida</h3>
+      <div class="kpi-row"><span>Execução</span><strong>${stake}</strong></div>
+      <div class="kpi-row"><span>Risco</span><strong>${risk}</strong></div>
+    </article>
+    <article class="kpi-card">
+      <h3>Plano final</h3>
+      <p class="meta">${plan}</p>
+    </article>
+  `;
 }
 
 function populatePrejogo(leagues) {
@@ -2347,10 +2359,9 @@ function exportPrejogoPdf() {
 }
 
 async function main() {
-  const res = await fetch('./data/site-data.json?v=20260414b', { cache: 'no-store' });
+  const res = await fetch('./data/site-data.json?v=20260414c', { cache: 'no-store' });
   DATA = await res.json();
   loadWatchlist();
-  loadUiMode();
 
   renderSummaryChips(DATA);
   renderChangelog();
@@ -2380,12 +2391,9 @@ async function main() {
   byId('prejogoResetBtn')?.addEventListener('click', resetPrejogoFilters);
   byId('heroOpenScanner')?.addEventListener('click', () => setActiveTab('scanner'));
   byId('heroOpenMatchup')?.addEventListener('click', () => setActiveTab('confronto'));
-  byId('quickOpenScanner')?.addEventListener('click', () => setActiveTab('scanner'));
-  byId('quickOpenMatchup')?.addEventListener('click', () => setActiveTab('confronto'));
   byId('homeOpenScannerTop')?.addEventListener('click', () => setActiveTab('scanner'));
   byId('homeOpenScannerSummary')?.addEventListener('click', () => setActiveTab('scanner'));
   byId('homeOpenWatchlist')?.addEventListener('click', () => setActiveTab('scanner'));
-  byId('uiModeToggle')?.addEventListener('click', toggleUiMode);
 
   byId('scannerExportBtn')?.addEventListener('click', () => {
     const league = byId('scanLeague').value;

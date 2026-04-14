@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260414b" />
+  <link rel="stylesheet" href="styles.css?v=20260414c" />
 </head>
 <body>
   <div class="bg-orb orb-1"></div>
@@ -31,8 +31,6 @@
     <button class="tab" data-tab="confronto">Matchup</button>
     <button class="tab" data-tab="modelo">Modelos</button>
     <button class="tab" data-tab="prejogo">Estratégia</button>
-    <span class="tabs-spacer"></span>
-    <button id="uiModeToggle" class="ghost-btn mode-btn" title="Alternar vista simples/pro">Modo simples</button>
   </nav>
 
   <main class="container">
@@ -41,19 +39,6 @@
         <div class="controls-grid controls-grid-top">
           <label>Liga<select id="leagueSelect"></select></label>
           <label>Equipa<select id="dashboardTeamSelect"></select></label>
-        </div>
-      </section>
-
-      <section class="panel panel-compact quick-start">
-        <div class="panel-head"><h2>Começar em 3 passos</h2></div>
-        <div class="quick-steps">
-          <article class="item"><p class="title">1) Escolhe liga e equipa</p><p class="meta">Afina já a leitura ao teu contexto.</p></article>
-          <article class="item"><p class="title">2) Vê o Jogo da Semana</p><p class="meta">Começa pelo cenário com maior interesse.</p></article>
-          <article class="item"><p class="title">3) Abre o Scanner</p><p class="meta">Explora oportunidades e filtra por mercado.</p></article>
-        </div>
-        <div class="hero-actions">
-          <button id="quickOpenScanner" class="ghost-btn hero-btn">Ir para Scanner</button>
-          <button id="quickOpenMatchup" class="ghost-btn hero-btn">Ir para Matchup</button>
         </div>
       </section>
 
@@ -79,23 +64,20 @@
         <div id="homeScannerTop" class="list"></div>
       </section>
 
-      <details class="filters-panel dashboard-more" id="dashboardMore">
-        <summary>Ver mais no Dashboard</summary>
-        <section class="panel panel-secondary">
-          <div class="panel-head"><h2>Resumo do Scanner</h2><button id="homeOpenScannerSummary" class="ghost-btn">Ir para Scanner</button></div>
-          <div id="homeScannerSummary" class="list"></div>
-        </section>
+      <section class="panel panel-secondary">
+        <div class="panel-head"><h2>Resumo do Scanner</h2><button id="homeOpenScannerSummary" class="ghost-btn">Ir para Scanner</button></div>
+        <div id="homeScannerSummary" class="list"></div>
+      </section>
 
-        <section class="panel panel-secondary">
-          <div class="panel-head"><h2>Watchlist (compacta)</h2><button id="homeOpenWatchlist" class="ghost-btn">Ver Watchlist completa</button></div>
-          <div id="homeWatchlistCompact" class="list"></div>
-        </section>
+      <section class="panel panel-secondary">
+        <div class="panel-head"><h2>Watchlist (compacta)</h2><button id="homeOpenWatchlist" class="ghost-btn">Ver Watchlist completa</button></div>
+        <div id="homeWatchlistCompact" class="list"></div>
+      </section>
 
-        <section class="panel panel-secondary">
-          <div class="panel-head"><h2>Atualização</h2></div>
-          <p id="homeLastUpdate" class="lead"></p>
-        </section>
-      </details>
+      <section class="panel panel-secondary">
+        <div class="panel-head"><h2>Atualização</h2></div>
+        <p id="homeLastUpdate" class="lead"></p>
+      </section>
     </section>
 
     <section class="tab-panel" id="panel-scanner" hidden>
@@ -135,6 +117,11 @@
     </section>
 
     <section class="tab-panel" id="panel-confronto" hidden>
+      <section class="panel panel-compact">
+        <div class="panel-head"><h2>Leitura Base</h2></div>
+        <p class="lead">Núcleo da decisão: confronto, radar, comparador, mercados convergentes, insights e H2H.</p>
+      </section>
+
       <section class="panel">
         <div class="panel-head"><h2>Confronto Casa vs Fora</h2></div>
         <div class="controls-grid">
@@ -187,13 +174,24 @@
         </div>
       </section>
 
-      <details class="filters-panel matchup-more" id="matchupAdvanced">
-        <summary>Análise avançada do Matchup</summary>
+      <section class="panel">
+        <div class="panel-head"><h2>Insights Automáticos do Matchup</h2></div>
+        <ul class="insights" id="confrontoInsights"></ul>
+      </section>
 
-        <section class="panel panel-secondary">
-          <div class="panel-head"><h2>Insights Automáticos do Matchup</h2></div>
-          <ul class="insights" id="confrontoInsights"></ul>
-        </section>
+      <section class="panel">
+        <div class="panel-head"><h2>Histórico Direto (H2H)</h2></div>
+        <div class="kpi-grid" id="h2hSummary"></div>
+        <div class="table-wrap">
+          <table id="h2hTable">
+            <thead><tr><th>Data</th><th>Contexto</th><th>Resultado</th><th>Total Golos</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <details class="filters-panel matchup-more" id="matchupAdvanced">
+        <summary>Contexto Avançado</summary>
 
         <section class="panel panel-secondary">
           <div class="panel-head"><h2>Camada de Processo (xG/xGA proxy)</h2></div>
@@ -220,17 +218,6 @@
         <section class="panel panel-secondary">
           <div class="panel-head"><h2>Bolas paradas, cantos e cartões</h2></div>
           <div id="setPiecesCards" class="kpi-grid"></div>
-        </section>
-
-        <section class="panel panel-secondary">
-          <div class="panel-head"><h2>Histórico Direto (H2H)</h2></div>
-          <div class="kpi-grid" id="h2hSummary"></div>
-          <div class="table-wrap">
-            <table id="h2hTable">
-              <thead><tr><th>Data</th><th>Contexto</th><th>Resultado</th><th>Total Golos</th></tr></thead>
-              <tbody></tbody>
-            </table>
-          </div>
         </section>
       </details>
     </section>
@@ -343,6 +330,11 @@
         </div>
       </section>
 
+      <section class="panel panel-priority">
+        <div class="panel-head"><h2>Plano de Aposta Final</h2></div>
+        <div id="strategyPlanCard" class="kpi-grid"></div>
+      </section>
+
       <section class="panel">
         <div class="panel-head"><h2>Heatmap de Resultados (Poisson 0-5)</h2></div>
         <div id="scoreHeatmap" class="heatmap-grid"></div>
@@ -351,6 +343,6 @@
     </section>
   </main>
 
-  <script src="app.js?v=20260414b" defer></script>
+  <script src="app.js?v=20260414c" defer></script>
 </body>
 </html>

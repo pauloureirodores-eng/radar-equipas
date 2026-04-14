@@ -58,8 +58,6 @@ h1 { margin: 0.45rem 0 0.6rem; font-family: 'Fraunces', Georgia, 'Times New Roma
   background: color-mix(in srgb, var(--surface) 93%, transparent);
   backdrop-filter: blur(6px);
 }
-.tabs-spacer { flex: 1 1 auto; }
-.mode-btn { margin-left: auto; }
 .tab {
   border: 1px solid transparent;
   background: transparent;
@@ -115,11 +113,6 @@ h1 { margin: 0.45rem 0 0.6rem; font-family: 'Fraunces', Georgia, 'Times New Roma
 .controls-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 0.7rem; margin-bottom: 0.8rem; }
 .controls-grid-top { margin-bottom: 0; grid-template-columns: repeat(2, minmax(0,1fr)); max-width: 620px; }
 .panel-compact { padding: 0.68rem 0.9rem; }
-.quick-start .quick-steps {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.65rem;
-}
 .controls-grid label { display: flex; flex-direction: column; font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); gap: 0.35rem; }
 select, input { border: 1px solid var(--line); border-radius: 11px; padding: 0.52rem 0.64rem; color: var(--text); background: #0f1a27; }
 .league-cards { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 0.75rem; }
@@ -227,14 +220,6 @@ tr:hover td { background: #76a9ff14; }
 .matchup-more[open] > summary {
   color: #d7e3f0;
 }
-.mode-simple #dashboardMore,
-.mode-simple #matchupAdvanced,
-.mode-simple .technical-panel {
-  display: none;
-}
-.mode-simple #panel-modelo .lead {
-  color: #aebccc;
-}
 .technical-panel {
   margin-bottom: 0;
   border-color: #32465d;
@@ -254,5 +239,4 @@ tr:hover td { background: #76a9ff14; }
   .tabs { border-radius: 14px; }
   #formLineChart { height: 280px; }
   #capitalCurveChart { height: 250px; }
-  .quick-start .quick-steps { grid-template-columns: 1fr; }
 }
