@@ -20,7 +20,7 @@
 * { box-sizing: border-box; }
 body { margin: 0; color: var(--text); background: radial-gradient(circle at top, rgba(54,88,158,0.30), transparent 30%), radial-gradient(circle at 80% 10%, rgba(18,152,170,0.12), transparent 22%), linear-gradient(180deg, var(--bg-2), var(--bg)); font-family: 'Manrope', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 .container { width: min(1320px, 95vw); margin: 0 auto; }
-main.container { width: min(1560px, 97vw); }
+main.container { width: min(1740px, 98vw); }
 .hero {
   position: relative;
   padding: 1rem;
@@ -153,7 +153,7 @@ select, input { border: 1px solid var(--line); border-radius: 11px; padding: 0.5
 .league-card h3 { margin: 0; font-size: 0.95rem; }
 .league-card p { margin: 0.3rem 0 0; color: var(--muted); font-size: 0.86rem; }
 .table-wrap { width: 100%; overflow: auto; border: 1px solid #ffffff14; border-radius: 16px; }
-table { width: 100%; border-collapse: collapse; min-width: 1120px; }
+table { width: 100%; border-collapse: collapse; min-width: 1220px; }
 th, td { text-align: left; padding: 0.92rem 0.85rem; border-bottom: 1px solid #ffffff12; font-size: 0.9rem; }
 th { color: #b4c1cf; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; background: #0f1a26; position: sticky; top: 0; z-index: 1; }
 th.sortable { cursor: pointer; user-select: none; }
@@ -315,6 +315,95 @@ tr:hover td { background: #76a9ff14; }
 .panel:hover {
   border-color: #ffffff2a;
 }
+.home-feature-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 0.65fr;
+  gap: 1rem;
+  margin-bottom: 1.3rem;
+}
+.home-side-rail {
+  display: grid;
+  gap: 1rem;
+}
+.home-side-rail .panel {
+  margin-bottom: 0;
+}
+.home-dual-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 1rem;
+  margin-bottom: 1.3rem;
+}
+.home-dual-grid > .panel {
+  margin-bottom: 0;
+}
+.flagship-shell {
+  margin-bottom: 0;
+  padding: 1.25rem;
+}
+.matchweek-grid {
+  display: block;
+}
+.flagship-premium {
+  border: 1px solid #ffffff2b;
+  border-radius: 28px;
+  background: linear-gradient(145deg, #10233c, #0b1424);
+  padding: 1.15rem;
+}
+.flagship-layout {
+  display: grid;
+  grid-template-columns: 1.25fr 0.75fr;
+  gap: 0.9rem;
+  align-items: stretch;
+}
+.flagship-lead h3 {
+  margin: 0.55rem 0 0.45rem;
+  font-size: 1.85rem;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+}
+.flagship-lead .meta {
+  margin: 0;
+  color: #c1cfdd;
+  font-size: 0.95rem;
+}
+.flagship-aside {
+  border: 1px solid #ffffff1d;
+  border-radius: 18px;
+  padding: 0.8rem;
+  background: #0000001f;
+}
+.flagship-aside h4 {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+.flagship-aside .meta {
+  margin: 0.2rem 0 0.55rem;
+  color: #b4c6d8;
+  font-size: 0.84rem;
+}
+.flagship-market-list {
+  display: grid;
+  gap: 0.45rem;
+}
+.flagship-market {
+  border: 1px solid #ffffff14;
+  border-radius: 12px;
+  padding: 0.5rem 0.58rem;
+  background: #ffffff0a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.45rem;
+}
+.flagship-market strong {
+  font-size: 0.84rem;
+}
+.flagship-market span {
+  font-size: 0.8rem;
+  color: #b6cbe0;
+}
 .kpi-row { display: flex; justify-content: space-between; padding: 0.2rem 0; font-size: 0.86rem; border-bottom: 1px dashed #ffffff22; }
 .kpi-row:last-child { border-bottom: none; }
 .kpi-row strong { font-size: 1.08rem; letter-spacing: 0.01em; }
@@ -370,6 +459,9 @@ tr:hover td { background: #76a9ff14; }
 @keyframes panelIn { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: translateY(0);} }
 @media (max-width: 1160px) {
   .hero-grid { grid-template-columns: 1fr; }
+  .home-feature-grid,
+  .home-dual-grid,
+  .flagship-layout { grid-template-columns: 1fr; }
 }
 @media (max-width: 980px) { .league-cards { grid-template-columns: repeat(2,minmax(0,1fr)); } .grid-2, .kpi-grid, .kpi-grid-4, .kpi-grid-6, .matchweek-grid { grid-template-columns: 1fr; } .controls-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } table { min-width: 900px; } }
 @media (max-width: 680px) {

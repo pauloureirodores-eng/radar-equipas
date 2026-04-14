@@ -351,10 +351,10 @@ function renderMarkets(league, teamFilter = 'Todas') {
     .slice(0, 3);
 
   byId('marketsList').innerHTML = rows.map((m) => {
-    const value = toNum(m.value_estimado);
-    const badge = value != null && value >= 0.08 ? 'Conviccao alta' : value != null && value >= 0 ? 'Conviccao media' : 'Observar';
-    const cls = value != null && value >= 0.08 ? 'good' : value != null && value >= 0 ? '' : 'warn';
-    return `<article class="item op-row"><div><p class="title">${m.market}</p><p class="meta">${m.team} Â· ${leagueLabel(m.league)}</p></div><div class="op-meta"><span class="badge ${cls}">${toNum(m.edge_vs_liga) != null ? `${fmtNum(m.edge_vs_liga * 100, 1)}% edge` : 'â€”'}</span><span class="badge">${badge}</span></div></article>`;
+    const value = toNum(m.value_estimado) ?? -999;
+    const badge = value >= 0.08 ? 'Conviccao alta' : value >= 0 ? 'Conviccao media' : 'Observar';
+    const cls = value >= 0.08 ? 'good' : value >= 0 ? '' : 'warn';
+    return `<article class="item op-row"><div><p class="title">${m.market}</p><p class="meta">${m.team} · ${leagueLabel(m.league)}</p></div><div class="op-meta"><span class="badge ${cls}">${toNum(m.edge_vs_liga) != null ? `${fmtNum(m.edge_vs_liga * 100, 1)}% edge` : '—'}</span><span class="badge">${badge}</span></div></article>`;
   }).join('') || '<p class="meta">Sem mercados suficientes.</p>';
 }
 function renderLay(league) {
@@ -373,7 +373,7 @@ function renderHomeScannerTop(league, teamFilter = 'Todas') {
     .sort((a, b) => Number(b.opportunityScore ?? -999) - Number(a.opportunityScore ?? -999))
     .slice(0, 5);
   byId('homeScannerTop').innerHTML = rows.length
-    ? rows.map((r) => `<article class="item op-row"><div><p class="title">${r.market}</p><p class="meta">${r.team} Â· ${leagueLabel(r.league)}</p></div><div class="op-meta"><span class="badge good">${toNum(r.edge_vs_liga) != null ? `${fmtNum(r.edge_vs_liga * 100, 1)}%` : 'â€”'}</span>${scoreBadge(r.opportunityScore)}</div></article>`).join('')
+    ? rows.map((r) => `<article class="item op-row"><div><p class="title">${r.market}</p><p class="meta">${r.team} · ${leagueLabel(r.league)}</p></div><div class="op-meta"><span class="badge good">${toNum(r.edge_vs_liga) != null ? `${fmtNum(r.edge_vs_liga * 100, 1)}%` : '—'}</span>${scoreBadge(r.opportunityScore)}</div></article>`).join('')
     : '<p class="meta">Sem oportunidades para esta liga.</p>';
 }
 function renderHomeScannerSummary(league, teamFilter = 'Todas') {
@@ -383,7 +383,7 @@ function renderHomeScannerSummary(league, teamFilter = 'Todas') {
     .sort((a, b) => Number(b.opportunityScore ?? -999) - Number(a.opportunityScore ?? -999))
     .slice(0, 5);
   byId('homeScannerSummary').innerHTML = rows.length
-    ? `<div class="mini-table"><div class="mini-head"><span>Equipa</span><span>Mercado</span><span>Edge</span><span>Status</span></div>${rows.map((r) => `<div class="mini-row"><span>${r.team}</span><span>${r.market}</span><span>${toNum(r.edge_vs_liga) != null ? `${fmtNum(r.edge_vs_liga * 100, 1)}%` : 'â€”'}</span><span>${r.opportunityScore >= 75 ? 'Forte' : 'Boa'}</span></div>`).join('')}</div>`
+    ? `<div class="mini-table"><div class="mini-head"><span>Equipa</span><span>Mercado</span><span>Edge</span><span>Status</span></div>${rows.map((r) => `<div class="mini-row"><span>${r.team}</span><span>${r.market}</span><span>${toNum(r.edge_vs_liga) != null ? `${fmtNum(r.edge_vs_liga * 100, 1)}%` : '—'}</span><span>${r.opportunityScore >= 75 ? 'Forte' : 'Boa'}</span></div>`).join('')}</div>`
     : '<p class="meta">Sem sinais suficientes para resumo do scanner.</p>';
 }
 function renderHomeWatchlistCompact(league) {
@@ -398,21 +398,21 @@ function renderHomeWatchlistCompact(league) {
     .filter(Boolean)
     .slice(0, 5);
   byId('homeWatchlistCompact').innerHTML = rows.length
-    ? rows.map((r) => `<article class="item"><p class="title">${r.team} Â· ${r.market}</p><p class="meta">${r.scope} Â· Hit ${toNum(r.hit_rate) != null ? fmtPct(r.hit_rate) : 'â€”'} Â· Edge ${toNum(r.edge_vs_liga) != null ? `${fmtNum(r.edge_vs_liga * 100, 1)} pp` : 'â€”'}</p></article>`).join('')
+    ? rows.map((r) => `<article class="item"><p class="title">${r.team} · ${r.market}</p><p class="meta">${r.scope} · Hit ${toNum(r.hit_rate) != null ? fmtPct(r.hit_rate) : '—'} · Edge ${toNum(r.edge_vs_liga) != null ? `${fmtNum(r.edge_vs_liga * 100, 1)} pp` : '—'}</p></article>`).join('')
     : '<p class="meta">Sem itens na watchlist desta liga.</p>';
 }
 function renderHomeOpsMeta() {
   const generatedAt = DATA.meta?.generatedAt ? String(DATA.meta.generatedAt) : '';
   const formatted = generatedAt
     ? new Date(generatedAt).toLocaleString('pt-PT', { timeZone: 'Europe/Lisbon' })
-    : 'â€”';
+    : '—';
   const changes = (DATA.changelog || []).length;
-  byId('homeLastUpdate').textContent = `Ultima atualizacao de dados: ${formatted} Â· changelog semanal: ${changes} registos.`;
+  byId('homeLastUpdate').textContent = `Ultima atualizacao de dados: ${formatted} · changelog semanal: ${changes} registos.`;
   const mini = byId('homeChangelogMini');
   if (mini) {
     const items = (DATA.changelog || []).slice(0, 2);
     mini.innerHTML = items.length
-      ? items.map((c) => `<article class="item"><p class="title">${c.date || 'â€”'} Â· ${c.title || 'Atualizacao'}</p><p class="meta">${c.summary || 'Atualizacao semanal de dados.'}</p></article>`).join('')
+      ? items.map((c) => `<article class="item"><p class="title">${c.date || '—'} · ${c.title || 'Atualizacao'}</p><p class="meta">${c.summary || 'Atualizacao semanal de dados.'}</p></article>`).join('')
       : '<p class="meta">Sem entradas recentes de changelog.</p>';
   }
 }
@@ -1397,40 +1397,39 @@ function renderMatchOfWeek(league) {
   const bestApi = DATA.matchOfWeekByLeague?.[league];
   if (bestApi && bestApi.homeTeam && bestApi.awayTeam) {
     const topMarkets = Array.isArray(bestApi.topMarkets) ? bestApi.topMarkets : [];
-    const marketsText = topMarkets.length
-      ? topMarkets.map((m) => `${m.market}${toNum(m.avg_edge) != null ? ` (${fmtNum(m.avg_edge * 100, 1)} pp)` : ''}`).join(' Ãƒâ€šÃ‚Â· ')
-      : 'Sem mercados convergentes fortes.';
+    const topMarketsHtml = topMarkets.length
+      ? topMarkets.slice(0, 3).map((m) => `<div class="flagship-market"><strong>${m.market}</strong><span>${toNum(m.avg_edge) != null ? `${fmtNum(m.avg_edge * 100, 1)} pp` : '—'}</span></div>`).join('')
+      : '<div class="flagship-market"><strong>Sem mercados convergentes fortes</strong><span>—</span></div>';
     const dt = bestApi.fixtureUtcDate
       ? new Date(bestApi.fixtureUtcDate).toLocaleString('pt-PT', { timeZone: 'Europe/Lisbon' })
-      : (bestApi.fixtureDate || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â');
+      : (bestApi.fixtureDate || '—');
     const conf = toNum(bestApi.confidenceScore);
     const reading = conf != null && conf >= 70
-      ? 'Jogo real do fim de semana com sinais fortes de convergÃƒÆ’Ã‚Âªncia.'
+      ? 'Jogo real do fim de semana com sinais fortes de convergencia.'
       : 'Jogo real do fim de semana com leitura equilibrada e oportunidade monitorizada.';
 
     byId('matchOfWeekCard').innerHTML = `
-      <article class="kpi-card flagship-card">
-        <div class="chips">
-          <span class="chip">Primeira leitura</span>
-          <span class="chip">${bestApi.homeTeam} vs ${bestApi.awayTeam}</span>
+      <article class="flagship-premium">
+        <div class="flagship-layout">
+          <div class="flagship-lead">
+            <div class="chips">
+              <span class="chip">Primeira leitura</span>
+              <span class="chip">${bestApi.homeTeam} vs ${bestApi.awayTeam}</span>
+            </div>
+            <h3>Ritmo alto, convergencia de sinal e leitura de valor.</h3>
+            <p class="meta">${reading}</p>
+            <div class="kpi-mini-grid">
+              <div><span>Confianca</span><strong>${conf != null ? `${conf}%` : '—'}</strong></div>
+              <div><span>Top edge</span><strong>${toNum(bestApi.topEdge) != null ? `${fmtNum(bestApi.topEdge * 100, 1)}%` : '—'}</strong></div>
+              <div><span>Data</span><strong>${dt}</strong></div>
+            </div>
+          </div>
+          <aside class="flagship-aside">
+            <h4>Mercados sugeridos</h4>
+            <p class="meta">Top 3 sinais da leitura atual.</p>
+            <div class="flagship-market-list">${topMarketsHtml}</div>
+          </aside>
         </div>
-        <h3>Ritmo alto, convergÃƒÆ’Ã‚Âªncia de sinal e leitura de valor.</h3>
-        <p class="meta">${reading}</p>
-        <div class="kpi-mini-grid">
-          <div><span>ConfianÃƒÆ’Ã‚Â§a</span><strong>${conf != null ? `${conf}%` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div>
-          <div><span>Top edge</span><strong>${toNum(bestApi.topEdge) != null ? `${fmtNum(bestApi.topEdge * 100, 1)}%` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div>
-          <div><span>Data</span><strong>${dt}</strong></div>
-        </div>
-        <button id="homeOpenMatchupFromCard" class="ghost-btn hero-btn-primary">Abrir Matchup completo</button>
-      </article>
-      <article class="kpi-card">
-        <h3>Mercados sugeridos</h3>
-        <p class="meta">${marketsText}</p>
-      </article>
-      <article class="kpi-card">
-        <h3>Contexto</h3>
-        <div class="kpi-row"><span>Liga</span><strong>${leagueLabel(league)}</strong></div>
-        <div class="kpi-row"><span>Fonte</span><strong>${bestApi.source || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div>
       </article>
     `;
     byId('homeOpenMatchupFromCard')?.addEventListener('click', () => {
@@ -1446,28 +1445,36 @@ function renderMatchOfWeek(league) {
   }
 
   const merged = buildConfrontoMerged(league, best.home, best.away).slice(0, 3);
-  const markets = merged.length ? merged.map((m) => m.market).join(' Ãƒâ€šÃ‚Â· ') : 'Sem mercados convergentes fortes';
+  const marketsHtml = merged.length
+    ? merged.map((m) => `<div class="flagship-market"><strong>${m.market}</strong><span>${toNum(m.avg_edge) != null ? `${fmtNum(m.avg_edge * 100, 1)} pp` : '—'}</span></div>`).join('')
+    : '<div class="flagship-market"><strong>Sem mercados convergentes fortes</strong><span>—</span></div>';
   const reading = best.conf.score >= 70
-    ? 'CenÃƒÆ’Ã‚Â¡rio com boa convergÃƒÆ’Ã‚Âªncia entre forma, amostra e edge de mercado.'
-    : 'CenÃƒÆ’Ã‚Â¡rio equilibrado, com sinais ÃƒÆ’Ã‚Âºteis mas exigindo gestÃƒÆ’Ã‚Â£o de risco.';
+    ? 'Cenario com boa convergencia entre forma, amostra e edge de mercado.'
+    : 'Cenario equilibrado, com sinais uteis e necessidade de gestao de risco.';
 
   byId('matchOfWeekCard').innerHTML = `
-    <article class="kpi-card flagship-card">
-      <div class="chips">
-        <span class="chip">Primeira leitura</span>
-        <span class="chip">${best.home} vs ${best.away}</span>
+    <article class="flagship-premium">
+      <div class="flagship-layout">
+        <div class="flagship-lead">
+          <div class="chips">
+            <span class="chip">Primeira leitura</span>
+            <span class="chip">${best.home} vs ${best.away}</span>
+          </div>
+          <h3>${reading}</h3>
+          <p class="meta">Leitura editorial com convergencia entre forma, processo e preco de mercado.</p>
+          <div class="kpi-mini-grid">
+            <div><span>1 / X / 2</span><strong>${fmtPct(best.probs.p1)} / ${fmtPct(best.probs.px)} / ${fmtPct(best.probs.p2)}</strong></div>
+            <div><span>Over 2.5</span><strong>${fmtPct(best.probs.over25)}</strong></div>
+            <div><span>BTTS</span><strong>${fmtPct(best.probs.btts)}</strong></div>
+          </div>
+        </div>
+        <aside class="flagship-aside">
+          <h4>Mercados sugeridos</h4>
+          <p class="meta">Top sinais por convergencia.</p>
+          <div class="flagship-market-list">${marketsHtml}</div>
+        </aside>
       </div>
-      <h3>${reading}</h3>
-      <p class="meta">Leitura editorial com convergÃƒÆ’Ã‚Âªncia entre forma, processo e preÃƒÆ’Ã‚Â§o de mercado.</p>
-      <div class="kpi-mini-grid">
-        <div><span>1 / X / 2</span><strong>${fmtPct(best.probs.p1)} / ${fmtPct(best.probs.px)} / ${fmtPct(best.probs.p2)}</strong></div>
-        <div><span>Over 2.5</span><strong>${fmtPct(best.probs.over25)}</strong></div>
-        <div><span>BTTS</span><strong>${fmtPct(best.probs.btts)}</strong></div>
-      </div>
-      <button id="homeOpenMatchupFromCard" class="ghost-btn hero-btn-primary">Abrir Matchup completo</button>
     </article>
-    <article class="kpi-card"><h3>ConfianÃƒÆ’Ã‚Â§a e estrutura</h3><div class="kpi-row"><span>Score</span><strong>${best.conf.score}</strong></div><div class="kpi-row"><span>Estabilidade</span><strong>${fmtPct(best.conf.stabilityFactor)}</strong></div><div class="kpi-row"><span>Amostra</span><strong>${best.conf.gamesHome}/${best.conf.gamesAway}</strong></div></article>
-    <article class="kpi-card"><h3>Mercados sugeridos</h3><div class="kpi-row"><span>Top edge</span><strong>${best.edgeTop ? `${fmtNum(best.edgeTop * 100, 1)} pp` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div><p class="meta">${markets}</p></article>
   `;
   byId('homeOpenMatchupFromCard')?.addEventListener('click', () => setActiveTab('confronto'));
 }
@@ -2391,7 +2398,7 @@ function exportPrejogoPdf() {
 }
 
 async function main() {
-  const res = await fetch('./data/site-data.json?v=20260414h', { cache: 'no-store' });
+  const res = await fetch('./data/site-data.json?v=20260414i', { cache: 'no-store' });
   DATA = await res.json();
   loadWatchlist();
 
@@ -2423,6 +2430,7 @@ async function main() {
   byId('prejogoResetBtn')?.addEventListener('click', resetPrejogoFilters);
   byId('heroOpenScanner')?.addEventListener('click', () => setActiveTab('scanner'));
   byId('heroOpenMatchup')?.addEventListener('click', () => setActiveTab('confronto'));
+  byId('homeOpenMatchupHeader')?.addEventListener('click', () => setActiveTab('confronto'));
   byId('homeOpenScannerTop')?.addEventListener('click', () => setActiveTab('scanner'));
   byId('homeOpenScannerSummary')?.addEventListener('click', () => setActiveTab('scanner'));
   byId('homeOpenWatchlist')?.addEventListener('click', () => setActiveTab('scanner'));

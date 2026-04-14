@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260414h" />
+  <link rel="stylesheet" href="styles.css?v=20260414i" />
 </head>
 <body>
   <div class="bg-orb orb-1"></div>
@@ -69,44 +69,47 @@
         <p class="eyebrow">Flagship</p>
         <h2>Jogo da Semana</h2>
       </div>
-      <section class="panel feature panel-priority">
-        <div class="panel-head"><h2>Jogo da Semana</h2></div>
-        <div id="matchOfWeekCard" class="kpi-grid matchweek-grid"></div>
-      </section>
+      <section class="home-feature-grid">
+        <article class="panel feature panel-priority flagship-shell">
+          <div class="panel-head">
+            <h2>Jogo da Semana</h2>
+            <button id="homeOpenMatchupHeader" class="ghost-btn">Abrir Matchup completo</button>
+          </div>
+          <div id="matchOfWeekCard" class="matchweek-grid"></div>
+        </article>
 
-      <section class="grid-2">
-        <article class="panel panel-priority">
-          <div class="panel-head"><h2>Alertas Semanais</h2></div>
-          <p id="weeklyAlertsMeta" class="lead"></p>
-          <div id="weeklyAlertsList" class="list"></div>
-        </article>
-        <article class="panel panel-priority">
-          <div class="panel-head"><h2>Mercados em Destaque</h2></div>
-          <div id="marketsList" class="list"></div>
-        </article>
+        <aside class="home-side-rail">
+          <article class="panel panel-priority">
+            <div class="panel-head"><h2>Mercados em Destaque</h2></div>
+            <div id="marketsList" class="list"></div>
+          </article>
+          <article class="panel panel-priority">
+            <div class="panel-head"><h2>Alertas Semanais</h2></div>
+            <p id="weeklyAlertsMeta" class="lead"></p>
+            <div id="weeklyAlertsList" class="list"></div>
+          </article>
+        </aside>
       </section>
 
       <div class="section-headline">
         <p class="eyebrow">Shortlist Editorial</p>
         <h2>Top Oportunidades</h2>
       </div>
-      <section class="panel panel-priority">
-        <div class="panel-head"><h2>Top Oportunidades</h2><button id="homeOpenScannerTop" class="ghost-btn">Abrir Scanner completo</button></div>
-        <div id="homeScannerTop" class="list"></div>
-      </section>
-
-      <div class="section-headline">
-        <p class="eyebrow">Operational Preview</p>
-        <h2>Resumo do Scanner</h2>
-      </div>
-      <section class="panel panel-secondary">
-        <div class="panel-head"><h2>Resumo do Scanner</h2><button id="homeOpenScannerSummary" class="ghost-btn">Ir para Scanner</button></div>
-        <div id="homeScannerSummary" class="list"></div>
-      </section>
-
-      <section class="panel panel-secondary">
-        <div class="panel-head"><h2>Watchlist (compacta)</h2><button id="homeOpenWatchlist" class="ghost-btn">Ver Watchlist completa</button></div>
-        <div id="homeWatchlistCompact" class="list"></div>
+      <section class="home-dual-grid">
+        <article class="panel panel-priority">
+          <div class="panel-head"><h2>Top Oportunidades</h2><button id="homeOpenScannerTop" class="ghost-btn">Abrir Scanner completo</button></div>
+          <div id="homeScannerTop" class="list"></div>
+        </article>
+        <aside class="home-side-rail">
+          <article class="panel panel-secondary">
+            <div class="panel-head"><h2>Resumo do Scanner</h2><button id="homeOpenScannerSummary" class="ghost-btn">Ir para Scanner</button></div>
+            <div id="homeScannerSummary" class="list"></div>
+          </article>
+          <article class="panel panel-secondary">
+            <div class="panel-head"><h2>Watchlist (compacta)</h2><button id="homeOpenWatchlist" class="ghost-btn">Ver Watchlist completa</button></div>
+            <div id="homeWatchlistCompact" class="list"></div>
+          </article>
+        </aside>
       </section>
 
       <section class="panel panel-secondary">
@@ -399,7 +402,7 @@
     </section>
   </main>
 
-  <script src="app.js?v=20260414h" defer></script>
+  <script src="app.js?v=20260414i" defer></script>
 </body>
 </html>
 
