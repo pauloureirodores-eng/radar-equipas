@@ -7,22 +7,43 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260414e" />
+  <link rel="stylesheet" href="styles.css?v=20260414f" />
 </head>
 <body>
   <div class="bg-orb orb-1"></div>
   <div class="bg-orb orb-2"></div>
 
   <header class="hero container">
-    <p class="eyebrow">Análise de Futebol</p>
-    <h1>Radar de Equipas e Mercados</h1>
-    <p class="lead">Plataforma para apostadores sérios: leitura de valor pré-jogo, matchup e execução com critério.</p>
-    <p class="audience-tag">Foco: decisão prática com profundidade analítica.</p>
-    <div class="hero-actions">
-      <button id="heroOpenScanner" class="ghost-btn hero-btn">Abrir Scanner</button>
-      <button id="heroOpenMatchup" class="ghost-btn hero-btn">Ver Matchup</button>
+    <div class="hero-grid">
+      <section class="hero-main">
+        <p class="eyebrow">Analista de Futebol</p>
+        <h1>Radar de Equipas e Mercados</h1>
+        <p class="lead">Um terminal de análise com convicção: menos ruído, mais contexto para decisão pré-jogo.</p>
+        <p class="audience-tag">Pré-jogo · Matchup · Execução</p>
+        <div class="hero-actions">
+          <button id="heroOpenScanner" class="ghost-btn hero-btn hero-btn-primary">Abrir Scanner</button>
+          <button id="heroOpenMatchup" class="ghost-btn hero-btn">Ver Matchup</button>
+        </div>
+        <div class="chips" id="summaryChips"></div>
+      </section>
+      <aside class="hero-flow panel">
+        <div class="panel-head"><h2>Começar em 3 passos</h2></div>
+        <div class="list">
+          <article class="item">
+            <p class="title">1. Ler oportunidade</p>
+            <p class="meta">Jogo da Semana, alertas e mercados em destaque.</p>
+          </article>
+          <article class="item">
+            <p class="title">2. Confirmar o matchup</p>
+            <p class="meta">Leitura base + contexto avançado do jogo.</p>
+          </article>
+          <article class="item">
+            <p class="title">3. Executar com critério</p>
+            <p class="meta">Preço, edge, stake e risco num plano final.</p>
+          </article>
+        </div>
+      </aside>
     </div>
-    <div class="chips" id="summaryChips"></div>
   </header>
 
   <nav class="container tabs" id="tabsNav">
@@ -41,6 +62,8 @@
           <label>Equipa<select id="dashboardTeamSelect"></select></label>
         </div>
       </section>
+
+      <section class="kpi-grid kpi-grid-4" id="homeKpis"></section>
 
       <section class="panel feature panel-priority">
         <div class="panel-head"><h2>Jogo da Semana</h2></div>
@@ -364,7 +387,7 @@
     </section>
   </main>
 
-  <script src="app.js?v=20260414e" defer></script>
+  <script src="app.js?v=20260414f" defer></script>
 </body>
 </html>
 

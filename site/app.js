@@ -468,6 +468,7 @@ function renderSosTable(league) {
 function renderOverview(league) {
   syncDashboardTeamOptions(league);
   const teamFilter = byId('dashboardTeamSelect')?.value || 'Todas';
+  renderHomeKpis(league, teamFilter);
   renderMatchOfWeek(league);
   renderMarkets(league, teamFilter);
   renderHomeScannerTop(league, teamFilter);
@@ -2366,7 +2367,7 @@ function exportPrejogoPdf() {
 }
 
 async function main() {
-  const res = await fetch('./data/site-data.json?v=20260414e', { cache: 'no-store' });
+  const res = await fetch('./data/site-data.json?v=20260414f', { cache: 'no-store' });
   DATA = await res.json();
   loadWatchlist();
 
