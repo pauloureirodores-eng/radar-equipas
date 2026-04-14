@@ -106,6 +106,15 @@ function sanitizeUiText(text) {
   const whitelistClean = pruned
     // Keep only letters (incl. accents), numbers, whitespace and common punctuation/symbols used in UI.
     .replace(/[^\p{L}\p{N}\s.,:;!?%+\-()\/|[\]{}'"&@#=<>°]/gu, '')
+    // Remove isolated mojibake tokens that still pass Unicode letter whitelist.
+    .replace(/(^|[\s([{-])(?:[ÂÃÄÅÆªº°]{1,4})(?=$|[\s)\]}.,;:!?%+-])/gu, '$1')
+    // Common broken separator between percentages/ranges: "64.4% Â Â 92.7%" -> "64.4% - 92.7%"
+    .replace(/(\d+(?:[.,]\d+)?%)(?:\s*[ÂÃÄÅÆªº°]+\s*)+(\d+(?:[.,]\d+)?%)/gu, '$1 - $2')
+    // Strip repeated leftovers of mojibake marker letters.
+    .replace(/(?:\s*[ÂÃÄÅÆªº°]\s*){2,}/gu, ' ')
+    // Cleanup accidental double symbols around dashes/slashes after sanitization.
+    .replace(/\s*-\s*-\s*/g, ' - ')
+    .replace(/\s*\/\s*\/\s*/g, ' / ')
     .replace(/\s{2,}/g, ' ')
     .trimStart();
   return whitelistClean;
@@ -2521,7 +2530,7 @@ function exportPrejogoPdf() {
 }
 
 async function main() {
-  const res = await fetch('./data/site-data.json?v=20260414s', { cache: 'no-store' });
+  const res = await fetch('./data/site-data.json?v=20260414t', { cache: 'no-store' });
   DATA = await res.json();
   loadWatchlist();
 
