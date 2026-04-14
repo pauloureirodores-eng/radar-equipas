@@ -120,6 +120,10 @@ function sanitizeUiText(text) {
   const decoded = fixMojibakeText(String(text));
   const cleaned = decoded
     .replace(/\uFFFD/g, '')
+    .replace(/&(?:[a-z]{1,10}|#\d{1,6}|#x[0-9a-f]{1,6});?/gi, ' ')
+    .replace(/\b(?:[aA]\s*&\s*){2,}[aA]?\b/g, ' ')
+    .replace(/\b(?:[aA]\s*){6,}\b/g, ' ')
+    .replace(/(?:["'`´^~]\s*){3,}/g, ' ')
     .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
     .replace(/[,;:.]{4,}/g, ' ')
     .replace(/\s{2,}/g, ' ');
@@ -152,9 +156,11 @@ function sanitizeUiText(text) {
   }).join('');
   const whitelistClean = pruned
     // Keep only letters (incl. accents), numbers, whitespace and common punctuation/symbols used in UI.
-    .replace(/[^\p{L}\p{N}\s.,:;!?%+\-()\/|[\]{}'"&@#=<>°]/gu, '')
+    .replace(/[^\p{L}\p{N}\s.,:;!?%+\-()\/|[\]{}'"&@#=<>°★☆↑↓·]/gu, '')
     // Remove isolated mojibake tokens that still pass Unicode letter whitelist.
     .replace(/(^|[\s([{-])(?:[ÂÃÄÅÆªº°]{1,4})(?=$|[\s)\]}.,;:!?%+-])/gu, '$1')
+    // Remove leftover ASCII noise chunks produced by broken entities ("a a & a", quote storms).
+    .replace(/(?:\b[aA]\b[\s'"`´^~&;]*){4,}/g, ' ')
     // Common broken separator between percentages/ranges: "64.4% Â Â 92.7%" -> "64.4% - 92.7%"
     .replace(/(\d+(?:[.,]\d+)?%)(?:\s*[ÂÃÄÅÆªº°]+\s*)+(\d+(?:[.,]\d+)?%)/gu, '$1 - $2')
     // Strip repeated leftovers of mojibake marker letters.
