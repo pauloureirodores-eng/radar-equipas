@@ -1,4 +1,4 @@
-const fmtPct = (n) => `${(Number(n) * 100).toFixed(1)}%`;
+﻿const fmtPct = (n) => `${(Number(n) * 100).toFixed(1)}%`;
 const fmtNum = (n, d = 2) => Number(n).toFixed(d);
 const byId = (id) => document.getElementById(id);
 
@@ -6,8 +6,8 @@ const RADAR_AXES = ['Resultados', 'Ataque', 'Defesa', 'Ritmo'];
 const LEAGUE_LABELS = {
   E0: 'Premier League (Inglaterra)',
   E1: 'Championship (Inglaterra)',
-  F1: 'Ligue 1 (FranÃ§a)',
-  I1: 'Serie A (ItÃ¡lia)',
+  F1: 'Ligue 1 (FranÃƒÆ’Ã‚Â§a)',
+  I1: 'Serie A (ItÃƒÆ’Ã‚Â¡lia)',
   P1: 'Liga Portugal',
   D1: 'Bundesliga',
   SP1: 'La Liga',
@@ -24,7 +24,7 @@ let WATCHLIST = new Set();
 
 function parseSortableNumber(raw) {
   const text = String(raw ?? '').trim();
-  if (!text || text === 'â€”') return null;
+  if (!text || text === 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â') return null;
   const cleaned = text
     .replace(/\s+/g, '')
     .replace('%', '')
@@ -43,10 +43,10 @@ function getCellSortValue(cell) {
 function updateSortIndicators(table, colIdx, direction) {
   const headers = Array.from(table.querySelectorAll('thead th'));
   headers.forEach((th, idx) => {
-    if (!th.dataset.labelBase) th.dataset.labelBase = th.textContent.trim().replace(/\s+[â–²â–¼]$/, '');
+    if (!th.dataset.labelBase) th.dataset.labelBase = th.textContent.trim().replace(/\s+[ÃƒÂ¢Ã¢â‚¬â€œÃ‚Â²ÃƒÂ¢Ã¢â‚¬â€œÃ‚Â¼]$/, '');
     th.classList.add('sortable');
     if (idx === colIdx) {
-      th.textContent = `${th.dataset.labelBase} ${direction === 'asc' ? 'â–²' : 'â–¼'}`;
+      th.textContent = `${th.dataset.labelBase} ${direction === 'asc' ? 'ÃƒÂ¢Ã¢â‚¬â€œÃ‚Â²' : 'ÃƒÂ¢Ã¢â‚¬â€œÃ‚Â¼'}`;
     } else {
       th.textContent = th.dataset.labelBase;
     }
@@ -85,7 +85,7 @@ function enableTableSorting(tableId) {
   const headers = Array.from(table.querySelectorAll('thead th'));
   headers.forEach((th, idx) => {
     th.classList.add('sortable');
-    if (!th.dataset.labelBase) th.dataset.labelBase = th.textContent.trim().replace(/\s+[â–²â–¼]$/, '');
+    if (!th.dataset.labelBase) th.dataset.labelBase = th.textContent.trim().replace(/\s+[ÃƒÂ¢Ã¢â‚¬â€œÃ‚Â²ÃƒÂ¢Ã¢â‚¬â€œÃ‚Â¼]$/, '');
     th.addEventListener('click', () => {
       const current = TABLE_SORT_STATE[tableId];
       const direction = current && current.colIdx === idx && current.direction === 'asc' ? 'desc' : 'asc';
@@ -194,14 +194,14 @@ function watchKey(row) {
 function sampleQuality(games) {
   const g = Number(games || 0);
   if (g >= 20) return { label: 'Alta', cls: 'good' };
-  if (g >= 12) return { label: 'MÃ©dia', cls: '' };
+  if (g >= 12) return { label: 'MÃƒÆ’Ã‚Â©dia', cls: '' };
   return { label: 'Baixa', cls: 'warn' };
 }
 
 function miniSparkline(row) {
   const a = toNum(row.hit_rate);
   const b = toNum(row.form_recent_5);
-  if (a == null || b == null) return 'â€”';
+  if (a == null || b == null) return 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â';
   const series = [0, 1, 2, 3, 4].map((i) => a + ((b - a) * i / 4));
   const width = 78;
   const height = 22;
@@ -238,7 +238,7 @@ function opportunityScore(row) {
 
 function scoreBadge(score) {
   if (score >= 75) return '<span class="badge good">Alta</span>';
-  if (score >= 55) return '<span class="badge">MÃ©dia</span>';
+  if (score >= 55) return '<span class="badge">MÃƒÆ’Ã‚Â©dia</span>';
   return '<span class="badge warn">Baixa</span>';
 }
 
@@ -260,10 +260,10 @@ function renderHomeKpis(league, teamFilter = 'Todas') {
     {
       label: 'Oportunidades ativas',
       value: `${marketRows.filter((r) => toNum(r.edge_vs_liga) != null && Number(r.edge_vs_liga) > 0).length}`,
-      sub: `${topOpp ? `${topOpp.team} Â· ${topOpp.market}` : 'Sem destaque'}`
+      sub: `${topOpp ? `${topOpp.team} Ãƒâ€šÃ‚Â· ${topOpp.market}` : 'Sem destaque'}`
     },
     {
-      label: 'Alertas crÃ­ticos',
+      label: 'Alertas crÃƒÆ’Ã‚Â­ticos',
       value: `${alerts.filter((a) => a.severity === 'high').length}`,
       sub: `${alerts.length} alertas na liga`
     },
@@ -273,8 +273,8 @@ function renderHomeKpis(league, teamFilter = 'Todas') {
       sub: `${bestMatch ? `${bestMatch.homeTeam} vs ${bestMatch.awayTeam}` : 'Sem jogo em foco'}`
     },
     {
-      label: 'ConfianÃ§a mÃ©dia',
-      value: `${topOpp && toNum(topOpp.opportunityScore) != null ? `${topOpp.opportunityScore}%` : 'â€”'}`,
+      label: 'ConfianÃƒÆ’Ã‚Â§a mÃƒÆ’Ã‚Â©dia',
+      value: `${topOpp && toNum(topOpp.opportunityScore) != null ? `${topOpp.opportunityScore}%` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}`,
       sub: `${topOpp && toNum(topOpp.edge_vs_liga) != null ? `Edge ${fmtNum(topOpp.edge_vs_liga * 100, 1)} pp` : 'Sem edge relevante'}`
     }
   ];
@@ -318,16 +318,16 @@ function renderHomeNarrative(league, teamFilter = 'Todas') {
     .slice(0, 2);
 
   byId('homeNarrative').innerHTML = `
-    <article class="item"><p class="title">Leitura rÃ¡pida da semana</p><p class="meta">${accelTeams.length} equipas em aceleraÃ§Ã£o (${accelTeams.map((x) => x.team).join(', ') || 'n/a'}).</p></article>
-    <article class="item"><p class="title">ConvicÃ§Ã£o de mercado</p><p class="meta">${topOpp.length} mercados com maior edge relativo (${topOpp.map((x) => `${x.team} Â· ${x.market}`).join(' | ') || 'n/a'}).</p></article>
-    <article class="item"><p class="title">Risco imediato</p><p class="meta">${high} alertas crÃ­ticos na liga selecionada.</p></article>
+    <article class="item"><p class="title">Leitura rÃƒÆ’Ã‚Â¡pida da semana</p><p class="meta">${accelTeams.length} equipas em aceleraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o (${accelTeams.map((x) => x.team).join(', ') || 'n/a'}).</p></article>
+    <article class="item"><p class="title">ConvicÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de mercado</p><p class="meta">${topOpp.length} mercados com maior edge relativo (${topOpp.map((x) => `${x.team} Ãƒâ€šÃ‚Â· ${x.market}`).join(' | ') || 'n/a'}).</p></article>
+    <article class="item"><p class="title">Risco imediato</p><p class="meta">${high} alertas crÃƒÆ’Ã‚Â­ticos na liga selecionada.</p></article>
   `;
 }
 
 function renderLeagueCards(data, selectedLeague) {
   byId('leagueCards').innerHTML = data.overview.map((lg) => {
     const activeStyle = lg.league === selectedLeague ? 'style="border-color:#0e7490"' : '';
-    return `<button class="league-card" data-league="${lg.league}" ${activeStyle}><h3>${leagueLabel(lg.league)}</h3><p>LÃ­der: <strong>${lg.topTeam}</strong></p><p>PPG lÃ­der: ${fmtNum(lg.topPPG)}</p><p>Equipas: ${lg.teams} Â· Jogos: ${lg.matches}</p></button>`;
+    return `<button class="league-card" data-league="${lg.league}" ${activeStyle}><h3>${leagueLabel(lg.league)}</h3><p>LÃƒÆ’Ã‚Â­der: <strong>${lg.topTeam}</strong></p><p>PPG lÃƒÆ’Ã‚Â­der: ${fmtNum(lg.topPPG)}</p><p>Equipas: ${lg.teams} Ãƒâ€šÃ‚Â· Jogos: ${lg.matches}</p></button>`;
   }).join('');
 
   byId('leagueCards').querySelectorAll('[data-league]').forEach((el) => {
@@ -348,23 +348,22 @@ function renderMarkets(league, teamFilter = 'Todas') {
   const rows = DATA.marketRows
     .filter((r) => r.league === league && r.scope === 'Total' && r.hit_rate != null && (teamFilter === 'Todas' || r.team === teamFilter))
     .sort((a, b) => Number(b.value_estimado ?? -999) - Number(a.value_estimado ?? -999))
-    .slice(0, 6);
+    .slice(0, 3);
 
   byId('marketsList').innerHTML = rows.map((m) => {
     const value = toNum(m.value_estimado);
-    const badge = value != null && value >= 0.08 ? 'ConvicÃ§Ã£o Alta' : value != null && value >= 0 ? 'ConvicÃ§Ã£o MÃ©dia' : 'Observar';
+    const badge = value != null && value >= 0.08 ? 'Conviccao alta' : value != null && value >= 0 ? 'Conviccao media' : 'Observar';
     const cls = value != null && value >= 0.08 ? 'good' : value != null && value >= 0 ? '' : 'warn';
-    return `<article class="item"><p class="title">${m.team} Â· ${m.market}</p><p class="meta">Hit ${m.hit_rate != null ? fmtPct(m.hit_rate) : 'â€”'} Â· Edge ${toNum(m.edge_vs_liga) != null ? `${fmtNum(m.edge_vs_liga * 100, 1)} pp` : 'â€”'} Â· Jogos ${m.jogos}</p><span class="badge ${cls}">${badge}</span></article>`;
+    return `<article class="item op-row"><div><p class="title">${m.market}</p><p class="meta">${m.team} Â· ${leagueLabel(m.league)}</p></div><div class="op-meta"><span class="badge ${cls}">${toNum(m.edge_vs_liga) != null ? `${fmtNum(m.edge_vs_liga * 100, 1)}% edge` : 'â€”'}</span><span class="badge">${badge}</span></div></article>`;
   }).join('') || '<p class="meta">Sem mercados suficientes.</p>';
 }
-
 function renderLay(league) {
   const rows = DATA.layRows
     .filter((r) => r.league === league)
     .sort((a, b) => Number(b.lay_score ?? -999) - Number(a.lay_score ?? -999))
     .slice(0, 10);
 
-  byId('layList').innerHTML = rows.map((m) => `<article class="item"><p class="title">${m.team} Â· ${m.cenario_lay}</p><p class="meta">${m.descricao} Â· Hit: ${m.hit_rate != null ? fmtPct(m.hit_rate) : 'â€”'} Â· Score: ${m.lay_score != null ? fmtNum(m.lay_score, 2) : 'â€”'}</p><span class="badge ${m.flag_candidato ? 'good' : 'warn'}">${m.flag_candidato ? 'candidato' : 'observar'}</span></article>`).join('') || '<p class="meta">Sem cenÃ¡rios lay.</p>';
+  byId('layList').innerHTML = rows.map((m) => `<article class="item"><p class="title">${m.team} Ãƒâ€šÃ‚Â· ${m.cenario_lay}</p><p class="meta">${m.descricao} Ãƒâ€šÃ‚Â· Hit: ${m.hit_rate != null ? fmtPct(m.hit_rate) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'} Ãƒâ€šÃ‚Â· Score: ${m.lay_score != null ? fmtNum(m.lay_score, 2) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</p><span class="badge ${m.flag_candidato ? 'good' : 'warn'}">${m.flag_candidato ? 'candidato' : 'observar'}</span></article>`).join('') || '<p class="meta">Sem cenÃƒÆ’Ã‚Â¡rios lay.</p>';
 }
 
 function renderHomeScannerTop(league, teamFilter = 'Todas') {
@@ -374,10 +373,9 @@ function renderHomeScannerTop(league, teamFilter = 'Todas') {
     .sort((a, b) => Number(b.opportunityScore ?? -999) - Number(a.opportunityScore ?? -999))
     .slice(0, 5);
   byId('homeScannerTop').innerHTML = rows.length
-    ? rows.map((r) => `<article class="item"><p class="title">${r.team} Â· ${r.market}</p><p class="meta">Score <strong>${r.opportunityScore}</strong> Â· Edge ${toNum(r.edge_vs_liga) != null ? `${fmtNum(r.edge_vs_liga * 100, 1)} pp` : 'â€”'} Â· ${scoreBadge(r.opportunityScore)}</p></article>`).join('')
+    ? rows.map((r) => `<article class="item op-row"><div><p class="title">${r.market}</p><p class="meta">${r.team} Â· ${leagueLabel(r.league)}</p></div><div class="op-meta"><span class="badge good">${toNum(r.edge_vs_liga) != null ? `${fmtNum(r.edge_vs_liga * 100, 1)}%` : 'â€”'}</span>${scoreBadge(r.opportunityScore)}</div></article>`).join('')
     : '<p class="meta">Sem oportunidades para esta liga.</p>';
 }
-
 function renderHomeScannerSummary(league, teamFilter = 'Todas') {
   const rows = DATA.marketRows
     .filter((r) => r.league === league && r.scope === 'Total' && Number(r.jogos || 0) >= 8 && (teamFilter === 'Todas' || r.team === teamFilter))
@@ -385,10 +383,9 @@ function renderHomeScannerSummary(league, teamFilter = 'Todas') {
     .sort((a, b) => Number(b.opportunityScore ?? -999) - Number(a.opportunityScore ?? -999))
     .slice(0, 5);
   byId('homeScannerSummary').innerHTML = rows.length
-    ? rows.map((r) => `<article class="item"><p class="title">${r.team} Â· ${r.market}</p><p class="meta">Hit ${toNum(r.hit_rate) != null ? fmtPct(r.hit_rate) : 'â€”'} Â· Jogos ${r.jogos} Â· Edge ${toNum(r.edge_vs_liga) != null ? `${fmtNum(r.edge_vs_liga * 100, 1)} pp` : 'â€”'}</p></article>`).join('')
+    ? `<div class="mini-table"><div class="mini-head"><span>Equipa</span><span>Mercado</span><span>Edge</span><span>Status</span></div>${rows.map((r) => `<div class="mini-row"><span>${r.team}</span><span>${r.market}</span><span>${toNum(r.edge_vs_liga) != null ? `${fmtNum(r.edge_vs_liga * 100, 1)}%` : 'â€”'}</span><span>${r.opportunityScore >= 75 ? 'Forte' : 'Boa'}</span></div>`).join('')}</div>`
     : '<p class="meta">Sem sinais suficientes para resumo do scanner.</p>';
 }
-
 function renderHomeWatchlistCompact(league) {
   const keys = Array.from(WATCHLIST);
   const rows = keys.map((k) => parseWatchKey(k))
@@ -404,23 +401,21 @@ function renderHomeWatchlistCompact(league) {
     ? rows.map((r) => `<article class="item"><p class="title">${r.team} Â· ${r.market}</p><p class="meta">${r.scope} Â· Hit ${toNum(r.hit_rate) != null ? fmtPct(r.hit_rate) : 'â€”'} Â· Edge ${toNum(r.edge_vs_liga) != null ? `${fmtNum(r.edge_vs_liga * 100, 1)} pp` : 'â€”'}</p></article>`).join('')
     : '<p class="meta">Sem itens na watchlist desta liga.</p>';
 }
-
 function renderHomeOpsMeta() {
   const generatedAt = DATA.meta?.generatedAt ? String(DATA.meta.generatedAt) : '';
   const formatted = generatedAt
     ? new Date(generatedAt).toLocaleString('pt-PT', { timeZone: 'Europe/Lisbon' })
     : 'â€”';
   const changes = (DATA.changelog || []).length;
-  byId('homeLastUpdate').textContent = `Ãšltima atualizaÃ§Ã£o de dados: ${formatted} Â· changelog semanal: ${changes} registos.`;
+  byId('homeLastUpdate').textContent = `Ultima atualizacao de dados: ${formatted} Â· changelog semanal: ${changes} registos.`;
   const mini = byId('homeChangelogMini');
   if (mini) {
     const items = (DATA.changelog || []).slice(0, 2);
     mini.innerHTML = items.length
-      ? items.map((c) => `<article class="item"><p class="title">${c.date || 'â€”'} Â· ${c.title || 'AtualizaÃ§Ã£o'}</p><p class="meta">${c.summary || 'AtualizaÃ§Ã£o semanal de dados.'}</p></article>`).join('')
+      ? items.map((c) => `<article class="item"><p class="title">${c.date || 'â€”'} Â· ${c.title || 'Atualizacao'}</p><p class="meta">${c.summary || 'Atualizacao semanal de dados.'}</p></article>`).join('')
       : '<p class="meta">Sem entradas recentes de changelog.</p>';
   }
 }
-
 function renderWeeklyVariation(league) {
   const teams = (DATA.rankings[league] || []).map((x) => x.team);
   const teamVar = teams.map((team) => {
@@ -435,8 +430,8 @@ function renderWeeklyVariation(league) {
   }).filter(Boolean).sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta)).slice(0, 8);
 
   byId('variationTeams').innerHTML = teamVar.length
-    ? teamVar.map((x) => `<article class="item"><p class="title">${x.team}</p><p class="meta">VariaÃ§Ã£o pontos (Ãºlt. vs ant.): <strong>${x.delta >= 0 ? '+' : ''}${fmtNum(x.delta, 2)}</strong></p></article>`).join('')
-    : '<p class="meta">Sem variaÃ§Ã£o suficiente.</p>';
+    ? teamVar.map((x) => `<article class="item"><p class="title">${x.team}</p><p class="meta">VariaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o pontos (ÃƒÆ’Ã‚Âºlt. vs ant.): <strong>${x.delta >= 0 ? '+' : ''}${fmtNum(x.delta, 2)}</strong></p></article>`).join('')
+    : '<p class="meta">Sem variaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o suficiente.</p>';
 
   const marketVar = DATA.marketRows
     .filter((r) => r.league === league && r.scope === 'Total')
@@ -451,8 +446,8 @@ function renderWeeklyVariation(league) {
     .slice(0, 8);
 
   byId('variationMarkets').innerHTML = marketVar.length
-    ? marketVar.map((x) => `<article class="item"><p class="title">${x.team} Â· ${x.market}</p><p class="meta">Forma 5J vs Ã©poca: ${fmtPct(x.recent)} vs ${fmtPct(x.season)} Â· <strong>${x.delta >= 0 ? '+' : ''}${fmtNum(x.delta * 100, 1)} pp</strong></p></article>`).join('')
-    : '<p class="meta">Sem variaÃ§Ã£o suficiente.</p>';
+    ? marketVar.map((x) => `<article class="item"><p class="title">${x.team} Ãƒâ€šÃ‚Â· ${x.market}</p><p class="meta">Forma 5J vs ÃƒÆ’Ã‚Â©poca: ${fmtPct(x.recent)} vs ${fmtPct(x.season)} Ãƒâ€šÃ‚Â· <strong>${x.delta >= 0 ? '+' : ''}${fmtNum(x.delta * 100, 1)} pp</strong></p></article>`).join('')
+    : '<p class="meta">Sem variaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o suficiente.</p>';
 }
 
 function renderWeeklyAlerts(league) {
@@ -462,18 +457,18 @@ function renderWeeklyAlerts(league) {
   const high = top.filter((a) => a.severity === 'high').length;
   const medium = top.filter((a) => a.severity === 'medium').length;
   byId('weeklyAlertsMeta').textContent = top.length
-    ? `${top.length} alertas principais Â· ${high} high Â· ${medium} medium`
-    : 'Sem alertas relevantes para esta liga na atualizaÃ§Ã£o atual.';
+    ? `${top.length} alertas principais Ãƒâ€šÃ‚Â· ${high} high Ãƒâ€šÃ‚Â· ${medium} medium`
+    : 'Sem alertas relevantes para esta liga na atualizaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o atual.';
 
   byId('weeklyAlertsList').innerHTML = top.length
     ? top.map((a) => {
       const sevClass = a.severity === 'high' ? 'warn' : '';
       const sevLabel = a.severity === 'high' ? 'HIGH' : 'MEDIUM';
-      const dir = a.direction === 'up' ? 'â†‘' : 'â†“';
+      const dir = a.direction === 'up' ? 'ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬Ëœ' : 'ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬Å“';
       const typeLabel = a.type === 'team_form' ? 'Equipa' : 'Mercado';
-      return `<article class="item"><p class="title">${dir} ${a.entity}${a.market ? ` Â· ${a.market}` : ''}</p><p class="meta">${a.message}</p><span class="badge ${sevClass}">${typeLabel} Â· ${sevLabel}</span></article>`;
+      return `<article class="item"><p class="title">${dir} ${a.entity}${a.market ? ` Ãƒâ€šÃ‚Â· ${a.market}` : ''}</p><p class="meta">${a.message}</p><span class="badge ${sevClass}">${typeLabel} Ãƒâ€šÃ‚Â· ${sevLabel}</span></article>`;
     }).join('')
-    : '<p class="meta">Sem alertas automÃ¡ticos para mostrar.</p>';
+    : '<p class="meta">Sem alertas automÃƒÆ’Ã‚Â¡ticos para mostrar.</p>';
 }
 
 function renderSosTable(league) {
@@ -482,7 +477,7 @@ function renderSosTable(league) {
     .sort((a, b) => Number(b.adj_ppg ?? -999) - Number(a.adj_ppg ?? -999))
     .slice(0, 20);
   byId('sosTable').querySelector('tbody').innerHTML = rows.length
-    ? rows.map((r) => `<tr><td>${r.team}</td><td>${fmtNum(r.raw_ppg)}</td><td>${fmtNum(r.sos_ppg)}</td><td>${fmtNum(r.adj_ppg)}</td><td>${r.last5_ppg != null ? fmtNum(r.last5_ppg) : 'â€”'}</td><td>${r.sample_matches}</td></tr>`).join('')
+    ? rows.map((r) => `<tr><td>${r.team}</td><td>${fmtNum(r.raw_ppg)}</td><td>${fmtNum(r.sos_ppg)}</td><td>${fmtNum(r.adj_ppg)}</td><td>${r.last5_ppg != null ? fmtNum(r.last5_ppg) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td><td>${r.sample_matches}</td></tr>`).join('')
     : '<tr><td colspan="6">Sem dados SOS.</td></tr>';
   applyExistingSort('sosTable');
 }
@@ -550,7 +545,7 @@ function renderScanner() {
   const meta = byId('scannerMeta');
   if (meta) {
     meta.textContent = shown.length
-      ? `${shown.length} mercados listados Â· oportunidade mÃ©dia ${avgOpp} Â· topo: ${top.team} (${top.market})`
+      ? `${shown.length} mercados listados Ãƒâ€šÃ‚Â· oportunidade mÃƒÆ’Ã‚Â©dia ${avgOpp} Ãƒâ€šÃ‚Â· topo: ${top.team} (${top.market})`
       : 'Sem mercados para estes filtros.';
   }
 
@@ -559,18 +554,18 @@ function renderScanner() {
     const watched = WATCHLIST.has(key);
     const sq = sampleQuality(r.jogos);
     return `<tr>
-      <td><button class="watch-btn ${watched ? 'active' : ''}" data-watch-key="${key}" title="Adicionar/remover watchlist">${watched ? 'â˜…' : 'â˜†'}</button></td>
+      <td><button class="watch-btn ${watched ? 'active' : ''}" data-watch-key="${key}" title="Adicionar/remover watchlist">${watched ? 'ÃƒÂ¢Ã‹Å“Ã¢â‚¬Â¦' : 'ÃƒÂ¢Ã‹Å“Ã¢â‚¬Â '}</button></td>
       <td>${r.team}</td>
       <td>${r.market}</td>
       <td>${r.jogos}</td>
-      <td>${r.hit_rate != null ? fmtPct(r.hit_rate) : 'â€”'}</td>
+      <td>${r.hit_rate != null ? fmtPct(r.hit_rate) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
       <td>${renderCiCell(r)}</td>
       <td>${miniSparkline(r)}</td>
       <td><span class="badge ${sq.cls}">${sq.label}</span></td>
       <td>${r.opportunityScore}<br>${scoreBadge(r.opportunityScore)}</td>
-      <td>${r.edge_vs_liga != null ? `${fmtNum(r.edge_vs_liga * 100, 1)} pp` : 'â€”'}</td>
-      <td>${r.roi_unid_por_aposta != null ? fmtNum(r.roi_unid_por_aposta, 3) : 'â€”'}</td>
-      <td>${r.value_estimado != null ? `${fmtNum(r.value_estimado * 100, 1)}%` : 'â€”'}</td>
+      <td>${r.edge_vs_liga != null ? `${fmtNum(r.edge_vs_liga * 100, 1)} pp` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${r.roi_unid_por_aposta != null ? fmtNum(r.roi_unid_por_aposta, 3) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${r.value_estimado != null ? `${fmtNum(r.value_estimado * 100, 1)}%` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
     </tr>`;
   }).join('') || '<tr><td colspan="12">Sem dados para os filtros escolhidos.</td></tr>';
 
@@ -591,11 +586,11 @@ function renderCiCell(r) {
   const lo = toNum(r.wilson_lo);
   const hi = toNum(r.wilson_hi);
   const hr = toNum(r.hit_rate);
-  if (lo == null || hi == null || hr == null) return 'â€”';
+  if (lo == null || hi == null || hr == null) return 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â';
   const left = clamp(lo * 100, 0, 100);
   const right = clamp(hi * 100, 0, 100);
   const point = clamp(hr * 100, 0, 100);
-  return `<div class="ci-cell"><div class="ci-track"><span class="ci-range" style="left:${left}%;width:${Math.max(1,right-left)}%"></span><span class="ci-point" style="left:${point}%"></span></div><div class="ci-label">${fmtPct(lo)}â€“${fmtPct(hi)}</div></div>`;
+  return `<div class="ci-cell"><div class="ci-track"><span class="ci-range" style="left:${left}%;width:${Math.max(1,right-left)}%"></span><span class="ci-point" style="left:${point}%"></span></div><div class="ci-label">${fmtPct(lo)}ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“${fmtPct(hi)}</div></div>`;
 }
 
 function renderWatchlistPanel() {
@@ -606,7 +601,7 @@ function renderWatchlistPanel() {
     return { key: k, league, team, scope, market };
   });
   el.innerHTML = items.length
-    ? items.map((x) => `<article class="item"><p class="title">${x.team} Â· ${x.market}</p><p class="meta">${leagueLabel(x.league)} Â· ${x.scope}</p><button class="ghost-btn watch-remove" data-watch-key="${x.key}">Remover</button></article>`).join('')
+    ? items.map((x) => `<article class="item"><p class="title">${x.team} Ãƒâ€šÃ‚Â· ${x.market}</p><p class="meta">${leagueLabel(x.league)} Ãƒâ€šÃ‚Â· ${x.scope}</p><button class="ghost-btn watch-remove" data-watch-key="${x.key}">Remover</button></article>`).join('')
     : '<p class="meta">Sem mercados guardados na watchlist.</p>';
 
   el.querySelectorAll('.watch-remove').forEach((btn) => {
@@ -726,15 +721,15 @@ function strengthsWeakness(row, league, scope) {
   const rows = getScopeRows(league, scope);
   const specs = [
     ['ppg', 'Pontos por jogo', false],
-    ['vit%', 'Taxa de vitÃ³rias', false],
+    ['vit%', 'Taxa de vitÃƒÆ’Ã‚Â³rias', false],
     ['golos_marcados', 'Golos marcados', false],
     ['golos_sofridos', 'Golos sofridos', true],
     ['CS%', 'Clean sheet', false],
     ['BTTS%', 'BTTS', false],
     ['O2.5%', 'Over 2.5', false],
-    ['SOT', 'Remates Ã  baliza', false],
-    ['SOT_sofridos', 'Remates Ã  baliza sofridos', true],
-    ['conversion_rate', 'ConversÃ£o de remates', false]
+    ['SOT', 'Remates ÃƒÆ’Ã‚Â  baliza', false],
+    ['SOT_sofridos', 'Remates ÃƒÆ’Ã‚Â  baliza sofridos', true],
+    ['conversion_rate', 'ConversÃƒÆ’Ã‚Â£o de remates', false]
   ];
 
   const scored = specs.map(([col, label, inv]) => ({
@@ -756,7 +751,7 @@ function renderConfrontoKpis(league, home, away) {
     if (!row) return `<article class="kpi-card"><h3>${title}</h3><p class="meta">Sem dados</p></article>`;
     return `<article class="kpi-card"><h3>${title}</h3>
       <div class="kpi-row"><span>PPG</span><strong>${fmtNum(row.ppg)}</strong></div>
-      <div class="kpi-row"><span>VitÃ³rias</span><strong>${fmtPct(row['vit%'])}</strong></div>
+      <div class="kpi-row"><span>VitÃƒÆ’Ã‚Â³rias</span><strong>${fmtPct(row['vit%'])}</strong></div>
       <div class="kpi-row"><span>Golos Marcados</span><strong>${fmtNum(row.golos_marcados)}</strong></div>
       <div class="kpi-row"><span>Golos Sofridos</span><strong>${fmtNum(row.golos_sofridos)}</strong></div>
       <div class="kpi-row"><span>BTTS</span><strong>${fmtPct(row['BTTS%'])}</strong></div>
@@ -792,12 +787,12 @@ function renderMatchupExecutive(league, home, away) {
 
   el.innerHTML = `
     <p class="title">Resumo Executivo: ${direction}</p>
-    <p class="meta">${leagueLabel(league)} Â· ${rhythm} Â· leitura rÃ¡pida para decisÃ£o prÃ©-jogo.</p>
+    <p class="meta">${leagueLabel(league)} Ãƒâ€šÃ‚Â· ${rhythm} Ãƒâ€šÃ‚Â· leitura rÃƒÆ’Ã‚Â¡pida para decisÃƒÆ’Ã‚Â£o prÃƒÆ’Ã‚Â©-jogo.</p>
     <div class="chips">
       <span class="chip">Delta PPG: ${ppgDelta >= 0 ? '+' : ''}${fmtNum(ppgDelta, 2)}</span>
-      <span class="chip">ConfianÃ§a: ${conf ? conf.score : 'â€”'}/100</span>
-      <span class="chip">Top mercado: ${topMarket ? topMarket.market : 'â€”'}</span>
-      <span class="chip">Edge mÃ©dio topo: ${topMarket ? `${fmtNum(topMarket.avg * 100, 1)} pp` : 'â€”'}</span>
+      <span class="chip">ConfianÃƒÆ’Ã‚Â§a: ${conf ? conf.score : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}/100</span>
+      <span class="chip">Top mercado: ${topMarket ? topMarket.market : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</span>
+      <span class="chip">Edge mÃƒÆ’Ã‚Â©dio topo: ${topMarket ? `${fmtNum(topMarket.avg * 100, 1)} pp` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</span>
     </div>
   `;
 }
@@ -846,8 +841,8 @@ function renderRadarSection(league, home, away) {
   const hs = strengthsWeakness(h, league, 'Casa');
   const as = strengthsWeakness(a, league, 'Fora');
 
-  byId('homeStrengths').innerHTML = `<div><strong>Pontos fortes:</strong> ${hs.top.map((x) => x.label).join(', ') || 'â€”'}</div><div><strong>Pontos fracos:</strong> ${hs.low.map((x) => x.label).join(', ') || 'â€”'}</div>`;
-  byId('awayStrengths').innerHTML = `<div><strong>Pontos fortes:</strong> ${as.top.map((x) => x.label).join(', ') || 'â€”'}</div><div><strong>Pontos fracos:</strong> ${as.low.map((x) => x.label).join(', ') || 'â€”'}</div>`;
+  byId('homeStrengths').innerHTML = `<div><strong>Pontos fortes:</strong> ${hs.top.map((x) => x.label).join(', ') || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</div><div><strong>Pontos fracos:</strong> ${hs.low.map((x) => x.label).join(', ') || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</div>`;
+  byId('awayStrengths').innerHTML = `<div><strong>Pontos fortes:</strong> ${as.top.map((x) => x.label).join(', ') || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</div><div><strong>Pontos fracos:</strong> ${as.low.map((x) => x.label).join(', ') || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</div>`;
 }
 
 function regressionAlertForTeam(league, team, scopeLabel) {
@@ -865,10 +860,10 @@ function regressionAlertForTeam(league, team, scopeLabel) {
 
   const gap = recent - expected;
   if (gap >= 1.2) {
-    return `${team}: rendimento recente acima do esperado (+${fmtNum(gap, 2)} pts/5j), possÃ­vel regressÃ£o Ã  mÃ©dia.`;
+    return `${team}: rendimento recente acima do esperado (+${fmtNum(gap, 2)} pts/5j), possÃƒÆ’Ã‚Â­vel regressÃƒÆ’Ã‚Â£o ÃƒÆ’Ã‚Â  mÃƒÆ’Ã‚Â©dia.`;
   }
   if (gap <= -1.2) {
-    return `${team}: rendimento recente abaixo do esperado (${fmtNum(gap, 2)} pts/5j), possÃ­vel recuperaÃ§Ã£o Ã  mÃ©dia.`;
+    return `${team}: rendimento recente abaixo do esperado (${fmtNum(gap, 2)} pts/5j), possÃƒÆ’Ã‚Â­vel recuperaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o ÃƒÆ’Ã‚Â  mÃƒÆ’Ã‚Â©dia.`;
   }
   return null;
 }
@@ -881,19 +876,19 @@ function matchupInsights(league, home, away) {
   const out = [];
 
   if (Number(h.golos_marcados) >= 1.7 && Number(a.golos_sofridos) >= 1.4) {
-    out.push('Casa com Ã¢ngulo ofensivo forte: ataque da casa acima da mÃ©dia e defesa visitante permissiva.');
+    out.push('Casa com ÃƒÆ’Ã‚Â¢ngulo ofensivo forte: ataque da casa acima da mÃƒÆ’Ã‚Â©dia e defesa visitante permissiva.');
   }
   if (Number(a.golos_marcados) >= 1.4 && Number(h.golos_sofridos) >= 1.3) {
-    out.push('Visitante com potencial de marcar: produÃ§Ã£o ofensiva consistente contra defesa da casa vulnerÃ¡vel.');
+    out.push('Visitante com potencial de marcar: produÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o ofensiva consistente contra defesa da casa vulnerÃƒÆ’Ã‚Â¡vel.');
   }
   if (Number(h['O2.5%']) >= 0.6 && Number(a['O2.5%']) >= 0.55) {
     out.push('Ritmo alto dos dois lados, jogo propenso a linhas de golos mais altas.');
   }
   if (Number(h['CS%']) >= 0.4 && Number(a['marca%']) <= 0.75) {
-    out.push('Boa hipÃ³tese de controlo defensivo da casa, com risco reduzido de sofrer.');
+    out.push('Boa hipÃƒÆ’Ã‚Â³tese de controlo defensivo da casa, com risco reduzido de sofrer.');
   }
   if (Number(h.ppg) - Number(a.ppg) >= 0.45) {
-    out.push('DiferenÃ§a de desempenho no contexto casa/fora favorece a equipa da casa.');
+    out.push('DiferenÃƒÆ’Ã‚Â§a de desempenho no contexto casa/fora favorece a equipa da casa.');
   }
 
   const regHome = regressionAlertForTeam(league, home, 'Casa');
@@ -968,14 +963,14 @@ function renderProcessLayer(league, home, away) {
       <div class="kpi-row"><span>Big chances (proxy)</span><strong>${fmtNum(am.bigChancesProxy, 2)}</strong></div>
     </article>
     <article class="kpi-card">
-      <h3>ComparaÃ§Ã£o direta</h3>
+      <h3>ComparaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o direta</h3>
       <div class="kpi-row"><span>xG diff (Casa-Fora)</span><strong>${fmtNum(hm.xg - am.xg, 2)}</strong></div>
       <div class="kpi-row"><span>xGA diff (Casa-Fora)</span><strong>${fmtNum(hm.xga - am.xga, 2)}</strong></div>
-      <div class="kpi-row"><span>xG/remate (Casa)</span><strong>${hm.xgPerShot != null ? fmtNum(hm.xgPerShot, 3) : 'â€”'}</strong></div>
-      <div class="kpi-row"><span>xG/remate (Fora)</span><strong>${am.xgPerShot != null ? fmtNum(am.xgPerShot, 3) : 'â€”'}</strong></div>
+      <div class="kpi-row"><span>xG/remate (Casa)</span><strong>${hm.xgPerShot != null ? fmtNum(hm.xgPerShot, 3) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div>
+      <div class="kpi-row"><span>xG/remate (Fora)</span><strong>${am.xgPerShot != null ? fmtNum(am.xgPerShot, 3) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div>
     </article>
     <article class="kpi-card">
-      <h3>Leitura de eficiÃªncia</h3>
+      <h3>Leitura de eficiÃƒÆ’Ã‚Âªncia</h3>
       <div class="kpi-row"><span>${home} golos - xG</span><strong>${hm.goalsMinusXg >= 0 ? '+' : ''}${fmtNum(hm.goalsMinusXg, 2)}</strong></div>
       <div class="kpi-row"><span>${away} golos - xG</span><strong>${am.goalsMinusXg >= 0 ? '+' : ''}${fmtNum(am.goalsMinusXg, 2)}</strong></div>
       <div class="kpi-row"><span>${home} golos sofridos - xGA</span><strong>${hm.goalsConcededMinusXga >= 0 ? '+' : ''}${fmtNum(hm.goalsConcededMinusXga, 2)}</strong></div>
@@ -988,7 +983,7 @@ function normalizeTeamName(s) {
   return String(s || '')
     .toLowerCase()
     .trim()
-    .replace(/[.'â€™-]/g, '')
+    .replace(/[.'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢-]/g, '')
     .replace(/\b(fc|cf|ac|sc)\b/g, '')
     .replace(/\s+/g, ' ')
     .trim();
@@ -1017,13 +1012,13 @@ function renderTeamContext(league, home, away) {
 
   if (!h && !a) {
     const reason = !meta.keyConfigured
-      ? 'API_FOOTBALL_KEY nÃ£o configurada.'
-      : (errors.length ? errors.join(' | ') : 'A API devolveu sem registos para esta janela/competiÃ§Ãµes.');
+      ? 'API_FOOTBALL_KEY nÃƒÆ’Ã‚Â£o configurada.'
+      : (errors.length ? errors.join(' | ') : 'A API devolveu sem registos para esta janela/competiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes.');
     el.innerHTML = `
       <article class="kpi-card">
-        <h3>Disponibilidade indisponÃ­vel nesta atualizaÃ§Ã£o</h3>
+        <h3>Disponibilidade indisponÃƒÆ’Ã‚Â­vel nesta atualizaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o</h3>
         <div class="kpi-row"><span>Provider</span><strong>${meta.provider || 'api-football'}</strong></div>
-        <div class="kpi-row"><span>Chave API</span><strong>${meta.keyConfigured ? 'Configurada' : 'NÃ£o configurada'}</strong></div>
+        <div class="kpi-row"><span>Chave API</span><strong>${meta.keyConfigured ? 'Configurada' : 'NÃƒÆ’Ã‚Â£o configurada'}</strong></div>
         <p class="meta">${reason}</p>
       </article>
     `;
@@ -1032,15 +1027,15 @@ function renderTeamContext(league, home, away) {
 
   const card = (team, ctx) => {
     if (!ctx) {
-      return `<article class="kpi-card"><h3>${team}</h3><p class="meta">Sem disponibilidade especÃ­fica para esta equipa na resposta atual.</p></article>`;
+      return `<article class="kpi-card"><h3>${team}</h3><p class="meta">Sem disponibilidade especÃƒÆ’Ã‚Â­fica para esta equipa na resposta atual.</p></article>`;
     }
     const abs = (ctx.keyAbsences || []).slice(0, 3);
     return `<article class="kpi-card">
       <h3>${team}</h3>
-      <div class="kpi-row"><span>IndisponÃ­veis</span><strong>${ctx.unavailableCount ?? 0}</strong></div>
+      <div class="kpi-row"><span>IndisponÃƒÆ’Ã‚Â­veis</span><strong>${ctx.unavailableCount ?? 0}</strong></div>
       <div class="kpi-row"><span>Lesionados</span><strong>${ctx.injuryCount ?? 0}</strong></div>
       <div class="kpi-row"><span>Suspensos</span><strong>${ctx.suspensionCount ?? 0}</strong></div>
-      <div class="kpi-row"><span>XI provÃ¡vel (formaÃ§Ã£o)</span><strong>${ctx.probableFormation || 'â€”'}</strong></div>
+      <div class="kpi-row"><span>XI provÃƒÆ’Ã‚Â¡vel (formaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o)</span><strong>${ctx.probableFormation || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div>
       <p class="meta">${abs.length ? `Baixas chave: ${abs.map((x) => x.player).join(', ')}` : 'Sem baixas chave mapeadas.'}</p>
     </article>`;
   };
@@ -1049,11 +1044,11 @@ function renderTeamContext(league, home, away) {
     ${card(home, h)}
     ${card(away, a)}
     <article class="kpi-card">
-      <h3>Fonte e atualizaÃ§Ã£o</h3>
-      <div class="kpi-row"><span>Provider</span><strong>${meta.provider || 'â€”'}</strong></div>
-      <div class="kpi-row"><span>Atualizado</span><strong>${meta.generatedAt ? String(meta.generatedAt).slice(0, 16).replace('T', ' ') : 'â€”'}</strong></div>
-      <div class="kpi-row"><span>Chave API</span><strong>${meta.keyConfigured ? 'Configurada' : 'NÃ£o configurada'}</strong></div>
-      <p class="meta">Quando disponÃ­vel, o XI provÃ¡vel Ã© inferido da formaÃ§Ã£o prevista no prÃ³ximo jogo.</p>
+      <h3>Fonte e atualizaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o</h3>
+      <div class="kpi-row"><span>Provider</span><strong>${meta.provider || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div>
+      <div class="kpi-row"><span>Atualizado</span><strong>${meta.generatedAt ? String(meta.generatedAt).slice(0, 16).replace('T', ' ') : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div>
+      <div class="kpi-row"><span>Chave API</span><strong>${meta.keyConfigured ? 'Configurada' : 'NÃƒÆ’Ã‚Â£o configurada'}</strong></div>
+      <p class="meta">Quando disponÃƒÆ’Ã‚Â­vel, o XI provÃƒÆ’Ã‚Â¡vel ÃƒÆ’Ã‚Â© inferido da formaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o prevista no prÃƒÆ’Ã‚Â³ximo jogo.</p>
     </article>
   `;
 }
@@ -1079,12 +1074,12 @@ function styleVector(row) {
 function styleLabel(v) {
   if (!v) return 'Sem perfil';
   const tags = [];
-  if (v.pressProxy >= 0.62) tags.push('pressÃ£o alta (proxy)');
+  if (v.pressProxy >= 0.62) tags.push('pressÃƒÆ’Ã‚Â£o alta (proxy)');
   if (v.directness >= 0.58) tags.push('jogo direto');
-  if (v.crossingBias >= 0.55) tags.push('dependÃªncia de cruzamentos');
-  if (v.transitionBias >= 0.56) tags.push('ataques rÃ¡pidos');
+  if (v.crossingBias >= 0.55) tags.push('dependÃƒÆ’Ã‚Âªncia de cruzamentos');
+  if (v.transitionBias >= 0.56) tags.push('ataques rÃƒÆ’Ã‚Â¡pidos');
   if (!tags.length) tags.push('perfil equilibrado');
-  return tags.join(' Â· ');
+  return tags.join(' Ãƒâ€šÃ‚Â· ');
 }
 
 function renderStyleMismatch(league, home, away) {
@@ -1108,25 +1103,25 @@ function renderStyleMismatch(league, home, away) {
   const clashes = [];
   if (hs.pressProxy - as.pressProxy >= 0.16) clashes.push(`${home} tende a pressionar mais alto do que ${away}.`);
   else if (as.pressProxy - hs.pressProxy >= 0.16) clashes.push(`${away} tende a pressionar mais alto do que ${home}.`);
-  if (Math.abs(hs.directness - as.directness) >= 0.18) clashes.push('DiferenÃ§a relevante entre jogo direto e construÃ§Ã£o.');
+  if (Math.abs(hs.directness - as.directness) >= 0.18) clashes.push('DiferenÃƒÆ’Ã‚Â§a relevante entre jogo direto e construÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o.');
   if (Math.abs(hs.crossingBias - as.crossingBias) >= 0.18) clashes.push('Assimetria no uso de cruzamentos e bolas laterais.');
-  if (Math.abs(hs.transitionBias - as.transitionBias) >= 0.18) clashes.push('Ritmo de transiÃ§Ã£o ofensiva em conflito.');
-  if (!clashes.length) clashes.push('Perfis relativamente prÃ³ximos; matchup tende a ser mais tÃ¡tico e menos caÃ³tico.');
+  if (Math.abs(hs.transitionBias - as.transitionBias) >= 0.18) clashes.push('Ritmo de transiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o ofensiva em conflito.');
+  if (!clashes.length) clashes.push('Perfis relativamente prÃƒÆ’Ã‚Â³ximos; matchup tende a ser mais tÃƒÆ’Ã‚Â¡tico e menos caÃƒÆ’Ã‚Â³tico.');
 
   el.innerHTML = `
     <article class="kpi-card">
       <h3>Leitura executiva de estilos</h3>
       <div class="kpi-row"><span>Mismatch score</span><strong>${mismatchScore}/100</strong></div>
-      <div class="kpi-row"><span>DiagnÃ³stico</span><strong>${verdict}</strong></div>
+      <div class="kpi-row"><span>DiagnÃƒÆ’Ã‚Â³stico</span><strong>${verdict}</strong></div>
       <p class="meta">${clashes.slice(0, 2).join(' ')}</p>
-      <p class="meta">*PPDA proxy: estimativa por remates permitidos vs remates Ã  baliza sofridos (nÃ£o Ã© PPDA oficial).</p>
+      <p class="meta">*PPDA proxy: estimativa por remates permitidos vs remates ÃƒÆ’Ã‚Â  baliza sofridos (nÃƒÆ’Ã‚Â£o ÃƒÆ’Ã‚Â© PPDA oficial).</p>
     </article>
     <article class="kpi-card">
-      <h3>ComparaÃ§Ã£o de perfil</h3>
+      <h3>ComparaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de perfil</h3>
       <div class="kpi-row"><span>${home}</span><strong>${styleLabel(hs)}</strong></div>
       <div class="kpi-row"><span>${away}</span><strong>${styleLabel(as)}</strong></div>
-      <div class="kpi-row"><span>PPDA proxy (${home})</span><strong>${hs.ppdaProxy != null ? fmtNum(hs.ppdaProxy, 2) : 'â€”'}</strong></div>
-      <div class="kpi-row"><span>PPDA proxy (${away})</span><strong>${as.ppdaProxy != null ? fmtNum(as.ppdaProxy, 2) : 'â€”'}</strong></div>
+      <div class="kpi-row"><span>PPDA proxy (${home})</span><strong>${hs.ppdaProxy != null ? fmtNum(hs.ppdaProxy, 2) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div>
+      <div class="kpi-row"><span>PPDA proxy (${away})</span><strong>${as.ppdaProxy != null ? fmtNum(as.ppdaProxy, 2) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div>
     </article>
   `;
 }
@@ -1175,7 +1170,7 @@ function rotationRiskLabel(unavailable, daysRest, games8) {
   else if ((daysRest ?? 99) <= 5) score += 1;
   if ((games8 || 0) >= 2) score += 2;
   if (score >= 5) return 'Alta';
-  if (score >= 3) return 'MÃ©dia';
+  if (score >= 3) return 'MÃƒÆ’Ã‚Â©dia';
   return 'Baixa';
 }
 
@@ -1213,8 +1208,8 @@ function renderFatigueRotation(league, home, away) {
     const thirdIn8 = !fallbackOk
       ? 'N/D'
       : (hasApiFatigue
-      ? (apiFatigue.thirdGameIn8d ? 'Sim' : 'NÃ£o')
-      : (games8 >= 2 ? 'Sim' : 'NÃ£o'));
+      ? (apiFatigue.thirdGameIn8d ? 'Sim' : 'NÃƒÆ’Ã‚Â£o')
+      : (games8 >= 2 ? 'Sim' : 'NÃƒÆ’Ã‚Â£o'));
     const euroBefore = hasApiFatigue ? !!apiFatigue.europeanBefore : false;
     const euroAfter = hasApiFatigue ? !!apiFatigue.europeanAfter : false;
     const extraTimeRecent = hasApiFatigue ? !!apiFatigue.extraTimeRecent : false;
@@ -1225,32 +1220,32 @@ function renderFatigueRotation(league, home, away) {
   const h = build(home, homeCtx);
   const a = build(away, awayCtx);
   const riskSummary = (h.risk === 'Alta' || a.risk === 'Alta')
-    ? 'Risco elevado de rotaÃ§Ã£o em pelo menos uma equipa.'
-    : (h.risk === 'MÃ©dia' || a.risk === 'MÃ©dia')
-      ? 'Risco moderado de rotaÃ§Ã£o; confirmar onze inicial.'
+    ? 'Risco elevado de rotaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o em pelo menos uma equipa.'
+    : (h.risk === 'MÃƒÆ’Ã‚Â©dia' || a.risk === 'MÃƒÆ’Ã‚Â©dia')
+      ? 'Risco moderado de rotaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o; confirmar onze inicial.'
       : 'Carga competitiva controlada para as duas equipas.';
   const sourceLabel = (h.hasApiFatigue && a.hasApiFatigue)
-    ? 'API multi-competiÃ§Ã£o'
-    : ((h.hasApiFatigue || a.hasApiFatigue) ? 'Misto (API + fallback domÃ©stico)' : 'Fallback domÃ©stico local');
+    ? 'API multi-competiÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o'
+    : ((h.hasApiFatigue || a.hasApiFatigue) ? 'Misto (API + fallback domÃƒÆ’Ã‚Â©stico)' : 'Fallback domÃƒÆ’Ã‚Â©stico local');
   const lowConfidenceNote = (!h.hasApiFatigue && !h.fallbackOk) || (!a.hasApiFatigue && !a.fallbackOk)
-    ? '<p class="meta">Nota: fallback local com baixa confianÃ§a temporal (pode estar desatualizado).</p>'
+    ? '<p class="meta">Nota: fallback local com baixa confianÃƒÆ’Ã‚Â§a temporal (pode estar desatualizado).</p>'
     : '';
 
   el.innerHTML = `
     <article class="kpi-card">
       <h3>Resumo de carga competitiva</h3>
-      <div class="kpi-row"><span>${home}</span><strong>${h.risk} (descanso ${h.daysRest != null ? h.daysRest : 'â€”'}d)</strong></div>
-      <div class="kpi-row"><span>${away}</span><strong>${a.risk} (descanso ${a.daysRest != null ? a.daysRest : 'â€”'}d)</strong></div>
+      <div class="kpi-row"><span>${home}</span><strong>${h.risk} (descanso ${h.daysRest != null ? h.daysRest : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}d)</strong></div>
+      <div class="kpi-row"><span>${away}</span><strong>${a.risk} (descanso ${a.daysRest != null ? a.daysRest : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}d)</strong></div>
       <p class="meta">${riskSummary}</p>
-      <p class="meta">Jogo europeu antes/depois: ${home} ${h.euroBefore ? 'Sim' : 'NÃ£o'}/${h.euroAfter ? 'Sim' : 'NÃ£o'} Â· ${away} ${a.euroBefore ? 'Sim' : 'NÃ£o'}/${a.euroAfter ? 'Sim' : 'NÃ£o'}.</p>
-      <p class="meta">Prolongamento recente: ${home} ${h.extraTimeRecent ? 'Sim' : 'NÃ£o'} Â· ${away} ${a.extraTimeRecent ? 'Sim' : 'NÃ£o'}.</p>
+      <p class="meta">Jogo europeu antes/depois: ${home} ${h.euroBefore ? 'Sim' : 'NÃƒÆ’Ã‚Â£o'}/${h.euroAfter ? 'Sim' : 'NÃƒÆ’Ã‚Â£o'} Ãƒâ€šÃ‚Â· ${away} ${a.euroBefore ? 'Sim' : 'NÃƒÆ’Ã‚Â£o'}/${a.euroAfter ? 'Sim' : 'NÃƒÆ’Ã‚Â£o'}.</p>
+      <p class="meta">Prolongamento recente: ${home} ${h.extraTimeRecent ? 'Sim' : 'NÃƒÆ’Ã‚Â£o'} Ãƒâ€šÃ‚Â· ${away} ${a.extraTimeRecent ? 'Sim' : 'NÃƒÆ’Ã‚Â£o'}.</p>
     </article>
     <article class="kpi-card">
       <h3>Detalhe por equipa</h3>
-      <div class="kpi-row"><span>${home}: jogos Ãºltimos 8d</span><strong>${h.games8 != null ? h.games8 : 'N/D'}</strong></div>
-      <div class="kpi-row"><span>${home}: 3.Âº jogo em 8d</span><strong>${h.thirdIn8}</strong></div>
-      <div class="kpi-row"><span>${away}: jogos Ãºltimos 8d</span><strong>${a.games8 != null ? a.games8 : 'N/D'}</strong></div>
-      <div class="kpi-row"><span>${away}: 3.Âº jogo em 8d</span><strong>${a.thirdIn8}</strong></div>
+      <div class="kpi-row"><span>${home}: jogos ÃƒÆ’Ã‚Âºltimos 8d</span><strong>${h.games8 != null ? h.games8 : 'N/D'}</strong></div>
+      <div class="kpi-row"><span>${home}: 3.Ãƒâ€šÃ‚Âº jogo em 8d</span><strong>${h.thirdIn8}</strong></div>
+      <div class="kpi-row"><span>${away}: jogos ÃƒÆ’Ã‚Âºltimos 8d</span><strong>${a.games8 != null ? a.games8 : 'N/D'}</strong></div>
+      <div class="kpi-row"><span>${away}: 3.Ãƒâ€šÃ‚Âº jogo em 8d</span><strong>${a.thirdIn8}</strong></div>
       <p class="meta">Fonte de fadiga: ${sourceLabel}</p>
       ${lowConfidenceNote}
     </article>
@@ -1275,11 +1270,11 @@ function renderSetPiecesModule(league, home, away) {
     const setPieceThreat = ((cornersFor ?? 0) * 0.65) + ((toNum(row.SOT) ?? 0) * 0.35);
     return `<article class="kpi-card">
       <h3>${team}</h3>
-      <div class="kpi-row"><span>Cantos a favor (90')</span><strong>${cornersFor != null ? fmtNum(cornersFor, 2) : 'â€”'}</strong></div>
-      <div class="kpi-row"><span>Cantos contra (90')</span><strong>${cornersAgainst != null ? fmtNum(cornersAgainst, 2) : 'â€”'}</strong></div>
-      <div class="kpi-row"><span>CartÃµes (proxy 90')</span><strong>${yellows != null ? fmtNum(yellows, 2) : 'â€”'}</strong></div>
+      <div class="kpi-row"><span>Cantos a favor (90')</span><strong>${cornersFor != null ? fmtNum(cornersFor, 2) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div>
+      <div class="kpi-row"><span>Cantos contra (90')</span><strong>${cornersAgainst != null ? fmtNum(cornersAgainst, 2) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div>
+      <div class="kpi-row"><span>CartÃƒÆ’Ã‚Âµes (proxy 90')</span><strong>${yellows != null ? fmtNum(yellows, 2) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div>
       <div class="kpi-row"><span>Set-piece threat (proxy)</span><strong>${fmtNum(setPieceThreat, 2)}</strong></div>
-      <p class="meta">Faltas, Ã¡rbitro e tendÃªncia penalties: N/D sem feed dedicado.</p>
+      <p class="meta">Faltas, ÃƒÆ’Ã‚Â¡rbitro e tendÃƒÆ’Ã‚Âªncia penalties: N/D sem feed dedicado.</p>
     </article>`;
   };
 
@@ -1341,7 +1336,7 @@ function renderCompareSection(league, home, away) {
 
   const rows = [
     ['PPG', Number(h.ppg), Number(a.ppg)],
-    ['VitÃ³rias %', Number(h['vit%']) * 100, Number(a['vit%']) * 100],
+    ['VitÃƒÆ’Ã‚Â³rias %', Number(h['vit%']) * 100, Number(a['vit%']) * 100],
     ['Golos marcados', Number(h.golos_marcados), Number(a.golos_marcados)],
     ['Golos sofridos', Number(h.golos_sofridos), Number(a.golos_sofridos)],
     ['BTTS %', Number(h['BTTS%']) * 100, Number(a['BTTS%']) * 100],
@@ -1361,7 +1356,7 @@ function drawCompareLineChart(homeSeries, awaySeries, homeName, awayName) {
   const t = chartTheme();
   if (!svg) return;
   if (!homeSeries.length && !awaySeries.length) {
-    svg.innerHTML = `<text x="16" y="28" fill="${t.muted}" font-size="14">Sem sÃ©ries para comparar.</text>`;
+    svg.innerHTML = `<text x="16" y="28" fill="${t.muted}" font-size="14">Sem sÃƒÆ’Ã‚Â©ries para comparar.</text>`;
     return;
   }
 
@@ -1393,7 +1388,7 @@ function drawCompareLineChart(homeSeries, awaySeries, homeName, awayName) {
     ${aPts ? `<polyline fill="none" stroke="${t.alt}" stroke-width="2.5" points="${aPts}" />` : ''}
     <text x="${margin.left}" y="14" fill="${t.main}" font-size="12">${homeName} (Casa)</text>
     <text x="${width - margin.right}" y="14" text-anchor="end" fill="${t.alt}" font-size="12">${awayName} (Fora)</text>
-    <text x="${margin.left}" y="${height - 8}" fill="${t.axis}" font-size="11">InÃ­cio</text>
+    <text x="${margin.left}" y="${height - 8}" fill="${t.axis}" font-size="11">InÃƒÆ’Ã‚Â­cio</text>
     <text x="${width - margin.right}" y="${height - 8}" text-anchor="end" fill="${t.axis}" font-size="11">Recente</text>
   `;
 }
@@ -1403,14 +1398,14 @@ function renderMatchOfWeek(league) {
   if (bestApi && bestApi.homeTeam && bestApi.awayTeam) {
     const topMarkets = Array.isArray(bestApi.topMarkets) ? bestApi.topMarkets : [];
     const marketsText = topMarkets.length
-      ? topMarkets.map((m) => `${m.market}${toNum(m.avg_edge) != null ? ` (${fmtNum(m.avg_edge * 100, 1)} pp)` : ''}`).join(' Â· ')
+      ? topMarkets.map((m) => `${m.market}${toNum(m.avg_edge) != null ? ` (${fmtNum(m.avg_edge * 100, 1)} pp)` : ''}`).join(' Ãƒâ€šÃ‚Â· ')
       : 'Sem mercados convergentes fortes.';
     const dt = bestApi.fixtureUtcDate
       ? new Date(bestApi.fixtureUtcDate).toLocaleString('pt-PT', { timeZone: 'Europe/Lisbon' })
-      : (bestApi.fixtureDate || 'â€”');
+      : (bestApi.fixtureDate || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â');
     const conf = toNum(bestApi.confidenceScore);
     const reading = conf != null && conf >= 70
-      ? 'Jogo real do fim de semana com sinais fortes de convergÃªncia.'
+      ? 'Jogo real do fim de semana com sinais fortes de convergÃƒÆ’Ã‚Âªncia.'
       : 'Jogo real do fim de semana com leitura equilibrada e oportunidade monitorizada.';
 
     byId('matchOfWeekCard').innerHTML = `
@@ -1419,11 +1414,11 @@ function renderMatchOfWeek(league) {
           <span class="chip">Primeira leitura</span>
           <span class="chip">${bestApi.homeTeam} vs ${bestApi.awayTeam}</span>
         </div>
-        <h3>Ritmo alto, convergÃªncia de sinal e leitura de valor.</h3>
+        <h3>Ritmo alto, convergÃƒÆ’Ã‚Âªncia de sinal e leitura de valor.</h3>
         <p class="meta">${reading}</p>
         <div class="kpi-mini-grid">
-          <div><span>ConfianÃ§a</span><strong>${conf != null ? `${conf}%` : 'â€”'}</strong></div>
-          <div><span>Top edge</span><strong>${toNum(bestApi.topEdge) != null ? `${fmtNum(bestApi.topEdge * 100, 1)}%` : 'â€”'}</strong></div>
+          <div><span>ConfianÃƒÆ’Ã‚Â§a</span><strong>${conf != null ? `${conf}%` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div>
+          <div><span>Top edge</span><strong>${toNum(bestApi.topEdge) != null ? `${fmtNum(bestApi.topEdge * 100, 1)}%` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div>
           <div><span>Data</span><strong>${dt}</strong></div>
         </div>
         <button id="homeOpenMatchupFromCard" class="ghost-btn hero-btn-primary">Abrir Matchup completo</button>
@@ -1435,7 +1430,7 @@ function renderMatchOfWeek(league) {
       <article class="kpi-card">
         <h3>Contexto</h3>
         <div class="kpi-row"><span>Liga</span><strong>${leagueLabel(league)}</strong></div>
-        <div class="kpi-row"><span>Fonte</span><strong>${bestApi.source || 'â€”'}</strong></div>
+        <div class="kpi-row"><span>Fonte</span><strong>${bestApi.source || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div>
       </article>
     `;
     byId('homeOpenMatchupFromCard')?.addEventListener('click', () => {
@@ -1451,10 +1446,10 @@ function renderMatchOfWeek(league) {
   }
 
   const merged = buildConfrontoMerged(league, best.home, best.away).slice(0, 3);
-  const markets = merged.length ? merged.map((m) => m.market).join(' Â· ') : 'Sem mercados convergentes fortes';
+  const markets = merged.length ? merged.map((m) => m.market).join(' Ãƒâ€šÃ‚Â· ') : 'Sem mercados convergentes fortes';
   const reading = best.conf.score >= 70
-    ? 'CenÃ¡rio com boa convergÃªncia entre forma, amostra e edge de mercado.'
-    : 'CenÃ¡rio equilibrado, com sinais Ãºteis mas exigindo gestÃ£o de risco.';
+    ? 'CenÃƒÆ’Ã‚Â¡rio com boa convergÃƒÆ’Ã‚Âªncia entre forma, amostra e edge de mercado.'
+    : 'CenÃƒÆ’Ã‚Â¡rio equilibrado, com sinais ÃƒÆ’Ã‚Âºteis mas exigindo gestÃƒÆ’Ã‚Â£o de risco.';
 
   byId('matchOfWeekCard').innerHTML = `
     <article class="kpi-card flagship-card">
@@ -1463,7 +1458,7 @@ function renderMatchOfWeek(league) {
         <span class="chip">${best.home} vs ${best.away}</span>
       </div>
       <h3>${reading}</h3>
-      <p class="meta">Leitura editorial com convergÃªncia entre forma, processo e preÃ§o de mercado.</p>
+      <p class="meta">Leitura editorial com convergÃƒÆ’Ã‚Âªncia entre forma, processo e preÃƒÆ’Ã‚Â§o de mercado.</p>
       <div class="kpi-mini-grid">
         <div><span>1 / X / 2</span><strong>${fmtPct(best.probs.p1)} / ${fmtPct(best.probs.px)} / ${fmtPct(best.probs.p2)}</strong></div>
         <div><span>Over 2.5</span><strong>${fmtPct(best.probs.over25)}</strong></div>
@@ -1471,8 +1466,8 @@ function renderMatchOfWeek(league) {
       </div>
       <button id="homeOpenMatchupFromCard" class="ghost-btn hero-btn-primary">Abrir Matchup completo</button>
     </article>
-    <article class="kpi-card"><h3>ConfianÃ§a e estrutura</h3><div class="kpi-row"><span>Score</span><strong>${best.conf.score}</strong></div><div class="kpi-row"><span>Estabilidade</span><strong>${fmtPct(best.conf.stabilityFactor)}</strong></div><div class="kpi-row"><span>Amostra</span><strong>${best.conf.gamesHome}/${best.conf.gamesAway}</strong></div></article>
-    <article class="kpi-card"><h3>Mercados sugeridos</h3><div class="kpi-row"><span>Top edge</span><strong>${best.edgeTop ? `${fmtNum(best.edgeTop * 100, 1)} pp` : 'â€”'}</strong></div><p class="meta">${markets}</p></article>
+    <article class="kpi-card"><h3>ConfianÃƒÆ’Ã‚Â§a e estrutura</h3><div class="kpi-row"><span>Score</span><strong>${best.conf.score}</strong></div><div class="kpi-row"><span>Estabilidade</span><strong>${fmtPct(best.conf.stabilityFactor)}</strong></div><div class="kpi-row"><span>Amostra</span><strong>${best.conf.gamesHome}/${best.conf.gamesAway}</strong></div></article>
+    <article class="kpi-card"><h3>Mercados sugeridos</h3><div class="kpi-row"><span>Top edge</span><strong>${best.edgeTop ? `${fmtNum(best.edgeTop * 100, 1)} pp` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div><p class="meta">${markets}</p></article>
   `;
   byId('homeOpenMatchupFromCard')?.addEventListener('click', () => setActiveTab('confronto'));
 }
@@ -1537,7 +1532,7 @@ function drawFormLineChart(series, metric) {
   if (!svg) return;
 
   if (!series.length) {
-    svg.innerHTML = `<text x="16" y="28" fill="${t.muted}" font-size="14">Sem dados suficientes para o grÃ¡fico.</text>`;
+    svg.innerHTML = `<text x="16" y="28" fill="${t.muted}" font-size="14">Sem dados suficientes para o grÃƒÆ’Ã‚Â¡fico.</text>`;
     return;
   }
 
@@ -1608,7 +1603,7 @@ function renderForma() {
   byId('formTable').querySelector('tbody').innerHTML = series.slice(-12).reverse().map((r, idx, arr) => {
     const next = arr[idx + 1];
     const d = next ? r.value - next.value : 0;
-    const trend = next ? (d > 0 ? 'A subir' : d < 0 ? 'A descer' : 'EstÃ¡vel') : 'â€”';
+    const trend = next ? (d > 0 ? 'A subir' : d < 0 ? 'A descer' : 'EstÃƒÆ’Ã‚Â¡vel') : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â';
     return `<tr><td>${r.date}</td><td>${fmtNum(r.value)}</td><td>${trend}</td></tr>`;
   }).join('') || '<tr><td colspan="3">Sem dados de forma para este filtro.</td></tr>';
   applyExistingSort('formTable');
@@ -1689,7 +1684,7 @@ function evKellyRows(probs) {
 
 function renderEVKellyTable(probs) {
   const rows = evKellyRows(probs);
-  byId('evKellyTable').querySelector('tbody').innerHTML = rows.map((r) => `<tr><td>${r.market}</td><td>${fmtPct(r.p)}</td><td>${r.odds ? fmtNum(r.odds, 2) : 'â€”'}</td><td>${r.ev != null ? `${fmtNum(r.ev * 100, 1)}%` : 'â€”'}</td><td>${r.kelly != null ? `${fmtNum(r.kelly * 100, 1)}%` : 'â€”'}</td></tr>`).join('');
+  byId('evKellyTable').querySelector('tbody').innerHTML = rows.map((r) => `<tr><td>${r.market}</td><td>${fmtPct(r.p)}</td><td>${r.odds ? fmtNum(r.odds, 2) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td><td>${r.ev != null ? `${fmtNum(r.ev * 100, 1)}%` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td><td>${r.kelly != null ? `${fmtNum(r.kelly * 100, 1)}%` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td></tr>`).join('');
   applyExistingSort('evKellyTable');
 }
 
@@ -1714,8 +1709,8 @@ function h2hRows(league, home, away) {
 function renderH2H(league, home, away) {
   const rows = h2hRows(league, home, away);
   if (!rows.length) {
-    byId('h2hSummary').innerHTML = '<article class="kpi-card"><h3>H2H</h3><p class="meta">Sem histÃ³rico direto disponÃ­vel nesta liga.</p></article>';
-    byId('h2hTable').querySelector('tbody').innerHTML = '<tr><td colspan="4">Sem histÃ³rico direto.</td></tr>';
+    byId('h2hSummary').innerHTML = '<article class="kpi-card"><h3>H2H</h3><p class="meta">Sem histÃƒÆ’Ã‚Â³rico direto disponÃƒÆ’Ã‚Â­vel nesta liga.</p></article>';
+    byId('h2hTable').querySelector('tbody').innerHTML = '<tr><td colspan="4">Sem histÃƒÆ’Ã‚Â³rico direto.</td></tr>';
     return;
   }
 
@@ -1728,8 +1723,8 @@ function renderH2H(league, home, away) {
   byId('h2hSummary').innerHTML = `
     <article class="kpi-card"><h3>Amostra</h3><div class="kpi-row"><span>Jogos</span><strong>${n}</strong></div></article>
     <article class="kpi-card"><h3>Registo (${home})</h3><div class="kpi-row"><span>V-E-D</span><strong>${wins}-${draws}-${losses}</strong></div></article>
-    <article class="kpi-card"><h3>MÃ©dia de golos</h3><div class="kpi-row"><span>Total por jogo</span><strong>${avgGoals != null ? fmtNum(avgGoals) : 'â€”'}</strong></div></article>
-    <article class="kpi-card"><h3>Ãšltimo jogo</h3><div class="kpi-row"><span>Data</span><strong>${rows[0].date}</strong></div></article>
+    <article class="kpi-card"><h3>MÃƒÆ’Ã‚Â©dia de golos</h3><div class="kpi-row"><span>Total por jogo</span><strong>${avgGoals != null ? fmtNum(avgGoals) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div></article>
+    <article class="kpi-card"><h3>ÃƒÆ’Ã…Â¡ltimo jogo</h3><div class="kpi-row"><span>Data</span><strong>${rows[0].date}</strong></div></article>
   `;
 
   byId('h2hTable').querySelector('tbody').innerHTML = rows.slice(0, 12).map((r) => `<tr><td>${r.date}</td><td>${r.context}</td><td>${r.score}</td><td>${r.totalGoals}</td></tr>`).join('');
@@ -1827,14 +1822,14 @@ function renderPrejogo() {
 
   const eg = computeExpectedGoals(league, home, away, weight);
   if (!eg) {
-    byId('prejogoProbCards').innerHTML = '<article class="kpi-card"><h3>PrÃ©-jogo</h3><p class="meta">Sem dados suficientes para calcular EG.</p></article>';
-    byId('prejogoConfidenceCards').innerHTML = '<article class="kpi-card"><h3>ConfianÃ§a</h3><p class="meta">Sem dados suficientes.</p></article>';
+    byId('prejogoProbCards').innerHTML = '<article class="kpi-card"><h3>PrÃƒÆ’Ã‚Â©-jogo</h3><p class="meta">Sem dados suficientes para calcular EG.</p></article>';
+    byId('prejogoConfidenceCards').innerHTML = '<article class="kpi-card"><h3>ConfianÃƒÆ’Ã‚Â§a</h3><p class="meta">Sem dados suficientes.</p></article>';
     byId('evKellyTable').querySelector('tbody').innerHTML = '<tr><td colspan="5">Insere odds para calcular EV/Kelly.</td></tr>';
     byId('prejogoShortlistTable').querySelector('tbody').innerHTML = '<tr><td colspan="5">Sem shortlist para este jogo.</td></tr>';
     byId('strategyPlanCard').innerHTML = '<article class="kpi-card"><h3>Plano</h3><p class="meta">Sem dados suficientes para construir plano de aposta.</p></article>';
     byId('scoreHeatmap').innerHTML = '<p class="meta">Sem dados de heatmap.</p>';
     byId('h2hSummary').innerHTML = '<article class="kpi-card"><h3>H2H</h3><p class="meta">Sem dados.</p></article>';
-    byId('h2hTable').querySelector('tbody').innerHTML = '<tr><td colspan="4">Sem histÃ³rico direto.</td></tr>';
+    byId('h2hTable').querySelector('tbody').innerHTML = '<tr><td colspan="4">Sem histÃƒÆ’Ã‚Â³rico direto.</td></tr>';
     return;
   }
 
@@ -1844,18 +1839,18 @@ function renderPrejogo() {
     <article class="kpi-card"><h3>Expected Goals</h3><div class="kpi-row"><span>${home}</span><strong>${fmtNum(eg.lambdaHome)}</strong></div><div class="kpi-row"><span>${away}</span><strong>${fmtNum(eg.lambdaAway)}</strong></div></article>
     <article class="kpi-card"><h3>1X2</h3><div class="kpi-row"><span>1</span><strong>${fmtPct(probs.p1)}</strong></div><div class="kpi-row"><span>X</span><strong>${fmtPct(probs.px)}</strong></div><div class="kpi-row"><span>2</span><strong>${fmtPct(probs.p2)}</strong></div></article>
     <article class="kpi-card"><h3>Totais</h3><div class="kpi-row"><span>Over 2.5</span><strong>${fmtPct(probs.over25)}</strong></div><div class="kpi-row"><span>BTTS</span><strong>${fmtPct(probs.btts)}</strong></div></article>
-    <article class="kpi-card"><h3>ConfiguraÃ§Ã£o</h3><div class="kpi-row"><span>Peso forma</span><strong>${fmtPct(weight)}</strong></div><div class="kpi-row"><span>Liga</span><strong>${leagueLabel(league)}</strong></div></article>
+    <article class="kpi-card"><h3>ConfiguraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o</h3><div class="kpi-row"><span>Peso forma</span><strong>${fmtPct(weight)}</strong></div><div class="kpi-row"><span>Liga</span><strong>${leagueLabel(league)}</strong></div></article>
   `;
 
   const conf = matchConfidence(league, home, away);
   byId('prejogoConfidenceCards').innerHTML = conf
     ? `
-      <article class="kpi-card"><h3>Score de ConfianÃ§a</h3><div class="kpi-row"><span>0-100</span><strong>${conf.score}</strong></div></article>
+      <article class="kpi-card"><h3>Score de ConfianÃƒÆ’Ã‚Â§a</h3><div class="kpi-row"><span>0-100</span><strong>${conf.score}</strong></div></article>
       <article class="kpi-card"><h3>Fator Amostra</h3><div class="kpi-row"><span>Casa/Fora</span><strong>${conf.gamesHome}/${conf.gamesAway}</strong></div></article>
       <article class="kpi-card"><h3>Qualidade da Amostra</h3><div class="kpi-row"><span>normalizado</span><strong>${fmtPct(conf.sampleFactor)}</strong></div></article>
       <article class="kpi-card"><h3>Estabilidade</h3><div class="kpi-row"><span>forma recente</span><strong>${fmtPct(conf.stabilityFactor)}</strong></div></article>
     `
-    : '<article class="kpi-card"><h3>ConfianÃ§a</h3><p class="meta">Sem dados suficientes.</p></article>';
+    : '<article class="kpi-card"><h3>ConfianÃƒÆ’Ã‚Â§a</h3><p class="meta">Sem dados suficientes.</p></article>';
 
   PREJOGO_STATE = { league, home, away, probs, shortlist: [] };
   renderEVKellyTable(probs);
@@ -1867,7 +1862,7 @@ function renderPrejogo() {
     .slice(0, 15);
   PREJOGO_STATE.shortlist = shortlist;
 
-  byId('prejogoShortlistTable').querySelector('tbody').innerHTML = shortlist.map((r) => `<tr><td>${r.market}</td><td>${fmtNum(r.homeEdge * 100, 1)} pp</td><td>${fmtNum(r.awayEdge * 100, 1)} pp</td><td>${fmtNum(r.avg * 100, 1)} pp</td><td>${r.hitAvg != null ? fmtPct(r.hitAvg) : 'â€”'}</td></tr>`).join('') || '<tr><td colspan="5">Sem shortlist para este jogo.</td></tr>';
+  byId('prejogoShortlistTable').querySelector('tbody').innerHTML = shortlist.map((r) => `<tr><td>${r.market}</td><td>${fmtNum(r.homeEdge * 100, 1)} pp</td><td>${fmtNum(r.awayEdge * 100, 1)} pp</td><td>${fmtNum(r.avg * 100, 1)} pp</td><td>${r.hitAvg != null ? fmtPct(r.hitAvg) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td></tr>`).join('') || '<tr><td colspan="5">Sem shortlist para este jogo.</td></tr>';
   applyExistingSort('prejogoShortlistTable');
   renderStrategyPlan(conf, shortlist, home, away, league);
 
@@ -1882,8 +1877,8 @@ function renderStrategyPlan(conf, shortlist, home, away, league) {
   const stake = confScore >= 72 ? '0.75u (base)' : confScore >= 58 ? '0.50u (conservador)' : '0.25u ou passar';
   const market = top ? `${top.market} (${fmtNum((top.avg || 0) * 100, 1)} pp)` : 'Sem mercado com edge consistente';
   const plan = top
-    ? `Priorizar ${top.market} com edge mÃ©dio positivo. Confirmar odds e disponibilidade antes do jogo.`
-    : 'Sem edge claro. Melhor decisÃ£o: aguardar preÃ§o ou passar no jogo.';
+    ? `Priorizar ${top.market} com edge mÃƒÆ’Ã‚Â©dio positivo. Confirmar odds e disponibilidade antes do jogo.`
+    : 'Sem edge claro. Melhor decisÃƒÆ’Ã‚Â£o: aguardar preÃƒÆ’Ã‚Â§o ou passar no jogo.';
 
   el.innerHTML = `
     <article class="kpi-card">
@@ -1894,11 +1889,11 @@ function renderStrategyPlan(conf, shortlist, home, away, league) {
     <article class="kpi-card">
       <h3>Edge + mercado</h3>
       <div class="kpi-row"><span>Top leitura</span><strong>${market}</strong></div>
-      <div class="kpi-row"><span>ConfianÃ§a</span><strong>${confScore || 'â€”'}/100</strong></div>
+      <div class="kpi-row"><span>ConfianÃƒÆ’Ã‚Â§a</span><strong>${confScore || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}/100</strong></div>
     </article>
     <article class="kpi-card">
       <h3>Stake sugerida</h3>
-      <div class="kpi-row"><span>ExecuÃ§Ã£o</span><strong>${stake}</strong></div>
+      <div class="kpi-row"><span>ExecuÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o</span><strong>${stake}</strong></div>
       <div class="kpi-row"><span>Risco</span><strong>${risk}</strong></div>
     </article>
     <article class="kpi-card">
@@ -1955,7 +1950,7 @@ function renderChangelog() {
   if (!el) return;
   const entries = DATA.changelog || [];
   el.innerHTML = entries.length
-    ? entries.slice(0, 8).map((c) => `<article class="item"><p class="title">${c.date || 'â€”'} Â· ${c.title || 'AtualizaÃ§Ã£o semanal'}</p><p class="meta">${c.summary || 'Refresh automÃ¡tico de dados e mÃ©tricas.'}</p></article>`).join('')
+    ? entries.slice(0, 8).map((c) => `<article class="item"><p class="title">${c.date || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'} Ãƒâ€šÃ‚Â· ${c.title || 'AtualizaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o semanal'}</p><p class="meta">${c.summary || 'Refresh automÃƒÆ’Ã‚Â¡tico de dados e mÃƒÆ’Ã‚Â©tricas.'}</p></article>`).join('')
     : '<p class="meta">Sem entradas de changelog ainda.</p>';
 }
 
@@ -2004,7 +1999,7 @@ function drawStakeCurve(staking) {
   if (!svg) return;
   const curve = staking?.curve || [];
   if (!curve.length) {
-    svg.innerHTML = `<text x="16" y="28" fill="${t.muted}" font-size="14">Sem dados de stake para comparar estratÃ©gias.</text>`;
+    svg.innerHTML = `<text x="16" y="28" fill="${t.muted}" font-size="14">Sem dados de stake para comparar estratÃƒÆ’Ã‚Â©gias.</text>`;
     return;
   }
 
@@ -2066,20 +2061,20 @@ function renderPerformanceGuide() {
   const bets = toNum(temporal.total_bets);
 
   byId('performanceGuideCards').innerHTML = `
-    <article class="kpi-card"><h3>1) O que Ã© isto?</h3><p class="meta">Ã‰ uma simulaÃ§Ã£o histÃ³rica com regras fixas de seleÃ§Ã£o de mercados.</p></article>
+    <article class="kpi-card"><h3>1) O que ÃƒÆ’Ã‚Â© isto?</h3><p class="meta">ÃƒÆ’Ã¢â‚¬Â° uma simulaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o histÃƒÆ’Ã‚Â³rica com regras fixas de seleÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o de mercados.</p></article>
     <article class="kpi-card"><h3>2) Regra de lucro</h3><p class="meta">Win: + (odds - 1) por unidade. Loss: -1 unidade.</p></article>
-    <article class="kpi-card"><h3>3) Hit rate</h3><p class="meta">Ã‰ a taxa de acerto das apostas simuladas (nÃ£o de todos os jogos).</p></article>
-    <article class="kpi-card"><h3>4) LimitaÃ§Ã£o</h3><p class="meta">NÃ£o Ã© garantia futura. Serve para comparar estratÃ©gias e risco.</p></article>
+    <article class="kpi-card"><h3>3) Hit rate</h3><p class="meta">ÃƒÆ’Ã¢â‚¬Â° a taxa de acerto das apostas simuladas (nÃƒÆ’Ã‚Â£o de todos os jogos).</p></article>
+    <article class="kpi-card"><h3>4) LimitaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o</h3><p class="meta">NÃƒÆ’Ã‚Â£o ÃƒÆ’Ã‚Â© garantia futura. Serve para comparar estratÃƒÆ’Ã‚Â©gias e risco.</p></article>
   `;
 
   const summary = [
     `Banca inicial: ${fmtNum(initial, 2)}`,
-    final != null ? `Banca final simulada: ${fmtNum(final, 2)}` : 'Banca final simulada: â€”',
-    profit != null ? `Lucro simulado: ${profit >= 0 ? '+' : ''}${fmtNum(profit, 2)}` : 'Lucro simulado: â€”',
-    hit != null ? `Hit rate: ${fmtPct(hit)}` : 'Hit rate: â€”',
-    bets != null ? `Apostas: ${fmtNum(bets, 0)}` : 'Apostas: â€”'
+    final != null ? `Banca final simulada: ${fmtNum(final, 2)}` : 'Banca final simulada: ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â',
+    profit != null ? `Lucro simulado: ${profit >= 0 ? '+' : ''}${fmtNum(profit, 2)}` : 'Lucro simulado: ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â',
+    hit != null ? `Hit rate: ${fmtPct(hit)}` : 'Hit rate: ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â',
+    bets != null ? `Apostas: ${fmtNum(bets, 0)}` : 'Apostas: ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'
   ];
-  byId('performanceGuideNote').textContent = summary.join(' Â· ');
+  byId('performanceGuideNote').textContent = summary.join(' Ãƒâ€šÃ‚Â· ');
 
   const total = toNum(sel.total_home_matches) ?? 0;
   const stage1 = toNum(sel.with_team_data) ?? 0;
@@ -2089,8 +2084,8 @@ function renderPerformanceGuide() {
   const selRate = toNum(sel.selection_rate);
 
   byId('performanceSelectionFlow').innerHTML = `
-    <article class="item"><p class="title">CritÃ©rio de seleÃ§Ã£o (ordem real)</p><p class="meta">1) jogo em casa na sÃ©rie temporal Â· 2) existe dados de mercado para equipa casa (Casa) e adversÃ¡rio (Fora) Â· 3) existe mercado comum entre as duas equipas Â· 4) apenas mercados com edge mÃ©dio > 0 e odds mÃ©dias > 1.01 Â· 5) escolhe-se 1 pick por jogo: o maior edge mÃ©dio.</p></article>
-    <article class="item"><p class="title">Funil desta atualizaÃ§Ã£o</p><p class="meta">Jogos casa: <strong>${fmtNum(total, 0)}</strong> â†’ com dados casa/fora: <strong>${fmtNum(stage1, 0)}</strong> â†’ com mercado comum: <strong>${fmtNum(stage2, 0)}</strong> â†’ com edge+odds vÃ¡lidos: <strong>${fmtNum(stage3, 0)}</strong> â†’ apostas selecionadas: <strong>${fmtNum(selected, 0)}</strong>${selRate != null ? ` (${fmtPct(selRate)})` : ''}.</p></article>
+    <article class="item"><p class="title">CritÃƒÆ’Ã‚Â©rio de seleÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o (ordem real)</p><p class="meta">1) jogo em casa na sÃƒÆ’Ã‚Â©rie temporal Ãƒâ€šÃ‚Â· 2) existe dados de mercado para equipa casa (Casa) e adversÃƒÆ’Ã‚Â¡rio (Fora) Ãƒâ€šÃ‚Â· 3) existe mercado comum entre as duas equipas Ãƒâ€šÃ‚Â· 4) apenas mercados com edge mÃƒÆ’Ã‚Â©dio > 0 e odds mÃƒÆ’Ã‚Â©dias > 1.01 Ãƒâ€šÃ‚Â· 5) escolhe-se 1 pick por jogo: o maior edge mÃƒÆ’Ã‚Â©dio.</p></article>
+    <article class="item"><p class="title">Funil desta atualizaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o</p><p class="meta">Jogos casa: <strong>${fmtNum(total, 0)}</strong> ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ com dados casa/fora: <strong>${fmtNum(stage1, 0)}</strong> ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ com mercado comum: <strong>${fmtNum(stage2, 0)}</strong> ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ com edge+odds vÃƒÆ’Ã‚Â¡lidos: <strong>${fmtNum(stage3, 0)}</strong> ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ apostas selecionadas: <strong>${fmtNum(selected, 0)}</strong>${selRate != null ? ` (${fmtPct(selRate)})` : ''}.</p></article>
   `;
 }
 
@@ -2100,30 +2095,30 @@ function renderStrategyProfiles() {
   const profile = (payload.profiles || []).find((p) => p.id === selected) || (payload.profiles || [])[0];
 
   if (!profile) {
-    byId('strategyProfileCards').innerHTML = '<article class="kpi-card"><h3>Perfis</h3><p class="meta">Sem dados de perfil disponÃ­veis.</p></article>';
-    byId('strategyProfileTable').querySelector('tbody').innerHTML = '<tr><td colspan="8">Sem estratÃ©gias avaliadas.</td></tr>';
+    byId('strategyProfileCards').innerHTML = '<article class="kpi-card"><h3>Perfis</h3><p class="meta">Sem dados de perfil disponÃƒÆ’Ã‚Â­veis.</p></article>';
+    byId('strategyProfileTable').querySelector('tbody').innerHTML = '<tr><td colspan="8">Sem estratÃƒÆ’Ã‚Â©gias avaliadas.</td></tr>';
     return;
   }
 
   const rec = profile.recommendation || null;
   byId('strategyProfileCards').innerHTML = `
     <article class="kpi-card"><h3>Perfil selecionado</h3><div class="kpi-row"><span>Modo</span><strong>${profile.label}</strong></div></article>
-    <article class="kpi-card"><h3>EstratÃ©gia recomendada</h3><div class="kpi-row"><span>Top score</span><strong>${rec ? rec.strategy_label : 'â€”'}</strong></div></article>
-    <article class="kpi-card"><h3>Score da recomendaÃ§Ã£o</h3><div class="kpi-row"><span>0-100</span><strong>${rec ? fmtNum(rec.score, 1) : 'â€”'}</strong></div></article>
-    <article class="kpi-card"><h3>Risco da recomendaÃ§Ã£o</h3><div class="kpi-row"><span>Drawdown mÃ¡x</span><strong>${rec && toNum(rec.max_drawdown_pct) != null ? `${fmtNum(rec.max_drawdown_pct * 100, 2)}%` : 'â€”'}</strong></div></article>
+    <article class="kpi-card"><h3>EstratÃƒÆ’Ã‚Â©gia recomendada</h3><div class="kpi-row"><span>Top score</span><strong>${rec ? rec.strategy_label : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div></article>
+    <article class="kpi-card"><h3>Score da recomendaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o</h3><div class="kpi-row"><span>0-100</span><strong>${rec ? fmtNum(rec.score, 1) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div></article>
+    <article class="kpi-card"><h3>Risco da recomendaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o</h3><div class="kpi-row"><span>Drawdown mÃƒÆ’Ã‚Â¡x</span><strong>${rec && toNum(rec.max_drawdown_pct) != null ? `${fmtNum(rec.max_drawdown_pct * 100, 2)}%` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div></article>
   `;
 
   byId('strategyProfileTable').querySelector('tbody').innerHTML = (profile.ranking || [])
     .map((r) => `<tr>
       <td>${r.strategy_label}</td>
       <td>${fmtNum(r.score, 1)}</td>
-      <td>${toNum(r.roi_on_staked) != null ? `${fmtNum(r.roi_on_staked * 100, 2)}%` : 'â€”'}</td>
-      <td>${toNum(r.profit_pct) != null ? `${fmtNum(r.profit_pct * 100, 2)}%` : 'â€”'}</td>
-      <td>${toNum(r.max_drawdown_pct) != null ? `${fmtNum(r.max_drawdown_pct * 100, 2)}%` : 'â€”'}</td>
-      <td>${toNum(r.weekly_roi_std) != null ? `${fmtNum(r.weekly_roi_std * 100, 2)}%` : 'â€”'}</td>
-      <td>${toNum(r.hit_rate) != null ? fmtPct(r.hit_rate) : 'â€”'}</td>
-      <td>${r.total_bets ?? 'â€”'}</td>
-    </tr>`).join('') || '<tr><td colspan="8">Sem estratÃ©gias avaliadas.</td></tr>';
+      <td>${toNum(r.roi_on_staked) != null ? `${fmtNum(r.roi_on_staked * 100, 2)}%` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${toNum(r.profit_pct) != null ? `${fmtNum(r.profit_pct * 100, 2)}%` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${toNum(r.max_drawdown_pct) != null ? `${fmtNum(r.max_drawdown_pct * 100, 2)}%` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${toNum(r.weekly_roi_std) != null ? `${fmtNum(r.weekly_roi_std * 100, 2)}%` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${toNum(r.hit_rate) != null ? fmtPct(r.hit_rate) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${r.total_bets ?? 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+    </tr>`).join('') || '<tr><td colspan="8">Sem estratÃƒÆ’Ã‚Â©gias avaliadas.</td></tr>';
   applyExistingSort('strategyProfileTable');
 }
 
@@ -2141,9 +2136,9 @@ function renderPerformance() {
 
   byId('perfCards').innerHTML = `
     <article class="kpi-card"><h3>Bets avaliadas</h3><div class="kpi-row"><span>Total</span><strong>${totalBets}</strong></div></article>
-    <article class="kpi-card"><h3>ROI mÃ©dio</h3><div class="kpi-row"><span>Todos os grupos</span><strong>${validRoi.length ? `${fmtNum(avg(validRoi) * 100, 2)}%` : 'â€”'}</strong></div></article>
-    <article class="kpi-card"><h3>EV mÃ©dio</h3><div class="kpi-row"><span>Todos os grupos</span><strong>${validEv.length ? `${fmtNum(avg(validEv) * 100, 2)}%` : 'â€”'}</strong></div></article>
-    <article class="kpi-card"><h3>Melhor segmento</h3><div class="kpi-row"><span>Liga/Grupo</span><strong>${best ? `${leagueLabel(best.league)} Â· ${groupLabel(best.group)}` : 'â€”'}</strong></div></article>
+    <article class="kpi-card"><h3>ROI mÃƒÆ’Ã‚Â©dio</h3><div class="kpi-row"><span>Todos os grupos</span><strong>${validRoi.length ? `${fmtNum(avg(validRoi) * 100, 2)}%` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div></article>
+    <article class="kpi-card"><h3>EV mÃƒÆ’Ã‚Â©dio</h3><div class="kpi-row"><span>Todos os grupos</span><strong>${validEv.length ? `${fmtNum(avg(validEv) * 100, 2)}%` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div></article>
+    <article class="kpi-card"><h3>Melhor segmento</h3><div class="kpi-row"><span>Liga/Grupo</span><strong>${best ? `${leagueLabel(best.league)} Ãƒâ€šÃ‚Â· ${groupLabel(best.group)}` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div></article>
   `;
 
   byId('perfMarketTable').querySelector('tbody').innerHTML = rows
@@ -2153,19 +2148,19 @@ function renderPerformance() {
       <td>${groupLabel(r.group)}</td>
       <td>${r.markets}</td>
       <td>${r.bets}</td>
-      <td>${toNum(r.hit_rate) != null ? fmtPct(r.hit_rate) : 'â€”'}</td>
-      <td>${toNum(r.roi_mean) != null ? `${fmtNum(r.roi_mean * 100, 2)}%` : 'â€”'}</td>
-      <td>${toNum(r.ev_mean) != null ? `${fmtNum(r.ev_mean * 100, 2)}%` : 'â€”'}</td>
-      <td>${toNum(r.drawdown_proxy) != null ? `${fmtNum(r.drawdown_proxy * 100, 1)}%` : 'â€”'}</td>
-      <td>${toNum(r.brier_proxy) != null ? fmtNum(r.brier_proxy, 3) : 'â€”'}</td>
+      <td>${toNum(r.hit_rate) != null ? fmtPct(r.hit_rate) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${toNum(r.roi_mean) != null ? `${fmtNum(r.roi_mean * 100, 2)}%` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${toNum(r.ev_mean) != null ? `${fmtNum(r.ev_mean * 100, 2)}%` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${toNum(r.drawdown_proxy) != null ? `${fmtNum(r.drawdown_proxy * 100, 1)}%` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${toNum(r.brier_proxy) != null ? fmtNum(r.brier_proxy, 3) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
     </tr>`).join('') || '<tr><td colspan="9">Sem dados de backtesting.</td></tr>';
   applyExistingSort('perfMarketTable');
 
   byId('qualityCards').innerHTML = `
     <article class="kpi-card"><h3>Checks executados</h3><div class="kpi-row"><span>Total</span><strong>${dq.summary?.checks_total ?? 0}</strong></div></article>
     <article class="kpi-card"><h3>Alertas</h3><div class="kpi-row"><span>Warn</span><strong>${dq.summary?.checks_warn ?? 0}</strong></div></article>
-    <article class="kpi-card"><h3>Estado</h3><div class="kpi-row"><span>Qualidade global</span><strong>${(dq.summary?.checks_warn ?? 0) === 0 ? 'OK' : 'AtenÃ§Ã£o'}</strong></div></article>
-    <article class="kpi-card"><h3>AtualizaÃ§Ã£o</h3><div class="kpi-row"><span>Dados</span><strong>${(DATA.meta?.generatedAt || '').slice(0, 10) || 'â€”'}</strong></div></article>
+    <article class="kpi-card"><h3>Estado</h3><div class="kpi-row"><span>Qualidade global</span><strong>${(dq.summary?.checks_warn ?? 0) === 0 ? 'OK' : 'AtenÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o'}</strong></div></article>
+    <article class="kpi-card"><h3>AtualizaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o</h3><div class="kpi-row"><span>Dados</span><strong>${(DATA.meta?.generatedAt || '').slice(0, 10) || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div></article>
   `;
 
   byId('qualityChecksTable').querySelector('tbody').innerHTML = (dq.checks || [])
@@ -2180,11 +2175,11 @@ function renderPerformance() {
       <td>${w.week_key}</td>
       <td>${w.bets}</td>
       <td>${w.wins}</td>
-      <td>${toNum(w.hit_rate) != null ? fmtPct(w.hit_rate) : 'â€”'}</td>
-      <td>${toNum(w.roi) != null ? `${fmtNum(w.roi * 100, 2)}%` : 'â€”'}</td>
-      <td>${toNum(w.profit) != null ? fmtNum(w.profit, 2) : 'â€”'}</td>
-      <td>${toNum(w.capital_end) != null ? fmtNum(w.capital_end, 2) : 'â€”'}</td>
-      <td>${toNum(w.max_drawdown_week) != null ? fmtNum(w.max_drawdown_week, 2) : 'â€”'}</td>
+      <td>${toNum(w.hit_rate) != null ? fmtPct(w.hit_rate) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${toNum(w.roi) != null ? `${fmtNum(w.roi * 100, 2)}%` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${toNum(w.profit) != null ? fmtNum(w.profit, 2) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${toNum(w.capital_end) != null ? fmtNum(w.capital_end, 2) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${toNum(w.max_drawdown_week) != null ? fmtNum(w.max_drawdown_week, 2) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
     </tr>`).join('') || '<tr><td colspan="8">Sem dados temporais.</td></tr>';
   applyExistingSort('weeklyBacktestTable');
 
@@ -2192,10 +2187,10 @@ function renderPerformance() {
   const bestKey = staking.best_strategy;
   const bestStrategy = (staking.strategies || []).find((x) => x.strategy === bestKey) || null;
   byId('stakeCards').innerHTML = `
-    <article class="kpi-card"><h3>EstratÃ©gias testadas</h3><div class="kpi-row"><span>Total</span><strong>${(staking.strategies || []).length}</strong></div></article>
-    <article class="kpi-card"><h3>Melhor estratÃ©gia</h3><div class="kpi-row"><span>ROI ajustado</span><strong>${bestStrategy ? bestStrategy.strategy_label : 'â€”'}</strong></div></article>
-    <article class="kpi-card"><h3>Capital final (melhor)</h3><div class="kpi-row"><span>simulaÃ§Ã£o</span><strong>${bestStrategy ? fmtNum(bestStrategy.final_capital, 2) : 'â€”'}</strong></div></article>
-    <article class="kpi-card"><h3>Drawdown (melhor)</h3><div class="kpi-row"><span>mÃ¡x %</span><strong>${bestStrategy && toNum(bestStrategy.max_drawdown_pct) != null ? `${fmtNum(bestStrategy.max_drawdown_pct * 100, 2)}%` : 'â€”'}</strong></div></article>
+    <article class="kpi-card"><h3>EstratÃƒÆ’Ã‚Â©gias testadas</h3><div class="kpi-row"><span>Total</span><strong>${(staking.strategies || []).length}</strong></div></article>
+    <article class="kpi-card"><h3>Melhor estratÃƒÆ’Ã‚Â©gia</h3><div class="kpi-row"><span>ROI ajustado</span><strong>${bestStrategy ? bestStrategy.strategy_label : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div></article>
+    <article class="kpi-card"><h3>Capital final (melhor)</h3><div class="kpi-row"><span>simulaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o</span><strong>${bestStrategy ? fmtNum(bestStrategy.final_capital, 2) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div></article>
+    <article class="kpi-card"><h3>Drawdown (melhor)</h3><div class="kpi-row"><span>mÃƒÆ’Ã‚Â¡x %</span><strong>${bestStrategy && toNum(bestStrategy.max_drawdown_pct) != null ? `${fmtNum(bestStrategy.max_drawdown_pct * 100, 2)}%` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div></article>
   `;
   drawStakeCurve(staking);
 
@@ -2203,13 +2198,13 @@ function renderPerformance() {
     .sort((a, b) => Number(b.roi_on_staked ?? -999) - Number(a.roi_on_staked ?? -999))
     .map((s) => `<tr>
       <td>${s.strategy_label}</td>
-      <td>${toNum(s.final_capital) != null ? fmtNum(s.final_capital, 2) : 'â€”'}</td>
-      <td>${toNum(s.total_profit) != null ? fmtNum(s.total_profit, 2) : 'â€”'}</td>
-      <td>${toNum(s.roi_on_staked) != null ? `${fmtNum(s.roi_on_staked * 100, 2)}%` : 'â€”'}</td>
-      <td>${toNum(s.max_drawdown_pct) != null ? `${fmtNum(s.max_drawdown_pct * 100, 2)}%` : 'â€”'}</td>
-      <td>${toNum(s.hit_rate) != null ? fmtPct(s.hit_rate) : 'â€”'}</td>
-      <td>${s.total_bets ?? 'â€”'}</td>
-    </tr>`).join('') || '<tr><td colspan="7">Sem dados de estratÃ©gias.</td></tr>';
+      <td>${toNum(s.final_capital) != null ? fmtNum(s.final_capital, 2) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${toNum(s.total_profit) != null ? fmtNum(s.total_profit, 2) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${toNum(s.roi_on_staked) != null ? `${fmtNum(s.roi_on_staked * 100, 2)}%` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${toNum(s.max_drawdown_pct) != null ? `${fmtNum(s.max_drawdown_pct * 100, 2)}%` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${toNum(s.hit_rate) != null ? fmtPct(s.hit_rate) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${s.total_bets ?? 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+    </tr>`).join('') || '<tr><td colspan="7">Sem dados de estratÃƒÆ’Ã‚Â©gias.</td></tr>';
   applyExistingSort('stakeTable');
 
   renderStrategyProfiles();
@@ -2218,7 +2213,7 @@ function renderPerformance() {
 function modelConfidenceBadge(score) {
   const s = Number(score || 0);
   if (s >= 75) return '<span class="badge good">Alta</span>';
-  if (s >= 55) return '<span class="badge">MÃ©dia</span>';
+  if (s >= 55) return '<span class="badge">MÃƒÆ’Ã‚Â©dia</span>';
   return '<span class="badge warn">Baixa</span>';
 }
 
@@ -2257,16 +2252,16 @@ function renderModel() {
 
   byId('modelCards').innerHTML = `
     <article class="kpi-card"><h3>Mercados filtrados</h3><div class="kpi-row"><span>Total</span><strong>${rows.length}</strong></div></article>
-    <article class="kpi-card"><h3>Edge mÃ©dio vs odds</h3><div class="kpi-row"><span>Modelo - implÃ­cita</span><strong>${edgeVals.length ? `${fmtNum(avg(edgeVals) * 100, 2)} pp` : 'â€”'}</strong></div></article>
-    <article class="kpi-card"><h3>EV mÃ©dio modelo</h3><div class="kpi-row"><span>Com odds mÃ©dias</span><strong>${evVals.length ? `${fmtNum(avg(evVals) * 100, 2)}%` : 'â€”'}</strong></div></article>
-    <article class="kpi-card"><h3>Top oportunidade</h3><div class="kpi-row"><span>EV mÃ¡ximo</span><strong>${best ? `${best.team} Â· ${best.market}` : 'â€”'}</strong></div></article>
+    <article class="kpi-card"><h3>Edge mÃƒÆ’Ã‚Â©dio vs odds</h3><div class="kpi-row"><span>Modelo - implÃƒÆ’Ã‚Â­cita</span><strong>${edgeVals.length ? `${fmtNum(avg(edgeVals) * 100, 2)} pp` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div></article>
+    <article class="kpi-card"><h3>EV mÃƒÆ’Ã‚Â©dio modelo</h3><div class="kpi-row"><span>Com odds mÃƒÆ’Ã‚Â©dias</span><strong>${evVals.length ? `${fmtNum(avg(evVals) * 100, 2)}%` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div></article>
+    <article class="kpi-card"><h3>Top oportunidade</h3><div class="kpi-row"><span>EV mÃƒÆ’Ã‚Â¡ximo</span><strong>${best ? `${best.team} Ãƒâ€šÃ‚Â· ${best.market}` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div></article>
   `;
 
   byId('modelTable').querySelector('tbody').innerHTML = rows.slice(0, 300).map((r) => {
-    const ci = (toNum(r.ci_lo) != null && toNum(r.ci_hi) != null) ? `${fmtPct(r.ci_lo)}â€“${fmtPct(r.ci_hi)}` : 'â€”';
+    const ci = (toNum(r.ci_lo) != null && toNum(r.ci_hi) != null) ? `${fmtPct(r.ci_lo)}ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“${fmtPct(r.ci_hi)}` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â';
     const sqCls = String(r.sample_quality || '').toLowerCase() === 'alta'
       ? 'good'
-      : String(r.sample_quality || '').toLowerCase() === 'mÃ©dia' || String(r.sample_quality || '').toLowerCase() === 'media'
+      : String(r.sample_quality || '').toLowerCase() === 'mÃƒÆ’Ã‚Â©dia' || String(r.sample_quality || '').toLowerCase() === 'media'
         ? ''
         : 'warn';
     return `<tr>
@@ -2274,14 +2269,14 @@ function renderModel() {
       <td>${r.team}</td>
       <td>${r.scope}</td>
       <td>${r.market}</td>
-      <td>${r.sample_games} <span class="badge ${sqCls}">${r.sample_quality || 'â€”'}</span></td>
-      <td>${toNum(r.p_empirical) != null ? fmtPct(r.p_empirical) : 'â€”'}</td>
-      <td>${toNum(r.p_model) != null ? fmtPct(r.p_model) : 'â€”'}</td>
+      <td>${r.sample_games} <span class="badge ${sqCls}">${r.sample_quality || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</span></td>
+      <td>${toNum(r.p_empirical) != null ? fmtPct(r.p_empirical) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${toNum(r.p_model) != null ? fmtPct(r.p_model) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
       <td>${ci}</td>
-      <td>${toNum(r.fair_odds) != null ? fmtNum(r.fair_odds, 2) : 'â€”'}</td>
-      <td>${toNum(r.odds_avg) != null ? fmtNum(r.odds_avg, 2) : 'â€”'}</td>
-      <td>${toNum(r.edge_vs_odds) != null ? `${fmtNum(r.edge_vs_odds * 100, 2)} pp` : 'â€”'}</td>
-      <td>${toNum(r.ev_model) != null ? `${fmtNum(r.ev_model * 100, 2)}%` : 'â€”'}</td>
+      <td>${toNum(r.fair_odds) != null ? fmtNum(r.fair_odds, 2) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${toNum(r.odds_avg) != null ? fmtNum(r.odds_avg, 2) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${toNum(r.edge_vs_odds) != null ? `${fmtNum(r.edge_vs_odds * 100, 2)} pp` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${toNum(r.ev_model) != null ? `${fmtNum(r.ev_model * 100, 2)}%` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
       <td>${modelInterpretationBadge(r.edge_vs_odds, r.ev_model)}</td>
       <td>${r.confidence_score ?? 0} ${modelConfidenceBadge(r.confidence_score)}</td>
     </tr>`;
@@ -2291,34 +2286,34 @@ function renderModel() {
   const cal = DATA.phase2Calibration || { summary: {}, bins: [], by_group: [] };
   const s = cal.summary || {};
   byId('calibrationCards').innerHTML = `
-    <article class="kpi-card"><h3>Amostras ponderadas</h3><div class="kpi-row"><span>Total</span><strong>${toNum(s.weighted_samples) != null ? fmtNum(s.weighted_samples, 0) : 'â€”'}</strong></div></article>
-    <article class="kpi-card"><h3>Brier Score</h3><div class="kpi-row"><span>Quanto menor melhor</span><strong>${toNum(s.brier) != null ? fmtNum(s.brier, 4) : 'â€”'}</strong></div></article>
-    <article class="kpi-card"><h3>LogLoss</h3><div class="kpi-row"><span>Quanto menor melhor</span><strong>${toNum(s.logloss) != null ? fmtNum(s.logloss, 4) : 'â€”'}</strong></div></article>
-    <article class="kpi-card"><h3>ECE</h3><div class="kpi-row"><span>Erro de calibraÃ§Ã£o</span><strong>${toNum(s.ece) != null ? fmtNum(s.ece, 4) : 'â€”'}</strong></div></article>
+    <article class="kpi-card"><h3>Amostras ponderadas</h3><div class="kpi-row"><span>Total</span><strong>${toNum(s.weighted_samples) != null ? fmtNum(s.weighted_samples, 0) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div></article>
+    <article class="kpi-card"><h3>Brier Score</h3><div class="kpi-row"><span>Quanto menor melhor</span><strong>${toNum(s.brier) != null ? fmtNum(s.brier, 4) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div></article>
+    <article class="kpi-card"><h3>LogLoss</h3><div class="kpi-row"><span>Quanto menor melhor</span><strong>${toNum(s.logloss) != null ? fmtNum(s.logloss, 4) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div></article>
+    <article class="kpi-card"><h3>ECE</h3><div class="kpi-row"><span>Erro de calibraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o</span><strong>${toNum(s.ece) != null ? fmtNum(s.ece, 4) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</strong></div></article>
   `;
 
   drawCalibrationChart(cal.bins || []);
 
   byId('calibrationBinsTable').querySelector('tbody').innerHTML = (cal.bins || []).map((b) => `<tr>
     <td>${b.bin}</td>
-    <td>${toNum(b.p_pred) != null ? fmtPct(b.p_pred) : 'â€”'}</td>
-    <td>${toNum(b.p_obs) != null ? fmtPct(b.p_obs) : 'â€”'}</td>
-    <td>${toNum(b.gap_abs) != null ? fmtNum(b.gap_abs * 100, 2) + ' pp' : 'â€”'}</td>
-    <td>${b.rows ?? 'â€”'}</td>
-    <td>${toNum(b.samples) != null ? fmtNum(b.samples, 0) : 'â€”'}</td>
-  </tr>`).join('') || '<tr><td colspan="6">Sem bins de calibraÃ§Ã£o.</td></tr>';
+    <td>${toNum(b.p_pred) != null ? fmtPct(b.p_pred) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+    <td>${toNum(b.p_obs) != null ? fmtPct(b.p_obs) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+    <td>${toNum(b.gap_abs) != null ? fmtNum(b.gap_abs * 100, 2) + ' pp' : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+    <td>${b.rows ?? 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+    <td>${toNum(b.samples) != null ? fmtNum(b.samples, 0) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+  </tr>`).join('') || '<tr><td colspan="6">Sem bins de calibraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o.</td></tr>';
   applyExistingSort('calibrationBinsTable');
 
   byId('calibrationGroupTable').querySelector('tbody').innerHTML = (cal.by_group || [])
     .sort((a, b) => Number(a.brier ?? 999) - Number(b.brier ?? 999))
     .map((g) => `<tr>
       <td>${groupLabel(g.group)}</td>
-      <td>${g.rows ?? 'â€”'}</td>
-      <td>${toNum(g.samples) != null ? fmtNum(g.samples, 0) : 'â€”'}</td>
-      <td>${toNum(g.brier) != null ? fmtNum(g.brier, 4) : 'â€”'}</td>
-      <td>${toNum(g.logloss) != null ? fmtNum(g.logloss, 4) : 'â€”'}</td>
-      <td>${toNum(g.avg_confidence) != null ? fmtNum(g.avg_confidence, 1) : 'â€”'}</td>
-    </tr>`).join('') || '<tr><td colspan="6">Sem grupos para calibraÃ§Ã£o.</td></tr>';
+      <td>${g.rows ?? 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${toNum(g.samples) != null ? fmtNum(g.samples, 0) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${toNum(g.brier) != null ? fmtNum(g.brier, 4) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${toNum(g.logloss) != null ? fmtNum(g.logloss, 4) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+      <td>${toNum(g.avg_confidence) != null ? fmtNum(g.avg_confidence, 1) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+    </tr>`).join('') || '<tr><td colspan="6">Sem grupos para calibraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o.</td></tr>';
   applyExistingSort('calibrationGroupTable');
 }
 
@@ -2328,7 +2323,7 @@ function drawCalibrationChart(bins) {
   if (!svg) return;
   const valid = (bins || []).filter((b) => toNum(b.p_pred) != null && toNum(b.p_obs) != null);
   if (!valid.length) {
-    svg.innerHTML = `<text x="16" y="28" fill="${t.muted}" font-size="14">Sem dados de calibraÃ§Ã£o.</text>`;
+    svg.innerHTML = `<text x="16" y="28" fill="${t.muted}" font-size="14">Sem dados de calibraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o.</text>`;
     return;
   }
 
@@ -2368,23 +2363,23 @@ function populateModel(leagues) {
 function exportPrejogoPdf() {
   if (!PREJOGO_STATE?.league || !PREJOGO_STATE?.home || !PREJOGO_STATE?.away || !PREJOGO_STATE?.probs) return;
   const now = new Date().toLocaleString('pt-PT', { timeZone: 'Europe/Lisbon' });
-  const rows = PREJOGO_STATE.shortlist.slice(0, 12).map((r) => `<tr><td>${r.market}</td><td>${fmtNum(r.avg * 100, 1)} pp</td><td>${r.hitAvg != null ? fmtPct(r.hitAvg) : 'â€”'}</td></tr>`).join('');
+  const rows = PREJOGO_STATE.shortlist.slice(0, 12).map((r) => `<tr><td>${r.market}</td><td>${fmtNum(r.avg * 100, 1)} pp</td><td>${r.hitAvg != null ? fmtPct(r.hitAvg) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td></tr>`).join('');
   const html = `
-    <!doctype html><html lang="pt"><head><meta charset="UTF-8"><title>RelatÃ³rio PrÃ©-jogo</title>
+    <!doctype html><html lang="pt"><head><meta charset="UTF-8"><title>RelatÃƒÆ’Ã‚Â³rio PrÃƒÆ’Ã‚Â©-jogo</title>
     <style>
       body{font-family:Arial,sans-serif;padding:24px;color:#111} h1,h2{margin:0 0 10px} .meta{color:#555;margin-bottom:16px}
       .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
       .card{border:1px solid #ddd;border-radius:8px;padding:10px}
       table{width:100%;border-collapse:collapse} th,td{border-bottom:1px solid #eee;padding:8px;text-align:left}
     </style></head><body>
-      <h1>RelatÃ³rio PrÃ©-jogo</h1>
-      <p class="meta">${PREJOGO_STATE.home} vs ${PREJOGO_STATE.away} Â· ${leagueLabel(PREJOGO_STATE.league)} Â· gerado em ${now}</p>
+      <h1>RelatÃƒÆ’Ã‚Â³rio PrÃƒÆ’Ã‚Â©-jogo</h1>
+      <p class="meta">${PREJOGO_STATE.home} vs ${PREJOGO_STATE.away} Ãƒâ€šÃ‚Â· ${leagueLabel(PREJOGO_STATE.league)} Ãƒâ€šÃ‚Â· gerado em ${now}</p>
       <div class="grid">
-        <div class="card"><h2>1X2</h2><p>1: ${fmtPct(PREJOGO_STATE.probs.p1)} Â· X: ${fmtPct(PREJOGO_STATE.probs.px)} Â· 2: ${fmtPct(PREJOGO_STATE.probs.p2)}</p></div>
-        <div class="card"><h2>Totais</h2><p>Over 2.5: ${fmtPct(PREJOGO_STATE.probs.over25)} Â· BTTS: ${fmtPct(PREJOGO_STATE.probs.btts)}</p></div>
+        <div class="card"><h2>1X2</h2><p>1: ${fmtPct(PREJOGO_STATE.probs.p1)} Ãƒâ€šÃ‚Â· X: ${fmtPct(PREJOGO_STATE.probs.px)} Ãƒâ€šÃ‚Â· 2: ${fmtPct(PREJOGO_STATE.probs.p2)}</p></div>
+        <div class="card"><h2>Totais</h2><p>Over 2.5: ${fmtPct(PREJOGO_STATE.probs.over25)} Ãƒâ€šÃ‚Â· BTTS: ${fmtPct(PREJOGO_STATE.probs.btts)}</p></div>
       </div>
       <h2>Shortlist de mercados</h2>
-      <table><thead><tr><th>Mercado</th><th>Edge mÃ©dio</th><th>Hit mÃ©dio</th></tr></thead><tbody>${rows || '<tr><td colspan="3">Sem shortlist.</td></tr>'}</tbody></table>
+      <table><thead><tr><th>Mercado</th><th>Edge mÃƒÆ’Ã‚Â©dio</th><th>Hit mÃƒÆ’Ã‚Â©dio</th></tr></thead><tbody>${rows || '<tr><td colspan="3">Sem shortlist.</td></tr>'}</tbody></table>
       <script>window.onload=()=>window.print();</script>
     </body></html>
   `;
@@ -2396,7 +2391,7 @@ function exportPrejogoPdf() {
 }
 
 async function main() {
-  const res = await fetch('./data/site-data.json?v=20260414g', { cache: 'no-store' });
+  const res = await fetch('./data/site-data.json?v=20260414h', { cache: 'no-store' });
   DATA = await res.json();
   loadWatchlist();
 
@@ -2461,5 +2456,7 @@ async function main() {
 
 main().catch((err) => {
   console.error(err);
-  alert('NÃ£o foi possÃ­vel carregar os dados do site.');
+  alert('NÃƒÆ’Ã‚Â£o foi possÃƒÆ’Ã‚Â­vel carregar os dados do site.');
 });
+
+

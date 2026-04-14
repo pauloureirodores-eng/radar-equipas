@@ -165,7 +165,7 @@ tr:hover td { background: #76a9ff14; }
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .list { display: grid; gap: 0.7rem; }
 .item { border: 1px solid #ffffff14; border-radius: 16px; padding: 0.86rem; background: #0a1524c9; transition: transform 160ms ease; }
-.item:hover { transform: translateY(-1px); }
+.item:hover { transform: translateY(-2px); border-color: #ffffff2b; box-shadow: 0 10px 24px rgba(0,0,0,0.25); }
 .item .title { margin: 0; font-weight: 700; font-size: 0.9rem; }
 .item .meta { margin: 0.25rem 0 0; color: var(--muted); font-size: 0.82rem; }
 .badge { display: inline-block; margin-top: 0.35rem; padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.75rem; border: 1px solid; color: #9fc6ff; border-color: #76a9ff55; background: #76a9ff22; }
@@ -264,6 +264,57 @@ tr:hover td { background: #76a9ff14; }
   font-size: 0.95rem;
   color: #fff;
 }
+.section-headline {
+  margin: 1.35rem 0 0.75rem;
+}
+.section-headline .eyebrow {
+  color: #9cb3cd;
+}
+.section-headline h2 {
+  margin: 0.28rem 0 0;
+  font-size: 1.55rem;
+  font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+  letter-spacing: -0.01em;
+}
+.op-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.8rem;
+}
+.op-meta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  justify-content: flex-end;
+}
+.mini-table {
+  border: 1px solid #ffffff18;
+  border-radius: 14px;
+  overflow: hidden;
+}
+.mini-head, .mini-row {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr 0.5fr 0.6fr;
+  gap: 0.6rem;
+  padding: 0.62rem 0.72rem;
+}
+.mini-head {
+  background: #ffffff10;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #afc2d7;
+}
+.mini-row {
+  border-top: 1px solid #ffffff12;
+  font-size: 0.86rem;
+  color: #dbe6f3;
+}
+.panel:hover {
+  border-color: #ffffff2a;
+}
 .kpi-row { display: flex; justify-content: space-between; padding: 0.2rem 0; font-size: 0.86rem; border-bottom: 1px dashed #ffffff22; }
 .kpi-row:last-child { border-bottom: none; }
 .kpi-row strong { font-size: 1.08rem; letter-spacing: 0.01em; }
@@ -332,4 +383,6 @@ tr:hover td { background: #76a9ff14; }
   #capitalCurveChart { height: 250px; }
   table { min-width: 760px; }
   .kpi-mini-grid { grid-template-columns: 1fr; }
+  .mini-head, .mini-row { grid-template-columns: 1fr; }
+  .op-row { grid-template-columns: 1fr; }
 }
