@@ -1149,6 +1149,15 @@ function rotationRiskLabel(unavailable, daysRest, games8) {
   return 'Baixa';
 }
 
+function fallbackFatigueConfidence(nextFx, lastFx, daysRest) {
+  if (!nextFx || !lastFx) return false;
+  if (!Number.isFinite(daysRest)) return false;
+  if (daysRest < 0 || daysRest > 14) return false;
+  const now = new Date();
+  const lastAgeDays = Math.max(0, Math.round((now - lastFx) / 86400000));
+  return lastAgeDays <= 21;
+}
+
 function renderFatigueRotation(league, home, away) {
   const el = byId('fatigueRotationCards');
   if (!el) return;
@@ -1162,20 +1171,25 @@ function renderFatigueRotation(league, home, away) {
       ? new Date(apiFatigue.referenceFixtureDate)
       : nearestFixtureDateForTeam(league, team);
     const lastFx = lastMatchDateForTeam(league, team);
-    const daysRest = hasApiFatigue
+    const rawDaysRest = hasApiFatigue
       ? (toNum(apiFatigue.daysRest) != null ? Number(apiFatigue.daysRest) : null)
       : ((nextFx && lastFx) ? Math.max(0, Math.round((nextFx - lastFx) / 86400000)) : null);
-    const games8 = hasApiFatigue
+    const fallbackOk = hasApiFatigue || fallbackFatigueConfidence(nextFx, lastFx, rawDaysRest);
+    const daysRest = fallbackOk ? rawDaysRest : null;
+    const rawGames8 = hasApiFatigue
       ? Number(apiFatigue.gamesLast8d || 0)
       : (nextFx ? gamesInWindow(league, team, nextFx, 8) : 0);
-    const thirdIn8 = hasApiFatigue
+    const games8 = fallbackOk ? rawGames8 : null;
+    const thirdIn8 = !fallbackOk
+      ? 'N/D'
+      : (hasApiFatigue
       ? (apiFatigue.thirdGameIn8d ? 'Sim' : 'Não')
-      : (games8 >= 2 ? 'Sim' : 'Não');
+      : (games8 >= 2 ? 'Sim' : 'Não'));
     const euroBefore = hasApiFatigue ? !!apiFatigue.europeanBefore : false;
     const euroAfter = hasApiFatigue ? !!apiFatigue.europeanAfter : false;
     const extraTimeRecent = hasApiFatigue ? !!apiFatigue.extraTimeRecent : false;
     const risk = rotationRiskLabel(ctx.unavailableCount || 0, daysRest, games8);
-    return { team, daysRest, games8, thirdIn8, risk, euroBefore, euroAfter, extraTimeRecent, hasApiFatigue };
+    return { team, daysRest, games8, thirdIn8, risk, euroBefore, euroAfter, extraTimeRecent, hasApiFatigue, fallbackOk };
   };
 
   const h = build(home, homeCtx);
@@ -1185,6 +1199,12 @@ function renderFatigueRotation(league, home, away) {
     : (h.risk === 'Média' || a.risk === 'Média')
       ? 'Risco moderado de rotação; confirmar onze inicial.'
       : 'Carga competitiva controlada para as duas equipas.';
+  const sourceLabel = (h.hasApiFatigue && a.hasApiFatigue)
+    ? 'API multi-competição'
+    : ((h.hasApiFatigue || a.hasApiFatigue) ? 'Misto (API + fallback doméstico)' : 'Fallback doméstico local');
+  const lowConfidenceNote = (!h.hasApiFatigue && !h.fallbackOk) || (!a.hasApiFatigue && !a.fallbackOk)
+    ? '<p class="meta">Nota: fallback local com baixa confiança temporal (pode estar desatualizado).</p>'
+    : '';
 
   el.innerHTML = `
     <article class="kpi-card">
@@ -1197,11 +1217,12 @@ function renderFatigueRotation(league, home, away) {
     </article>
     <article class="kpi-card">
       <h3>Detalhe por equipa</h3>
-      <div class="kpi-row"><span>${home}: jogos últimos 8d</span><strong>${h.games8}</strong></div>
+      <div class="kpi-row"><span>${home}: jogos últimos 8d</span><strong>${h.games8 != null ? h.games8 : 'N/D'}</strong></div>
       <div class="kpi-row"><span>${home}: 3.º jogo em 8d</span><strong>${h.thirdIn8}</strong></div>
-      <div class="kpi-row"><span>${away}: jogos últimos 8d</span><strong>${a.games8}</strong></div>
+      <div class="kpi-row"><span>${away}: jogos últimos 8d</span><strong>${a.games8 != null ? a.games8 : 'N/D'}</strong></div>
       <div class="kpi-row"><span>${away}: 3.º jogo em 8d</span><strong>${a.thirdIn8}</strong></div>
-      <p class="meta">Fonte de fadiga: ${(h.hasApiFatigue || a.hasApiFatigue) ? 'API multi-competição' : 'Fallback doméstico local'}</p>
+      <p class="meta">Fonte de fadiga: ${sourceLabel}</p>
+      ${lowConfidenceNote}
     </article>
   `;
 }
