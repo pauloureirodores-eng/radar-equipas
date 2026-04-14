@@ -1,4 +1,4 @@
-﻿const fmtPct = (n) => `${(Number(n) * 100).toFixed(1)}%`;
+const fmtPct = (n) => `${(Number(n) * 100).toFixed(1)}%`;
 const fmtNum = (n, d = 2) => Number(n).toFixed(d);
 const byId = (id) => document.getElementById(id);
 
@@ -21,6 +21,89 @@ let DATA = null;
 const TABLE_SORT_STATE = {};
 let PREJOGO_STATE = { league: null, home: null, away: null, probs: null, shortlist: [] };
 let WATCHLIST = new Set();
+
+function hasMojibake(text) {
+  return /Ã.|Â.|â€|â–|ï¿½/.test(text);
+}
+
+function mojibakeScore(text) {
+  if (!text) return 0;
+  let score = 0;
+  score += (text.match(/Ã./g) || []).length * 3;
+  score += (text.match(/Â./g) || []).length * 2;
+  score += (text.match(/â€/g) || []).length * 2;
+  score += (text.match(/â–/g) || []).length * 2;
+  score += (text.match(/ï¿½/g) || []).length * 3;
+  return score;
+}
+
+function decodeLatin1AsUtf8(text) {
+  const bytes = new Uint8Array(text.length);
+  for (let i = 0; i < text.length; i += 1) {
+    bytes[i] = text.charCodeAt(i) & 0xFF;
+  }
+  return new TextDecoder('utf-8', { fatal: false }).decode(bytes);
+}
+
+function fixMojibakeText(text) {
+  if (!hasMojibake(text)) return text;
+  let best = text;
+  let bestScore = mojibakeScore(text);
+  let current = text;
+  for (let i = 0; i < 4; i += 1) {
+    const decoded = decodeLatin1AsUtf8(current);
+    const score = mojibakeScore(decoded);
+    if (score < bestScore) {
+      best = decoded;
+      bestScore = score;
+    }
+    current = decoded;
+  }
+  return best;
+}
+
+function normalizeTextInNode(root) {
+  if (!root) return;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  let node = walker.nextNode();
+  while (node) {
+    const original = node.nodeValue || '';
+    if (hasMojibake(original)) {
+      const fixed = fixMojibakeText(original);
+      if (fixed !== original) node.nodeValue = fixed;
+    }
+    node = walker.nextNode();
+  }
+}
+
+let textFixObserver = null;
+function startMojibakeObserver() {
+  if (textFixObserver || !document.body) return;
+  textFixObserver = new MutationObserver((mutations) => {
+    for (const m of mutations) {
+      if (m.type === 'characterData' && m.target?.nodeType === Node.TEXT_NODE) {
+        const txt = m.target.nodeValue || '';
+        if (hasMojibake(txt)) {
+          const fixed = fixMojibakeText(txt);
+          if (fixed !== txt) m.target.nodeValue = fixed;
+        }
+      } else {
+        m.addedNodes.forEach((n) => {
+          if (n.nodeType === Node.TEXT_NODE) {
+            const txt = n.nodeValue || '';
+            if (hasMojibake(txt)) {
+              const fixed = fixMojibakeText(txt);
+              if (fixed !== txt) n.nodeValue = fixed;
+            }
+          } else if (n.nodeType === Node.ELEMENT_NODE) {
+            normalizeTextInNode(n);
+          }
+        });
+      }
+    }
+  });
+  textFixObserver.observe(document.body, { childList: true, subtree: true, characterData: true });
+}
 
 function parseSortableNumber(raw) {
   const text = String(raw ?? '').trim();
@@ -2398,7 +2481,7 @@ function exportPrejogoPdf() {
 }
 
 async function main() {
-  const res = await fetch('./data/site-data.json?v=20260414i', { cache: 'no-store' });
+  const res = await fetch('./data/site-data.json?v=20260414k', { cache: 'no-store' });
   DATA = await res.json();
   loadWatchlist();
 
@@ -2411,6 +2494,8 @@ async function main() {
   byId('leagueSelect').addEventListener('change', (e) => renderOverview(e.target.value));
   byId('dashboardTeamSelect')?.addEventListener('change', () => renderOverview(byId('leagueSelect').value));
   renderOverview(leagues[0]);
+  normalizeTextInNode(document.body);
+  startMojibakeObserver();
 
   populateScannerFilters(leagues);
   ['scanLeague', 'scanScope', 'scanGroup', 'scanMinGames'].forEach((id) => byId(id).addEventListener('change', renderScanner));
