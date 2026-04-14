@@ -16,11 +16,36 @@ const LEAGUE_LABELS = {
   T1: 'Turkish Superleague'
 };
 const WATCHLIST_KEY = 'radar_watchlist_v1';
+const UI_MODE_KEY = 'radar_ui_mode_v1';
 
 let DATA = null;
 const TABLE_SORT_STATE = {};
 let PREJOGO_STATE = { league: null, home: null, away: null, probs: null, shortlist: [] };
 let WATCHLIST = new Set();
+let UI_MODE = 'simple';
+
+function applyUiMode(mode) {
+  UI_MODE = mode === 'pro' ? 'pro' : 'simple';
+  document.body.classList.toggle('mode-simple', UI_MODE === 'simple');
+  document.body.classList.toggle('mode-pro', UI_MODE === 'pro');
+  const btn = byId('uiModeToggle');
+  if (btn) btn.textContent = UI_MODE === 'simple' ? 'Modo simples' : 'Modo pro';
+}
+
+function loadUiMode() {
+  try {
+    const raw = localStorage.getItem(UI_MODE_KEY);
+    applyUiMode(raw === 'pro' ? 'pro' : 'simple');
+  } catch {
+    applyUiMode('simple');
+  }
+}
+
+function toggleUiMode() {
+  const next = UI_MODE === 'simple' ? 'pro' : 'simple';
+  applyUiMode(next);
+  localStorage.setItem(UI_MODE_KEY, next);
+}
 
 function parseSortableNumber(raw) {
   const text = String(raw ?? '').trim();
@@ -2322,9 +2347,10 @@ function exportPrejogoPdf() {
 }
 
 async function main() {
-  const res = await fetch('./data/site-data.json?v=20260414a', { cache: 'no-store' });
+  const res = await fetch('./data/site-data.json?v=20260414b', { cache: 'no-store' });
   DATA = await res.json();
   loadWatchlist();
+  loadUiMode();
 
   renderSummaryChips(DATA);
   renderChangelog();
@@ -2354,9 +2380,12 @@ async function main() {
   byId('prejogoResetBtn')?.addEventListener('click', resetPrejogoFilters);
   byId('heroOpenScanner')?.addEventListener('click', () => setActiveTab('scanner'));
   byId('heroOpenMatchup')?.addEventListener('click', () => setActiveTab('confronto'));
+  byId('quickOpenScanner')?.addEventListener('click', () => setActiveTab('scanner'));
+  byId('quickOpenMatchup')?.addEventListener('click', () => setActiveTab('confronto'));
   byId('homeOpenScannerTop')?.addEventListener('click', () => setActiveTab('scanner'));
   byId('homeOpenScannerSummary')?.addEventListener('click', () => setActiveTab('scanner'));
   byId('homeOpenWatchlist')?.addEventListener('click', () => setActiveTab('scanner'));
+  byId('uiModeToggle')?.addEventListener('click', toggleUiMode);
 
   byId('scannerExportBtn')?.addEventListener('click', () => {
     const league = byId('scanLeague').value;
