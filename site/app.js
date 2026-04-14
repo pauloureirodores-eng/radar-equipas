@@ -2366,7 +2366,7 @@ function exportPrejogoPdf() {
 }
 
 async function main() {
-  const res = await fetch('./data/site-data.json?v=20260414d', { cache: 'no-store' });
+  const res = await fetch('./data/site-data.json?v=20260414e', { cache: 'no-store' });
   DATA = await res.json();
   loadWatchlist();
 
