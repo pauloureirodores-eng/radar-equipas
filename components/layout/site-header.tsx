@@ -5,7 +5,7 @@ const NAV_ITEMS = [
   { label: "Scanner", href: "/scanner" },
   { label: "Matchup", href: "/matchup" },
   { label: "Modelos", href: "/modelos" },
-  { label: "Estratégia", href: "/estrategia" }
+  { label: "Estrategia", href: "/estrategia" }
 ];
 
 type SiteHeaderProps = {

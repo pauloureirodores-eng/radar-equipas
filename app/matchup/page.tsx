@@ -7,7 +7,7 @@ export default function MatchupPage() {
     <>
       <SiteHeader activeTab="Matchup" />
       <PageShell>
-        <PageIntro title="Matchup" description="Leitura Base + Contexto Avançado para análise profunda do confronto." />
+        <PageIntro title="Matchup" description="Leitura Base + Contexto Avancado para analise profunda do confronto." />
       </PageShell>
     </>
   );

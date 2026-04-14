@@ -1,14 +1,14 @@
 export const dashboardKpis = [
   { label: "Oportunidades activas", value: "12", sub: "+3 vs ontem" },
-  { label: "Alertas críticos", value: "4", sub: "2 por disponibilidade" },
-  { label: "Matchups premium", value: "6", sub: "alta convergência" },
-  { label: "Confiança média", value: "78%", sub: "scanner curado" }
+  { label: "Alertas criticos", value: "4", sub: "2 por disponibilidade" },
+  { label: "Matchups premium", value: "6", sub: "alta convergencia" },
+  { label: "Confianca media", value: "78%", sub: "scanner curado" }
 ];
 
 export const weeklyAlerts = [
   "Movimento forte nas odds do Over 2.5 em Benfica vs Braga",
-  "Dúvida no ponta-de-lança titular do Napoli",
-  "Equipa visitante com 3.º jogo em 8 dias"
+  "Duvida no ponta-de-lanca titular do Napoli",
+  "Equipa visitante com 3.o jogo em 8 dias"
 ];
 
 export const featuredMarkets = [
@@ -36,14 +36,14 @@ export const topOpportunities = [
     market: "Casa DNB",
     game: "Lille vs Rennes",
     edge: "+4.6%",
-    confidence: "Média",
-    note: "Contexto competitivo favorável"
+    confidence: "Media",
+    note: "Contexto competitivo favoravel"
   },
   {
     market: "Over Cantos",
     game: "Leeds vs Norwich",
     edge: "+4.1%",
-    confidence: "Média",
+    confidence: "Media",
     note: "Perfil de cruzamento e volume"
   }
 ];

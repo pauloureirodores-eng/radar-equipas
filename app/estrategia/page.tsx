@@ -5,9 +5,9 @@ import { PageIntro } from "@/components/layout/page-intro";
 export default function EstrategiaPage() {
   return (
     <>
-      <SiteHeader activeTab="Estratégia" />
+      <SiteHeader activeTab="Estrategia" />
       <PageShell>
-        <PageIntro title="Estratégia" description="Fluxo executivo de decisão: probabilidade, preço, edge, stake e risco." />
+        <PageIntro title="Estrategia" description="Fluxo executivo de decisao: probabilidade, preco, edge, stake e risco." />
       </PageShell>
     </>
   );

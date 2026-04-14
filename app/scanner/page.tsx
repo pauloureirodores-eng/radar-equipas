@@ -7,7 +7,7 @@ export default function ScannerPage() {
     <>
       <SiteHeader activeTab="Scanner" />
       <PageShell>
-        <PageIntro title="Scanner" description="Página operacional para exploração multi-equipa, filtros detalhados e exportação." />
+        <PageIntro title="Scanner" description="Pagina operacional para exploracao multi-equipa, filtros detalhados e exportacao." />
       </PageShell>
     </>
   );

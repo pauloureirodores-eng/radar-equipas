@@ -7,7 +7,7 @@ export default function ModelosPage() {
     <>
       <SiteHeader activeTab="Modelos" />
       <PageShell>
-        <PageIntro title="Modelos" description="Área técnica Lab Pro para outputs modelados, calibração e confiabilidade." />
+        <PageIntro title="Modelos" description="Area tecnica Lab Pro para outputs modelados, calibracao e confiabilidade." />
       </PageShell>
     </>
   );
