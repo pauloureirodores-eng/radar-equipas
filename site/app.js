@@ -171,6 +171,8 @@ function sanitizeUiText(text) {
     .replace(/\s{2,}/g, ' ')
     .trimStart();
   const repairedPt = whitelistClean
+    // Join words broken by stray quote-like chars: "decis \" o" -> "deciso".
+    .replace(/([A-Za-z])\s*["'`´^~]+\s*([A-Za-z])/g, '$1$2')
     .replace(/\bConfigura["']?\s*o\b/gi, 'Configuração')
     .replace(/\bConfian["']?\s*a\b/gi, 'Confiança')
     .replace(/\bAtualiza["']?\s*o\b/gi, 'Atualização')
@@ -186,6 +188,12 @@ function sanitizeUiText(text) {
     .replace(/\bConfigura(?:\s*["'`´^~]+\s*o|\s+o)\b/gi, 'Configuracao')
     .replace(/\bConfian(?:\s*["'`´^~]+\s*a|\s+a)?\b/gi, 'Confianca')
     .replace(/\bScore\s+de\s+Confian(?:\s*["'`´^~]+)?\b/gi, 'Score de Confianca')
+    .replace(/\bVitrias\b/g, 'Vitorias')
+    .replace(/\bdeciso\b/gi, 'decisao')
+    .replace(/\brpida\b/gi, 'rapida')
+    .replace(/\bpr-?jogo\b/gi, 'pre-jogo')
+    .replace(/\bprejogo\b/gi, 'pre-jogo')
+    .replace(/["'`´^~]+/g, ' ')
     .replace(/\s{2,}/g, ' ')
     .trim();
   return repairedPt;
