@@ -26,7 +26,7 @@ export function DashboardHome() {
           <div className="p-8 md:p-10">
             <div className="mb-4 flex flex-wrap items-center gap-3">
               <span className="rounded-full bg-emerald-400/15 px-3 py-1 text-sm text-emerald-200">Produto premium curado</span>
-              <span className="rounded-full bg-white/5 px-3 py-1 text-sm text-white/70">Pre-jogo · Matchup · Execucao</span>
+              <span className="rounded-full bg-white/5 px-3 py-1 text-sm text-white/70">Pre-jogo | Matchup | Execucao</span>
             </div>
 
             <div className="space-y-5">
