@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import type { ComponentPropsWithoutRef } from "react";
 import { SectionHeader } from "@/components/layout/section-header";
 
 type NavSection = {
@@ -17,9 +18,15 @@ const SIDE_NAV: NavSection[] = [
   { id: "matchup-mercados", label: "Mercados" }
 ];
 
-function CardShell({ children, className = "" }: { children: ReactNode; className?: string }) {
+type CardShellProps = ComponentPropsWithoutRef<"section"> & {
+  children: ReactNode;
+  className?: string;
+};
+
+function CardShell({ children, className = "", ...rest }: CardShellProps) {
   return (
     <section
+      {...rest}
       className={`rounded-[2rem] border border-white/10 bg-white/5 shadow-2xl shadow-black/20 transition duration-300 hover:-translate-y-0.5 hover:border-white/20 ${className}`}
     >
       {children}
