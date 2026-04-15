@@ -905,12 +905,13 @@ function radarProfile(league, row, scope) {
 
 function drawRadar(canvasId, titleId, teamName, values, color) {
   const canvas = byId(canvasId);
+  if (!canvas) return;
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   const cx = canvas.width / 2;
-  const cy = canvas.height / 2;
-  const radius = Math.min(canvas.width, canvas.height) * 0.36;
+  const cy = canvas.height / 2 + 4;
+  const radius = Math.min(canvas.width, canvas.height) * 0.42;
 
   byId(titleId).textContent = teamName;
 
@@ -929,7 +930,7 @@ function drawRadar(canvasId, titleId, teamName, values, color) {
   }
 
   ctx.fillStyle = '#55606f';
-  ctx.font = '12px Segoe UI';
+  ctx.font = '13px Segoe UI';
   ctx.textAlign = 'center';
   RADAR_AXES.forEach((axis, i) => {
     const angle = -Math.PI / 2 + (i * 2 * Math.PI / RADAR_AXES.length);
@@ -964,15 +965,15 @@ function strengthsWeakness(row, league, scope) {
   const rows = getScopeRows(league, scope);
   const specs = [
     ['ppg', 'Pontos por jogo', false],
-    ['vit%', 'Taxa de vitÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³rias', false],
+    ['vit%', 'Taxa de vitorias', false],
     ['golos_marcados', 'Golos marcados', false],
     ['golos_sofridos', 'Golos sofridos', true],
     ['CS%', 'Clean sheet', false],
     ['BTTS%', 'BTTS', false],
     ['O2.5%', 'Over 2.5', false],
-    ['SOT', 'Remates ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â  baliza', false],
-    ['SOT_sofridos', 'Remates ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â  baliza sofridos', true],
-    ['conversion_rate', 'ConversÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o de remates', false]
+    ['SOT', 'Remates a baliza', false],
+    ['SOT_sofridos', 'Remates a baliza sofridos', true],
+    ['conversion_rate', 'Conversao de remates', false]
   ];
 
   const scored = specs.map(([col, label, inv]) => ({
@@ -1069,7 +1070,11 @@ function renderConfrontoMarkets(league, home, away) {
     .sort((a, b) => b.avg - a.avg)
     .slice(0, 20);
 
-  byId('confrontoMarketTable').querySelector('tbody').innerHTML = merged.map((r) => `<tr><td>${r.market}</td><td>${fmtNum(r.homeEdge * 100, 1)} pp</td><td>${fmtNum(r.awayEdge * 100, 1)} pp</td><td>${fmtNum(r.avg * 100, 1)} pp</td></tr>`).join('') || '<tr><td colspan="4">Sem mercados convergentes para este confronto.</td></tr>';
+  byId('confrontoMarketTable').querySelector('tbody').innerHTML = merged.map((r, idx) => {
+    const cls = idx < 3 ? 'market-top' : idx < 6 ? 'market-mid' : '';
+    const badge = idx < 3 ? ' ★' : '';
+    return `<tr class="${cls}"><td>${r.market}${badge}</td><td>${fmtNum(r.homeEdge * 100, 1)} pp</td><td>${fmtNum(r.awayEdge * 100, 1)} pp</td><td>${fmtNum(r.avg * 100, 1)} pp</td></tr>`;
+  }).join('') || '<tr><td colspan="4">Sem mercados convergentes para este confronto.</td></tr>';
   applyExistingSort('confrontoMarketTable');
 }
 
@@ -1084,8 +1089,14 @@ function renderRadarSection(league, home, away) {
   const hs = strengthsWeakness(h, league, 'Casa');
   const as = strengthsWeakness(a, league, 'Fora');
 
-  byId('homeStrengths').innerHTML = `<div><strong>Pontos fortes:</strong> ${hs.top.map((x) => x.label).join(', ') || 'ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â'}</div><div><strong>Pontos fracos:</strong> ${hs.low.map((x) => x.label).join(', ') || 'ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â'}</div>`;
-  byId('awayStrengths').innerHTML = `<div><strong>Pontos fortes:</strong> ${as.top.map((x) => x.label).join(', ') || 'ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â'}</div><div><strong>Pontos fracos:</strong> ${as.low.map((x) => x.label).join(', ') || 'ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â'}</div>`;
+  byId('homeStrengths').innerHTML = `
+    <div class="mini-row"><strong>Pontos fortes:</strong><span>${hs.top.map((x) => x.label).join(', ') || 'Sem destaque claro'}</span></div>
+    <div class="mini-row"><strong>Pontos fracos:</strong><span>${hs.low.map((x) => x.label).join(', ') || 'Sem fragilidade clara'}</span></div>
+  `;
+  byId('awayStrengths').innerHTML = `
+    <div class="mini-row"><strong>Pontos fortes:</strong><span>${as.top.map((x) => x.label).join(', ') || 'Sem destaque claro'}</span></div>
+    <div class="mini-row"><strong>Pontos fracos:</strong><span>${as.low.map((x) => x.label).join(', ') || 'Sem fragilidade clara'}</span></div>
+  `;
 }
 
 function regressionAlertForTeam(league, team, scopeLabel) {
@@ -1117,21 +1128,31 @@ function matchupInsights(league, home, away) {
   if (!h || !a) return [];
 
   const out = [];
+  const hGF = Number(h.golos_marcados);
+  const hGA = Number(h.golos_sofridos);
+  const aGF = Number(a.golos_marcados);
+  const aGA = Number(a.golos_sofridos);
+  const hPPG = Number(h.ppg);
+  const aPPG = Number(a.ppg);
+  const hOver = Number(h['O2.5%']);
+  const aOver = Number(a['O2.5%']);
+  const hBTTS = Number(h['BTTS%']);
+  const aBTTS = Number(a['BTTS%']);
 
-  if (Number(h.golos_marcados) >= 1.7 && Number(a.golos_sofridos) >= 1.4) {
-    out.push('Casa com ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ngulo ofensivo forte: ataque da casa acima da mÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©dia e defesa visitante permissiva.');
+  if (hGF >= 1.7 && aGA >= 1.4) {
+    out.push(`Casa com vantagem territorial: ${home} cria volume alto (${fmtNum(hGF, 2)} golos/jogo) e encontra uma defesa fora permissiva (${fmtNum(aGA, 2)} sofridos).`);
   }
-  if (Number(a.golos_marcados) >= 1.4 && Number(h.golos_sofridos) >= 1.3) {
-    out.push('Visitante com potencial de marcar: produÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o ofensiva consistente contra defesa da casa vulnerÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡vel.');
+  if (aGF >= 1.4 && hGA >= 1.3) {
+    out.push(`Transicao do visitante em alta: ${away} chega com taxa ofensiva consistente (${fmtNum(aGF, 2)}) e pode explorar espaco nas costas (${fmtNum(hGA, 2)} sofridos da casa).`);
   }
-  if (Number(h['O2.5%']) >= 0.6 && Number(a['O2.5%']) >= 0.55) {
-    out.push('Ritmo alto dos dois lados, jogo propenso a linhas de golos mais altas.');
+  if (hOver >= 0.6 && aOver >= 0.55) {
+    out.push(`Ritmo de jogo para over: ambos chegam com historico elevado de Over 2.5 (${fmtPct(hOver)} vs ${fmtPct(aOver)}).`);
   }
-  if (Number(h['CS%']) >= 0.4 && Number(a['marca%']) <= 0.75) {
-    out.push('Boa hipÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³tese de controlo defensivo da casa, com risco reduzido de sofrer.');
+  if (hBTTS >= 0.58 && aBTTS >= 0.55) {
+    out.push(`BTTS com suporte estatistico: os dois lados apresentam probabilidade elevada de ambas marcarem (${fmtPct(hBTTS)} e ${fmtPct(aBTTS)}).`);
   }
-  if (Number(h.ppg) - Number(a.ppg) >= 0.45) {
-    out.push('DiferenÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§a de desempenho no contexto casa/fora favorece a equipa da casa.');
+  if (hPPG - aPPG >= 0.45) {
+    out.push(`Contexto competitivo favorece ${home}: diferenca de ${fmtNum(hPPG - aPPG, 2)} pontos por jogo no split casa/fora.`);
   }
 
   const regHome = regressionAlertForTeam(league, home, 'Casa');
@@ -1139,7 +1160,7 @@ function matchupInsights(league, home, away) {
   if (regHome) out.push(regHome);
   if (regAway) out.push(regAway);
 
-  return out.slice(0, 5);
+  return out.slice(0, 6);
 }
 
 function renderConfrontoInsights(league, home, away) {
@@ -1543,6 +1564,7 @@ function populateConfronto(leagues) {
   leagueSel.addEventListener('change', refreshTeams);
   byId('cfHome').addEventListener('change', renderConfronto);
   byId('cfAway').addEventListener('change', renderConfronto);
+  byId('compareMetric')?.addEventListener('change', renderConfronto);
   refreshTeams();
 }
 
@@ -1566,9 +1588,23 @@ function renderConfronto() {
 }
 
 function renderCompareSection(league, home, away) {
-  const homePoints = getSeries(league, home, 'H', 'roll5_points').filter((x) => Number.isFinite(x.value));
-  const awayPoints = getSeries(league, away, 'A', 'roll5_points').filter((x) => Number.isFinite(x.value));
-  drawCompareLineChart(homePoints, awayPoints, home, away);
+  const metricSel = byId('compareMetric');
+  const selected = metricSel?.value || 'resultados';
+  const metricCfg = {
+    resultados: { series: 'roll5_points', tableLabel: 'Resultados (PPG)', asPct: false },
+    golos_marcados: { series: 'roll5_gf', tableLabel: 'Golos marcados', asPct: false },
+    golos_sofridos: { series: 'roll5_ga', tableLabel: 'Golos sofridos', asPct: false },
+    btts: { series: 'roll5_btts', tableLabel: 'BTTS', asPct: true },
+    over25: { series: 'roll5_over_2_5', tableLabel: 'Over 2.5', asPct: true }
+  }[selected] || { series: 'roll5_points', tableLabel: 'Resultados (PPG)', asPct: false };
+
+  const homePoints = getSeries(league, home, 'H', metricCfg.series)
+    .filter((x) => Number.isFinite(x.value))
+    .map((x) => ({ ...x, value: metricCfg.asPct ? x.value * 100 : x.value }));
+  const awayPoints = getSeries(league, away, 'A', metricCfg.series)
+    .filter((x) => Number.isFinite(x.value))
+    .map((x) => ({ ...x, value: metricCfg.asPct ? x.value * 100 : x.value }));
+  drawCompareLineChart(homePoints, awayPoints, home, away, metricCfg.tableLabel, metricCfg.asPct);
 
   const h = getResumoRow(league, home, 'Casa');
   const a = getResumoRow(league, away, 'Fora');
@@ -1577,29 +1613,29 @@ function renderCompareSection(league, home, away) {
     return;
   }
 
-  const rows = [
-    ['PPG', Number(h.ppg), Number(a.ppg)],
-    ['VitÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³rias %', Number(h['vit%']) * 100, Number(a['vit%']) * 100],
-    ['Golos marcados', Number(h.golos_marcados), Number(a.golos_marcados)],
-    ['Golos sofridos', Number(h.golos_sofridos), Number(a.golos_sofridos)],
-    ['BTTS %', Number(h['BTTS%']) * 100, Number(a['BTTS%']) * 100],
-    ['Over 2.5 %', Number(h['O2.5%']) * 100, Number(a['O2.5%']) * 100]
-  ];
+  const rowsMap = {
+    resultados: [[metricCfg.tableLabel, Number(h.ppg), Number(a.ppg)]],
+    golos_marcados: [[metricCfg.tableLabel, Number(h.golos_marcados), Number(a.golos_marcados)]],
+    golos_sofridos: [[metricCfg.tableLabel, Number(h.golos_sofridos), Number(a.golos_sofridos)]],
+    btts: [[metricCfg.tableLabel, Number(h['BTTS%']) * 100, Number(a['BTTS%']) * 100]],
+    over25: [[metricCfg.tableLabel, Number(h['O2.5%']) * 100, Number(a['O2.5%']) * 100]]
+  };
+  const rows = rowsMap[selected] || rowsMap.resultados;
 
   byId('compareDeltaTable').querySelector('tbody').innerHTML = rows.map(([m, hv, av]) => {
     const d = hv - av;
-    const suffix = m.includes('%') ? '%' : '';
+    const suffix = metricCfg.asPct ? '%' : '';
     return `<tr><td>${m}</td><td>${fmtNum(hv, 2)}${suffix}</td><td>${fmtNum(av, 2)}${suffix}</td><td>${d >= 0 ? '+' : ''}${fmtNum(d, 2)}${suffix}</td></tr>`;
   }).join('');
   applyExistingSort('compareDeltaTable');
 }
 
-function drawCompareLineChart(homeSeries, awaySeries, homeName, awayName) {
+function drawCompareLineChart(homeSeries, awaySeries, homeName, awayName, metricLabel = 'Resultados', asPct = false) {
   const svg = byId('compareLineChart');
   const t = chartTheme();
   if (!svg) return;
   if (!homeSeries.length && !awaySeries.length) {
-    svg.innerHTML = `<text x="16" y="28" fill="${t.muted}" font-size="14">Sem sÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â©ries para comparar.</text>`;
+    svg.innerHTML = `<text x="16" y="28" fill="${t.muted}" font-size="14">Sem series para comparar.</text>`;
     return;
   }
 
@@ -1631,7 +1667,8 @@ function drawCompareLineChart(homeSeries, awaySeries, homeName, awayName) {
     ${aPts ? `<polyline fill="none" stroke="${t.alt}" stroke-width="2.5" points="${aPts}" />` : ''}
     <text x="${margin.left}" y="14" fill="${t.main}" font-size="12">${homeName} (Casa)</text>
     <text x="${width - margin.right}" y="14" text-anchor="end" fill="${t.alt}" font-size="12">${awayName} (Fora)</text>
-    <text x="${margin.left}" y="${height - 8}" fill="${t.axis}" font-size="11">InÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­cio</text>
+    <text x="${width / 2}" y="14" text-anchor="middle" fill="${t.axis}" font-size="11">${metricLabel}${asPct ? ' (%)' : ''}</text>
+    <text x="${margin.left}" y="${height - 8}" fill="${t.axis}" font-size="11">Inicio</text>
     <text x="${width - margin.right}" y="${height - 8}" text-anchor="end" fill="${t.axis}" font-size="11">Recente</text>
   `;
 }

@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260414w" />
+  <link rel="stylesheet" href="styles.css?v=20260415c" />
 </head>
 <body>
   <div class="bg-orb orb-1"></div>
@@ -182,19 +182,30 @@
         <div class="grid-2">
           <div class="radar-block">
             <h3 id="radarHomeTitle"></h3>
-            <canvas id="radarHome" width="380" height="320"></canvas>
+            <canvas id="radarHome" width="460" height="360"></canvas>
             <div class="mini-list" id="homeStrengths"></div>
           </div>
           <div class="radar-block">
             <h3 id="radarAwayTitle"></h3>
-            <canvas id="radarAway" width="380" height="320"></canvas>
+            <canvas id="radarAway" width="460" height="360"></canvas>
             <div class="mini-list" id="awayStrengths"></div>
           </div>
         </div>
       </section>
 
       <section class="panel">
-        <div class="panel-head"><h2>Comparador Lado a Lado</h2></div>
+        <div class="panel-head">
+          <h2>Comparador Lado a Lado</h2>
+          <label>Mercado
+            <select id="compareMetric">
+              <option value="resultados">Resultados</option>
+              <option value="golos_marcados">Golos marcados</option>
+              <option value="golos_sofridos">Golos sofridos</option>
+              <option value="btts">BTTS</option>
+              <option value="over25">Over 2.5</option>
+            </select>
+          </label>
+        </div>
         <div class="linechart-wrap">
           <svg id="compareLineChart" viewBox="0 0 760 300" preserveAspectRatio="none"></svg>
         </div>
@@ -403,7 +414,7 @@
     </section>
   </main>
 
-  <script src="app.js?v=20260415b" defer></script>
+  <script src="app.js?v=20260415c" defer></script>
 </body>
 </html>
 

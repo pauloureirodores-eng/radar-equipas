@@ -141,6 +141,18 @@ h1 { margin: 0.45rem 0 0.6rem; font-family: 'Fraunces', Georgia, 'Times New Roma
 .tab-panel.active .panel:nth-of-type(4) { animation-delay: 120ms; }
 .panel.lite { box-shadow: none; margin-bottom: 0; }
 .panel-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 0.75rem; }
+.panel-head label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.panel-head label select {
+  min-width: 170px;
+}
 .panel h2 { margin: 0; font-family: 'Fraunces', Georgia, 'Times New Roman', serif; font-size: 1.12rem; letter-spacing: 0.01em; font-weight: 650; }
 .league-picker { font-size: 0.85rem; color: var(--muted); display: inline-flex; align-items: center; gap: 0.5rem; }
 .controls-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 0.7rem; margin-bottom: 0.8rem; }
@@ -421,10 +433,34 @@ tr:hover td { background: #76a9ff14; }
 .kpi-row:last-child { border-bottom: none; }
 .kpi-row strong { font-size: 1.08rem; letter-spacing: 0.01em; }
 .radar-block { border: 1px solid var(--line); border-radius: 12px; padding: 0.7rem; background: #0f1a27; }
-.radar-block h3 { margin: 0 0 0.4rem; font-size: 0.95rem; }
-.radar-block canvas { width: 100%; max-width: 380px; height: auto; display: block; }
-.mini-list { margin-top: 0.6rem; font-size: 0.84rem; color: var(--muted); }
-.mini-list strong { color: var(--text); }
+.radar-block h3 { margin: 0 0 0.45rem; font-size: 0.95rem; }
+.radar-block canvas { width: 100%; max-width: 460px; height: auto; display: block; margin: 0.2rem auto 0; }
+.mini-list {
+  margin-top: 0.75rem;
+  font-size: 0.86rem;
+  color: var(--muted);
+  display: grid;
+  gap: 0.42rem;
+}
+.mini-list .mini-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 0.55rem;
+  align-items: start;
+}
+.mini-list strong { color: var(--text); font-weight: 700; }
+
+#confrontoMarketTable tbody tr.market-top td {
+  background: linear-gradient(90deg, #173a32, #0f1a27 70%);
+}
+#confrontoMarketTable tbody tr.market-top td:last-child {
+  color: #9be0cd;
+  font-weight: 700;
+}
+#confrontoMarketTable tbody tr.market-mid td:last-child {
+  color: #cde8ff;
+  font-weight: 600;
+}
 .insights { margin: 0; padding-left: 1rem; display: grid; gap: 0.45rem; }
 .insights li { font-size: 0.9rem; color: var(--text); }
 .heatmap-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.35rem; }
