@@ -1,6 +1,7 @@
 import { SiteHeader } from "@/components/layout/site-header";
 import { PageShell } from "@/components/layout/page-shell";
 import { PageIntro } from "@/components/layout/page-intro";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
 const shortlist = [
   { market: "Over 2.5", game: "Benfica vs Braga", edge: "+7.2%" },
@@ -8,9 +9,17 @@ const shortlist = [
   { market: "Casa DNB", game: "Lille vs Rennes", edge: "+4.6%" }
 ];
 
-function CardShell({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+type CardShellProps = ComponentPropsWithoutRef<"section"> & {
+  children: ReactNode;
+  className?: string;
+};
+
+function CardShell({ children, className = "", ...rest }: CardShellProps) {
   return (
-    <section className={`rounded-[2rem] border border-white/10 bg-white/5 shadow-2xl shadow-black/20 ${className}`}>
+    <section
+      {...rest}
+      className={`rounded-[2rem] border border-white/10 bg-white/5 shadow-2xl shadow-black/20 ${className}`}
+    >
       {children}
     </section>
   );
