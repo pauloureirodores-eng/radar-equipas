@@ -11,21 +11,16 @@ export function MatchupMarketStack({ markets }: { markets: Market[] }) {
           <h2 className="mt-2 text-2xl font-semibold text-white">Mercados alinhados</h2>
           <p className="mt-1 text-sm text-white/55">O Matchup deve entregar primeiro conclusao, so depois detalhe.</p>
         </div>
-        <Link
-          href="/estrategia#fluxo-decisao"
-          className="rounded-full bg-white px-5 py-3 text-sm font-medium text-slate-950 transition hover:bg-white/90"
-        >
-          Ir para Estrategia
-        </Link>
+        <span className="text-cyan-300 text-xl">↗</span>
       </div>
 
-      <div className="mt-5 grid gap-4 xl:grid-cols-3">
+      <div className="mt-5 space-y-4">
         {markets.map((item) => (
           <div key={item.market} className="rounded-2xl border border-white/10 bg-black/15 p-4">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <div className="font-medium text-white">{item.market}</div>
-                <div className="text-sm text-white/55">{item.edge}</div>
+                <div className="text-3xl font-semibold tracking-tight text-white md:text-4xl">{item.market}</div>
+                <div className="text-sm text-white/55">{item.edge} edge</div>
               </div>
               <span className="rounded-full bg-white/10 px-3 py-1 text-sm text-white">{item.score}%</span>
             </div>
@@ -35,6 +30,13 @@ export function MatchupMarketStack({ markets }: { markets: Market[] }) {
           </div>
         ))}
       </div>
+
+      <Link
+        href="/estrategia#fluxo-decisao"
+        className="mt-4 block w-full rounded-full bg-white px-5 py-3 text-center text-sm font-medium text-slate-950 transition hover:bg-white/90"
+      >
+        Ir para Estrategia
+      </Link>
     </section>
   );
 }

@@ -8,7 +8,10 @@ import type { MatchupData } from "@/lib/mock/matchup";
 export function MatchupPage({ data }: { data: MatchupData }) {
   return (
     <div className="space-y-8">
-      <MatchupHeader data={data} />
+      <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+        <MatchupHeader data={data} />
+        <MatchupMarketStack markets={data.markets} />
+      </section>
 
       <div className="grid gap-6 lg:grid-cols-[0.22fr_0.78fr]">
         <aside className="lg:sticky lg:top-28 lg:h-fit">
@@ -16,7 +19,6 @@ export function MatchupPage({ data }: { data: MatchupData }) {
         </aside>
 
         <div className="space-y-8">
-          <MatchupMarketStack markets={data.markets} />
           <BaseReadSection data={data} />
           <AdvancedContextSection items={data.advancedContext} />
         </div>

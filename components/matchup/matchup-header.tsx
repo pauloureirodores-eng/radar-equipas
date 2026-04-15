@@ -36,9 +36,9 @@ function StatPill({
 
 export function MatchupHeader({ data }: MatchupHeaderProps) {
   return (
-    <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-      <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-[#10233c] to-[#0a1321] shadow-2xl shadow-black/20">
-        <div className="p-8 md:p-10">
+    <section id="resumo" className="scroll-mt-28 h-full">
+      <div className="h-full overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-[#10233c] to-[#0a1321] shadow-2xl shadow-black/20">
+        <div className="flex h-full flex-col p-8 md:p-10">
           <div className="mb-4 flex flex-wrap items-center gap-3">
             <span className="rounded-full bg-cyan-400/15 px-3 py-1 text-sm text-cyan-200">Flagship matchup</span>
             <span className="rounded-full bg-white/5 px-3 py-1 text-sm text-white/70">
@@ -55,15 +55,13 @@ export function MatchupHeader({ data }: MatchupHeaderProps) {
               A pagina Matchup deve dar primeiro a conclusao, e so depois abrir a explicacao detalhada do cenario.
             </p>
           </div>
-        </div>
-      </div>
 
-      <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/20">
-        <div className="grid gap-3 md:grid-cols-2">
-          <StatPill label="Confianca" value={data.confidence} tone="good" />
-          <StatPill label="Edge medio" value={data.avgEdge} tone="good" />
-          <StatPill label="Risco disponibilidade" value={data.availabilityRisk} tone="warn" />
-          <StatPill label="Contexto" value={data.contextStrength} />
+          <div className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <StatPill label="Confianca" value={data.confidence} tone="good" />
+            <StatPill label="Edge medio" value={data.avgEdge} tone="good" />
+            <StatPill label="Risco disponibilidade" value={data.availabilityRisk} tone="warn" />
+            <StatPill label="Contexto" value={data.contextStrength} />
+          </div>
         </div>
       </div>
     </section>

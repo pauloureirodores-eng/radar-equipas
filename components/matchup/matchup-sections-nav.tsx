@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 
 const items = [
-  { id: "mercados", label: "Mercados" },
+  { id: "resumo", label: "Resumo" },
   { id: "base-read", label: "Leitura Base" },
-  { id: "advanced-context", label: "Contexto" }
+  { id: "advanced-context", label: "Contexto" },
+  { id: "mercados", label: "Mercados" }
 ];
 
 export function MatchupSectionsNav() {
-  const [activeId, setActiveId] = useState("mercados");
+  const [activeId, setActiveId] = useState("resumo");
 
   useEffect(() => {
     const observer = new IntersectionObserver(
