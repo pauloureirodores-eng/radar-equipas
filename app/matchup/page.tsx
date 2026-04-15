@@ -1,13 +1,13 @@
 import { SiteHeader } from "@/components/layout/site-header";
 import { PageShell } from "@/components/layout/page-shell";
-import { PageIntro } from "@/components/layout/page-intro";
+import { MatchupPremium } from "@/components/matchup/matchup-premium";
 
 export default function MatchupPage() {
   return (
     <>
       <SiteHeader activeTab="Matchup" />
       <PageShell>
-        <PageIntro title="Matchup" description="Leitura Base + Contexto Avancado para analise profunda do confronto." />
+        <MatchupPremium />
       </PageShell>
     </>
   );
