@@ -1,10 +1,5 @@
-import dynamic from "next/dynamic";
 import type { MatchupData } from "@/lib/mock/matchup";
-
-const RadarChartClient = dynamic(() => import("@/components/matchup/radar-chart-client"), {
-  ssr: false,
-  loading: () => <div className="aspect-square animate-pulse rounded-full border border-dashed border-white/15 bg-white/5" />
-});
+import RadarChartClient from "@/components/matchup/radar-chart-client";
 
 function MiniInsight({ title, text }: { title: string; text: string }) {
   return (
