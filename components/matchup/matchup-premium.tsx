@@ -1,9 +1,27 @@
-import { SectionHeader } from "@/components/layout/section-header";
+"use client";
+
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import { SectionHeader } from "@/components/layout/section-header";
+
+type NavSection = {
+  id: string;
+  label: string;
+};
+
+const SIDE_NAV: NavSection[] = [
+  { id: "matchup-resumo", label: "Resumo" },
+  { id: "matchup-base", label: "Leitura Base" },
+  { id: "matchup-contexto", label: "Contexto" },
+  { id: "matchup-mercados", label: "Mercados" }
+];
 
 function CardShell({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
-    <section className={`rounded-[2rem] border border-white/10 bg-white/5 shadow-2xl shadow-black/20 ${className}`}>
+    <section
+      className={`rounded-[2rem] border border-white/10 bg-white/5 shadow-2xl shadow-black/20 transition duration-300 hover:-translate-y-0.5 hover:border-white/20 ${className}`}
+    >
       {children}
     </section>
   );
@@ -43,9 +61,36 @@ function MiniInsight({ title, text }: { title: string; text: string }) {
 }
 
 export function MatchupPremium() {
+  const [active, setActive] = useState<string>(SIDE_NAV[0].id);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        if (visible[0]?.target?.id) {
+          setActive(visible[0].target.id);
+        }
+      },
+      {
+        root: null,
+        rootMargin: "-20% 0px -55% 0px",
+        threshold: [0.1, 0.25, 0.5]
+      }
+    );
+
+    SIDE_NAV.forEach((section) => {
+      const el = document.getElementById(section.id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="space-y-8">
-      <section className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+      <section id="matchup-resumo" className="scroll-mt-28 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
         <CardShell className="overflow-hidden bg-gradient-to-br from-[#10233c] to-[#0a1321]">
           <div className="p-8 md:p-10">
             <div className="mb-4 flex flex-wrap items-center gap-3">
@@ -73,7 +118,7 @@ export function MatchupPremium() {
           </div>
         </CardShell>
 
-        <CardShell>
+        <CardShell id="matchup-mercados">
           <div className="p-6">
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -90,7 +135,7 @@ export function MatchupPremium() {
                 ["BTTS", "+5.8% edge", "71%"],
                 ["Over Cantos", "+4.0% edge", "63%"]
               ].map(([market, edge, score]) => (
-                <article key={market} className="rounded-2xl border border-white/10 bg-black/15 p-4">
+                <article key={market} className="rounded-2xl border border-white/10 bg-black/15 p-4 transition hover:bg-black/25">
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <p className="font-medium text-white">{market}</p>
@@ -100,32 +145,36 @@ export function MatchupPremium() {
                   </div>
                 </article>
               ))}
-              <button className="w-full rounded-full bg-white px-4 py-2 text-sm font-medium text-slate-950 transition hover:bg-white/90">
+              <Link
+                href="/estrategia#fluxo-decisao"
+                className="block w-full rounded-full bg-white px-4 py-2 text-center text-sm font-medium text-slate-950 transition hover:bg-white/90"
+              >
                 Ir para Estrategia
-              </button>
+              </Link>
             </div>
           </div>
         </CardShell>
       </section>
 
       <section className="grid gap-6 lg:grid-cols-[0.22fr_0.78fr]">
-        <CardShell className="h-fit p-4">
-          <div className="space-y-2">
-            {["Resumo", "Leitura Base", "Contexto", "Mercados"].map((label, idx) => (
-              <button
-                key={label}
-                className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm transition ${
-                  idx === 0 ? "bg-white text-slate-950" : "bg-white/5 text-white/75 hover:bg-white/10"
+        <CardShell className="sticky top-28 h-fit p-4">
+          <nav className="space-y-2">
+            {SIDE_NAV.map((section) => (
+              <a
+                key={section.id}
+                href={`#${section.id}`}
+                className={`block rounded-2xl px-4 py-3 text-sm transition ${
+                  active === section.id ? "bg-white text-slate-950" : "bg-white/5 text-white/75 hover:bg-white/10"
                 }`}
               >
-                {label}
-              </button>
+                {section.label}
+              </a>
             ))}
-          </div>
+          </nav>
         </CardShell>
 
         <div className="space-y-8">
-          <section className="space-y-5">
+          <section id="matchup-base" className="scroll-mt-28 space-y-5">
             <SectionHeader
               eyebrow="Camada 1"
               title="Leitura Base"
@@ -230,7 +279,7 @@ export function MatchupPremium() {
             </div>
           </section>
 
-          <section className="space-y-5">
+          <section id="matchup-contexto" className="scroll-mt-28 space-y-5">
             <SectionHeader
               eyebrow="Camada 2"
               title="Contexto Avancado"
