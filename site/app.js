@@ -182,6 +182,10 @@ function sanitizeUiText(text) {
     .replace(/\bPr["']?\s*jogo\b/gi, 'Pré-jogo')
     .replace(/\bHist["']?\s*rico\b/gi, 'Histórico')
     .replace(/\bm["']?\s*dia\b/gi, 'média')
+    // Residual short-label fixes seen in cards/titles.
+    .replace(/\bConfigura(?:\s*["'`´^~]+\s*o|\s+o)\b/gi, 'Configuracao')
+    .replace(/\bConfian(?:\s*["'`´^~]+\s*a|\s+a)?\b/gi, 'Confianca')
+    .replace(/\bScore\s+de\s+Confian(?:\s*["'`´^~]+)?\b/gi, 'Score de Confianca')
     .replace(/\s{2,}/g, ' ')
     .trim();
   return repairedPt;
