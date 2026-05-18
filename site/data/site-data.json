@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-05-11T16:50:39.122425+00:00",
+    "generatedAt": "2026-05-18T11:11:15.992594+00:00",
     "sourceFiles": [
       "D1.csv",
       "E0.csv",
@@ -568433,9 +568433,9 @@
   },
   "upcomingFixturesMeta": {
     "provider": "football-data.org",
-    "generatedAt": "2026-05-11T16:49:04.178062+00:00",
-    "windowDateFrom": "2026-05-15",
-    "windowDateTo": "2026-05-18",
+    "generatedAt": "2026-05-18T11:10:16.967847+00:00",
+    "windowDateFrom": "2026-05-22",
+    "windowDateTo": "2026-05-25",
     "tokenConfigured": true
   },
   "upcomingFixtures": [
@@ -568443,1056 +568443,486 @@
       "league": "E0",
       "competitionCode": "PL",
       "competitionName": "Premier League",
-      "matchId": 538146,
+      "matchId": 538155,
       "status": "TIMED",
-      "utcDate": "2026-05-15T19:00:00Z",
-      "date": "2026-05-15",
-      "homeTeamApi": "Aston Villa FC",
-      "awayTeamApi": "Liverpool FC",
-      "homeTeamNorm": "aston villa",
-      "awayTeamNorm": "liverpool"
+      "utcDate": "2026-05-24T15:00:00Z",
+      "date": "2026-05-24",
+      "homeTeamApi": "Sunderland AFC",
+      "awayTeamApi": "Chelsea FC",
+      "homeTeamNorm": "sunderland afc",
+      "awayTeamNorm": "chelsea"
     },
     {
       "league": "E0",
       "competitionCode": "PL",
       "competitionName": "Premier League",
-      "matchId": 538152,
+      "matchId": 538156,
       "status": "TIMED",
-      "utcDate": "2026-05-17T11:30:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Manchester United FC",
-      "awayTeamApi": "Nottingham Forest FC",
-      "homeTeamNorm": "manchester united",
-      "awayTeamNorm": "nottingham forest"
+      "utcDate": "2026-05-24T15:00:00Z",
+      "date": "2026-05-24",
+      "homeTeamApi": "Brighton & Hove Albion FC",
+      "awayTeamApi": "Manchester United FC",
+      "homeTeamNorm": "brighton & hove albion",
+      "awayTeamNorm": "manchester united"
     },
     {
       "league": "E0",
       "competitionCode": "PL",
       "competitionName": "Premier League",
-      "matchId": 538148,
+      "matchId": 538157,
       "status": "TIMED",
-      "utcDate": "2026-05-17T14:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Brentford FC",
-      "awayTeamApi": "Crystal Palace FC",
-      "homeTeamNorm": "brentford",
-      "awayTeamNorm": "crystal palace"
+      "utcDate": "2026-05-24T15:00:00Z",
+      "date": "2026-05-24",
+      "homeTeamApi": "Crystal Palace FC",
+      "awayTeamApi": "Arsenal FC",
+      "homeTeamNorm": "crystal palace",
+      "awayTeamNorm": "arsenal"
     },
     {
       "league": "E0",
       "competitionCode": "PL",
       "competitionName": "Premier League",
-      "matchId": 538150,
+      "matchId": 538158,
       "status": "TIMED",
-      "utcDate": "2026-05-17T14:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Everton FC",
-      "awayTeamApi": "Sunderland AFC",
-      "homeTeamNorm": "everton",
-      "awayTeamNorm": "sunderland afc"
+      "utcDate": "2026-05-24T15:00:00Z",
+      "date": "2026-05-24",
+      "homeTeamApi": "Burnley FC",
+      "awayTeamApi": "Wolverhampton Wanderers FC",
+      "homeTeamNorm": "burnley",
+      "awayTeamNorm": "wolverhampton wanderers"
     },
     {
       "league": "E0",
       "competitionCode": "PL",
       "competitionName": "Premier League",
-      "matchId": 538151,
+      "matchId": 538159,
       "status": "TIMED",
-      "utcDate": "2026-05-17T14:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Leeds United FC",
-      "awayTeamApi": "Brighton & Hove Albion FC",
-      "homeTeamNorm": "leeds united",
-      "awayTeamNorm": "brighton & hove albion"
+      "utcDate": "2026-05-24T15:00:00Z",
+      "date": "2026-05-24",
+      "homeTeamApi": "Fulham FC",
+      "awayTeamApi": "Newcastle United FC",
+      "homeTeamNorm": "fulham",
+      "awayTeamNorm": "newcastle united"
     },
     {
       "league": "E0",
       "competitionCode": "PL",
       "competitionName": "Premier League",
-      "matchId": 538154,
+      "matchId": 538160,
       "status": "TIMED",
-      "utcDate": "2026-05-17T14:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Wolverhampton Wanderers FC",
-      "awayTeamApi": "Fulham FC",
-      "homeTeamNorm": "wolverhampton wanderers",
-      "awayTeamNorm": "fulham"
+      "utcDate": "2026-05-24T15:00:00Z",
+      "date": "2026-05-24",
+      "homeTeamApi": "Liverpool FC",
+      "awayTeamApi": "Brentford FC",
+      "homeTeamNorm": "liverpool",
+      "awayTeamNorm": "brentford"
     },
     {
       "league": "E0",
       "competitionCode": "PL",
       "competitionName": "Premier League",
-      "matchId": 538153,
+      "matchId": 538161,
       "status": "TIMED",
-      "utcDate": "2026-05-17T16:30:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Newcastle United FC",
-      "awayTeamApi": "West Ham United FC",
-      "homeTeamNorm": "newcastle united",
-      "awayTeamNorm": "west ham united"
+      "utcDate": "2026-05-24T15:00:00Z",
+      "date": "2026-05-24",
+      "homeTeamApi": "Manchester City FC",
+      "awayTeamApi": "Aston Villa FC",
+      "homeTeamNorm": "manchester city",
+      "awayTeamNorm": "aston villa"
     },
     {
       "league": "E0",
       "competitionCode": "PL",
       "competitionName": "Premier League",
-      "matchId": 538147,
+      "matchId": 538162,
       "status": "TIMED",
-      "utcDate": "2026-05-18T19:00:00Z",
-      "date": "2026-05-18",
-      "homeTeamApi": "Arsenal FC",
-      "awayTeamApi": "Burnley FC",
-      "homeTeamNorm": "arsenal",
-      "awayTeamNorm": "burnley"
+      "utcDate": "2026-05-24T15:00:00Z",
+      "date": "2026-05-24",
+      "homeTeamApi": "Nottingham Forest FC",
+      "awayTeamApi": "AFC Bournemouth",
+      "homeTeamNorm": "nottingham forest",
+      "awayTeamNorm": "afc bournemouth"
     },
     {
-      "league": "F1",
-      "competitionCode": "FL1",
-      "competitionName": "Ligue 1",
-      "matchId": 542703,
+      "league": "E0",
+      "competitionCode": "PL",
+      "competitionName": "Premier League",
+      "matchId": 538163,
       "status": "TIMED",
-      "utcDate": "2026-05-17T19:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "FC Lorient",
-      "awayTeamApi": "Le Havre AC",
-      "homeTeamNorm": "fc lorient",
-      "awayTeamNorm": "le havre"
+      "utcDate": "2026-05-24T15:00:00Z",
+      "date": "2026-05-24",
+      "homeTeamApi": "Tottenham Hotspur FC",
+      "awayTeamApi": "Everton FC",
+      "homeTeamNorm": "tottenham hotspur",
+      "awayTeamNorm": "everton"
     },
     {
-      "league": "F1",
-      "competitionCode": "FL1",
-      "competitionName": "Ligue 1",
-      "matchId": 542704,
+      "league": "E0",
+      "competitionCode": "PL",
+      "competitionName": "Premier League",
+      "matchId": 538164,
       "status": "TIMED",
-      "utcDate": "2026-05-17T19:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "FC Nantes",
-      "awayTeamApi": "Toulouse FC",
-      "homeTeamNorm": "fc nantes",
-      "awayTeamNorm": "toulouse"
-    },
-    {
-      "league": "F1",
-      "competitionCode": "FL1",
-      "competitionName": "Ligue 1",
-      "matchId": 542705,
-      "status": "TIMED",
-      "utcDate": "2026-05-17T19:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Paris FC",
-      "awayTeamApi": "Paris Saint-Germain FC",
-      "homeTeamNorm": "paris",
-      "awayTeamNorm": "paris saint germain"
-    },
-    {
-      "league": "F1",
-      "competitionCode": "FL1",
-      "competitionName": "Ligue 1",
-      "matchId": 542706,
-      "status": "TIMED",
-      "utcDate": "2026-05-17T19:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "OGC Nice",
-      "awayTeamApi": "FC Metz",
-      "homeTeamNorm": "ogc nice",
-      "awayTeamNorm": "fc metz"
-    },
-    {
-      "league": "F1",
-      "competitionCode": "FL1",
-      "competitionName": "Ligue 1",
-      "matchId": 542707,
-      "status": "TIMED",
-      "utcDate": "2026-05-17T19:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Olympique Lyonnais",
-      "awayTeamApi": "Racing Club de Lens",
-      "homeTeamNorm": "olympique lyonnais",
-      "awayTeamNorm": "racing club de lens"
-    },
-    {
-      "league": "F1",
-      "competitionCode": "FL1",
-      "competitionName": "Ligue 1",
-      "matchId": 542708,
-      "status": "TIMED",
-      "utcDate": "2026-05-17T19:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Olympique de Marseille",
-      "awayTeamApi": "Stade Rennais FC 1901",
-      "homeTeamNorm": "olympique de marseille",
-      "awayTeamNorm": "stade rennais 1901"
-    },
-    {
-      "league": "F1",
-      "competitionCode": "FL1",
-      "competitionName": "Ligue 1",
-      "matchId": 542709,
-      "status": "TIMED",
-      "utcDate": "2026-05-17T19:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Lille OSC",
-      "awayTeamApi": "AJ Auxerre",
-      "homeTeamNorm": "lille osc",
-      "awayTeamNorm": "aj auxerre"
-    },
-    {
-      "league": "F1",
-      "competitionCode": "FL1",
-      "competitionName": "Ligue 1",
-      "matchId": 542710,
-      "status": "TIMED",
-      "utcDate": "2026-05-17T19:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "RC Strasbourg Alsace",
-      "awayTeamApi": "AS Monaco FC",
-      "homeTeamNorm": "rc strasbourg alsace",
-      "awayTeamNorm": "as monaco"
-    },
-    {
-      "league": "F1",
-      "competitionCode": "FL1",
-      "competitionName": "Ligue 1",
-      "matchId": 542711,
-      "status": "TIMED",
-      "utcDate": "2026-05-17T19:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Stade Brestois 29",
-      "awayTeamApi": "Angers SCO",
-      "homeTeamNorm": "stade brestois 29",
-      "awayTeamNorm": "angerso"
+      "utcDate": "2026-05-24T15:00:00Z",
+      "date": "2026-05-24",
+      "homeTeamApi": "West Ham United FC",
+      "awayTeamApi": "Leeds United FC",
+      "homeTeamNorm": "west ham united",
+      "awayTeamNorm": "leeds united"
     },
     {
       "league": "I1",
       "competitionCode": "SA",
       "competitionName": "Serie A",
-      "matchId": 537175,
-      "status": "SCHEDULED",
-      "utcDate": "2026-05-17T00:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "AS Roma",
-      "awayTeamApi": "SS Lazio",
-      "homeTeamNorm": "as roma",
-      "awayTeamNorm": "ss lazio"
+      "matchId": 537185,
+      "status": "TIMED",
+      "utcDate": "2026-05-24T13:00:00Z",
+      "date": "2026-05-24",
+      "homeTeamApi": "ACF Fiorentina",
+      "awayTeamApi": "Atalanta BC",
+      "homeTeamNorm": "acf fiorentina",
+      "awayTeamNorm": "atalanta bc"
     },
     {
       "league": "I1",
       "competitionCode": "SA",
       "competitionName": "Serie A",
-      "matchId": 537176,
-      "status": "SCHEDULED",
-      "utcDate": "2026-05-17T00:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Atalanta BC",
-      "awayTeamApi": "Bologna FC 1909",
-      "homeTeamNorm": "atalanta bc",
-      "awayTeamNorm": "bologna 1909"
+      "matchId": 537186,
+      "status": "TIMED",
+      "utcDate": "2026-05-24T13:00:00Z",
+      "date": "2026-05-24",
+      "homeTeamApi": "AC Milan",
+      "awayTeamApi": "Cagliari Calcio",
+      "homeTeamNorm": "ac milan",
+      "awayTeamNorm": "cagliari calcio"
     },
     {
       "league": "I1",
       "competitionCode": "SA",
       "competitionName": "Serie A",
-      "matchId": 537177,
-      "status": "SCHEDULED",
-      "utcDate": "2026-05-17T00:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Cagliari Calcio",
-      "awayTeamApi": "Torino FC",
-      "homeTeamNorm": "cagliari calcio",
-      "awayTeamNorm": "torino"
+      "matchId": 537187,
+      "status": "TIMED",
+      "utcDate": "2026-05-24T13:00:00Z",
+      "date": "2026-05-24",
+      "homeTeamApi": "Bologna FC 1909",
+      "awayTeamApi": "FC Internazionale Milano",
+      "homeTeamNorm": "bologna 1909",
+      "awayTeamNorm": "fc internazionale milano"
     },
     {
       "league": "I1",
       "competitionCode": "SA",
       "competitionName": "Serie A",
-      "matchId": 537178,
-      "status": "SCHEDULED",
-      "utcDate": "2026-05-17T00:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Genoa CFC",
-      "awayTeamApi": "AC Milan",
-      "homeTeamNorm": "genoac",
-      "awayTeamNorm": "ac milan"
+      "matchId": 537188,
+      "status": "TIMED",
+      "utcDate": "2026-05-24T13:00:00Z",
+      "date": "2026-05-24",
+      "homeTeamApi": "Torino FC",
+      "awayTeamApi": "Juventus FC",
+      "homeTeamNorm": "torino",
+      "awayTeamNorm": "juventus"
     },
     {
       "league": "I1",
       "competitionCode": "SA",
       "competitionName": "Serie A",
-      "matchId": 537179,
-      "status": "SCHEDULED",
-      "utcDate": "2026-05-17T00:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Como 1907",
-      "awayTeamApi": "Parma Calcio 1913",
-      "homeTeamNorm": "como 1907",
-      "awayTeamNorm": "parma calcio 1913"
+      "matchId": 537189,
+      "status": "TIMED",
+      "utcDate": "2026-05-24T13:00:00Z",
+      "date": "2026-05-24",
+      "homeTeamApi": "Hellas Verona FC",
+      "awayTeamApi": "AS Roma",
+      "homeTeamNorm": "hellas verona",
+      "awayTeamNorm": "as roma"
     },
     {
       "league": "I1",
       "competitionCode": "SA",
       "competitionName": "Serie A",
-      "matchId": 537180,
-      "status": "SCHEDULED",
-      "utcDate": "2026-05-17T00:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "FC Internazionale Milano",
-      "awayTeamApi": "Hellas Verona FC",
-      "homeTeamNorm": "fc internazionale milano",
-      "awayTeamNorm": "hellas verona"
+      "matchId": 537190,
+      "status": "TIMED",
+      "utcDate": "2026-05-24T13:00:00Z",
+      "date": "2026-05-24",
+      "homeTeamApi": "SS Lazio",
+      "awayTeamApi": "AC Pisa 1909",
+      "homeTeamNorm": "ss lazio",
+      "awayTeamNorm": "ac pisa 1909"
     },
     {
       "league": "I1",
       "competitionCode": "SA",
       "competitionName": "Serie A",
-      "matchId": 537181,
-      "status": "SCHEDULED",
-      "utcDate": "2026-05-17T00:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Juventus FC",
-      "awayTeamApi": "ACF Fiorentina",
-      "homeTeamNorm": "juventus",
-      "awayTeamNorm": "acf fiorentina"
+      "matchId": 537191,
+      "status": "TIMED",
+      "utcDate": "2026-05-24T13:00:00Z",
+      "date": "2026-05-24",
+      "homeTeamApi": "Parma Calcio 1913",
+      "awayTeamApi": "US Sassuolo Calcio",
+      "homeTeamNorm": "parma calcio 1913",
+      "awayTeamNorm": "us sassuolo calcio"
     },
     {
       "league": "I1",
       "competitionCode": "SA",
       "competitionName": "Serie A",
-      "matchId": 537182,
-      "status": "SCHEDULED",
-      "utcDate": "2026-05-17T00:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "AC Pisa 1909",
-      "awayTeamApi": "SSC Napoli",
-      "homeTeamNorm": "ac pisa 1909",
-      "awayTeamNorm": "ssc napoli"
+      "matchId": 537192,
+      "status": "TIMED",
+      "utcDate": "2026-05-24T13:00:00Z",
+      "date": "2026-05-24",
+      "homeTeamApi": "SSC Napoli",
+      "awayTeamApi": "Udinese Calcio",
+      "homeTeamNorm": "ssc napoli",
+      "awayTeamNorm": "udinese calcio"
     },
     {
       "league": "I1",
       "competitionCode": "SA",
       "competitionName": "Serie A",
-      "matchId": 537183,
-      "status": "SCHEDULED",
-      "utcDate": "2026-05-17T00:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "US Sassuolo Calcio",
-      "awayTeamApi": "US Lecce",
-      "homeTeamNorm": "us sassuolo calcio",
-      "awayTeamNorm": "us lecce"
+      "matchId": 537193,
+      "status": "TIMED",
+      "utcDate": "2026-05-24T13:00:00Z",
+      "date": "2026-05-24",
+      "homeTeamApi": "US Cremonese",
+      "awayTeamApi": "Como 1907",
+      "homeTeamNorm": "us cremonese",
+      "awayTeamNorm": "como 1907"
     },
     {
       "league": "I1",
       "competitionCode": "SA",
       "competitionName": "Serie A",
-      "matchId": 537184,
-      "status": "SCHEDULED",
-      "utcDate": "2026-05-17T00:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Udinese Calcio",
-      "awayTeamApi": "US Cremonese",
-      "homeTeamNorm": "udinese calcio",
-      "awayTeamNorm": "us cremonese"
-    },
-    {
-      "league": "P1",
-      "competitionCode": "PPL",
-      "competitionName": "Primeira Liga",
-      "matchId": 545997,
-      "status": "SCHEDULED",
-      "utcDate": "2026-05-17T00:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Moreirense FC",
-      "awayTeamApi": "AVS",
-      "homeTeamNorm": "moreirense",
-      "awayTeamNorm": "avs"
-    },
-    {
-      "league": "P1",
-      "competitionCode": "PPL",
-      "competitionName": "Primeira Liga",
-      "matchId": 545998,
-      "status": "SCHEDULED",
-      "utcDate": "2026-05-17T00:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "FC Famalicão",
-      "awayTeamApi": "FC Alverca",
-      "homeTeamNorm": "fc famalicão",
-      "awayTeamNorm": "fc alverca"
-    },
-    {
-      "league": "P1",
-      "competitionCode": "PPL",
-      "competitionName": "Primeira Liga",
-      "matchId": 545999,
-      "status": "SCHEDULED",
-      "utcDate": "2026-05-17T00:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Sporting Clube de Portugal",
-      "awayTeamApi": "Gil Vicente FC",
-      "homeTeamNorm": "sporting clube de portugal",
-      "awayTeamNorm": "gil vicente"
-    },
-    {
-      "league": "P1",
-      "competitionCode": "PPL",
-      "competitionName": "Primeira Liga",
-      "matchId": 546000,
-      "status": "SCHEDULED",
-      "utcDate": "2026-05-17T00:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "FC Porto",
-      "awayTeamApi": "CD Santa Clara",
-      "homeTeamNorm": "fc porto",
-      "awayTeamNorm": "cd santa clara"
-    },
-    {
-      "league": "P1",
-      "competitionCode": "PPL",
-      "competitionName": "Primeira Liga",
-      "matchId": 546001,
-      "status": "SCHEDULED",
-      "utcDate": "2026-05-17T00:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "GD Estoril Praia",
-      "awayTeamApi": "Sport Lisboa e Benfica",
-      "homeTeamNorm": "gd estoril praia",
-      "awayTeamNorm": "sport lisboa e benfica"
-    },
-    {
-      "league": "P1",
-      "competitionCode": "PPL",
-      "competitionName": "Primeira Liga",
-      "matchId": 546002,
-      "status": "SCHEDULED",
-      "utcDate": "2026-05-17T00:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "CD Nacional",
-      "awayTeamApi": "Vitória SC",
-      "homeTeamNorm": "cd nacional",
-      "awayTeamNorm": "vitória"
-    },
-    {
-      "league": "P1",
-      "competitionCode": "PPL",
-      "competitionName": "Primeira Liga",
-      "matchId": 546003,
-      "status": "SCHEDULED",
-      "utcDate": "2026-05-17T00:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Casa Pia AC",
-      "awayTeamApi": "Rio Ave FC",
-      "homeTeamNorm": "casa pia",
-      "awayTeamNorm": "rio ave"
-    },
-    {
-      "league": "P1",
-      "competitionCode": "PPL",
-      "competitionName": "Primeira Liga",
-      "matchId": 546004,
-      "status": "SCHEDULED",
-      "utcDate": "2026-05-17T00:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "FC Arouca",
-      "awayTeamApi": "CD Tondela",
-      "homeTeamNorm": "fc arouca",
-      "awayTeamNorm": "cd tondela"
-    },
-    {
-      "league": "P1",
-      "competitionCode": "PPL",
-      "competitionName": "Primeira Liga",
-      "matchId": 546005,
-      "status": "SCHEDULED",
-      "utcDate": "2026-05-17T00:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Sporting Clube de Braga",
-      "awayTeamApi": "CF Estrela da Amadora",
-      "homeTeamNorm": "sporting clube de braga",
-      "awayTeamNorm": "cf estrela da amadora"
-    },
-    {
-      "league": "D1",
-      "competitionCode": "BL1",
-      "competitionName": "Bundesliga",
-      "matchId": 540703,
+      "matchId": 537194,
       "status": "TIMED",
-      "utcDate": "2026-05-16T13:30:00Z",
-      "date": "2026-05-16",
-      "homeTeamApi": "SV Werder Bremen",
-      "awayTeamApi": "Borussia Dortmund",
-      "homeTeamNorm": "sv werder bremen",
-      "awayTeamNorm": "borussia dortmund"
-    },
-    {
-      "league": "D1",
-      "competitionCode": "BL1",
-      "competitionName": "Bundesliga",
-      "matchId": 540704,
-      "status": "TIMED",
-      "utcDate": "2026-05-16T13:30:00Z",
-      "date": "2026-05-16",
-      "homeTeamApi": "1. FC Heidenheim 1846",
-      "awayTeamApi": "1. FSV Mainz 05",
-      "homeTeamNorm": "1 heidenheim 1846",
-      "awayTeamNorm": "1 fsv mainz 05"
-    },
-    {
-      "league": "D1",
-      "competitionCode": "BL1",
-      "competitionName": "Bundesliga",
-      "matchId": 540705,
-      "status": "TIMED",
-      "utcDate": "2026-05-16T13:30:00Z",
-      "date": "2026-05-16",
-      "homeTeamApi": "SC Freiburg",
-      "awayTeamApi": "RB Leipzig",
-      "homeTeamNorm": "sc freiburg",
-      "awayTeamNorm": "rb leipzig"
-    },
-    {
-      "league": "D1",
-      "competitionCode": "BL1",
-      "competitionName": "Bundesliga",
-      "matchId": 540706,
-      "status": "TIMED",
-      "utcDate": "2026-05-16T13:30:00Z",
-      "date": "2026-05-16",
-      "homeTeamApi": "Eintracht Frankfurt",
-      "awayTeamApi": "VfB Stuttgart",
-      "homeTeamNorm": "eintracht frankfurt",
-      "awayTeamNorm": "vfb stuttgart"
-    },
-    {
-      "league": "D1",
-      "competitionCode": "BL1",
-      "competitionName": "Bundesliga",
-      "matchId": 540707,
-      "status": "TIMED",
-      "utcDate": "2026-05-16T13:30:00Z",
-      "date": "2026-05-16",
-      "homeTeamApi": "FC St. Pauli 1910",
-      "awayTeamApi": "VfL Wolfsburg",
-      "homeTeamNorm": "fc st pauli 1910",
-      "awayTeamNorm": "vfl wolfsburg"
-    },
-    {
-      "league": "D1",
-      "competitionCode": "BL1",
-      "competitionName": "Bundesliga",
-      "matchId": 540708,
-      "status": "TIMED",
-      "utcDate": "2026-05-16T13:30:00Z",
-      "date": "2026-05-16",
-      "homeTeamApi": "1. FC Union Berlin",
-      "awayTeamApi": "FC Augsburg",
-      "homeTeamNorm": "1 union berlin",
-      "awayTeamNorm": "fc augsburg"
-    },
-    {
-      "league": "D1",
-      "competitionCode": "BL1",
-      "competitionName": "Bundesliga",
-      "matchId": 540709,
-      "status": "TIMED",
-      "utcDate": "2026-05-16T13:30:00Z",
-      "date": "2026-05-16",
-      "homeTeamApi": "Borussia Mönchengladbach",
-      "awayTeamApi": "TSG 1899 Hoffenheim",
-      "homeTeamNorm": "borussia mönchengladbach",
-      "awayTeamNorm": "tsg 1899 hoffenheim"
-    },
-    {
-      "league": "D1",
-      "competitionCode": "BL1",
-      "competitionName": "Bundesliga",
-      "matchId": 540710,
-      "status": "TIMED",
-      "utcDate": "2026-05-16T13:30:00Z",
-      "date": "2026-05-16",
-      "homeTeamApi": "FC Bayern München",
-      "awayTeamApi": "1. FC Köln",
-      "homeTeamNorm": "fc bayern münchen",
-      "awayTeamNorm": "1 köln"
-    },
-    {
-      "league": "D1",
-      "competitionCode": "BL1",
-      "competitionName": "Bundesliga",
-      "matchId": 540711,
-      "status": "TIMED",
-      "utcDate": "2026-05-16T13:30:00Z",
-      "date": "2026-05-16",
-      "homeTeamApi": "Bayer 04 Leverkusen",
-      "awayTeamApi": "Hamburger SV",
-      "homeTeamNorm": "bayer 04 leverkusen",
-      "awayTeamNorm": "hamburger sv"
+      "utcDate": "2026-05-24T13:00:00Z",
+      "date": "2026-05-24",
+      "homeTeamApi": "US Lecce",
+      "awayTeamApi": "Genoa CFC",
+      "homeTeamNorm": "us lecce",
+      "awayTeamNorm": "genoac"
     },
     {
       "league": "SP1",
       "competitionCode": "PD",
       "competitionName": "Primera Division",
-      "matchId": 544571,
+      "matchId": 544581,
       "status": "TIMED",
-      "utcDate": "2026-05-17T17:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Athletic Club",
-      "awayTeamApi": "RC Celta de Vigo",
-      "homeTeamNorm": "athletic club",
-      "awayTeamNorm": "rc celta de vigo"
+      "utcDate": "2026-05-23T19:00:00Z",
+      "date": "2026-05-23",
+      "homeTeamApi": "Deportivo Alavés",
+      "awayTeamApi": "Rayo Vallecano de Madrid",
+      "homeTeamNorm": "deportivo alavés",
+      "awayTeamNorm": "rayo vallecano de madrid"
     },
     {
       "league": "SP1",
       "competitionCode": "PD",
       "competitionName": "Primera Division",
-      "matchId": 544572,
+      "matchId": 544582,
       "status": "TIMED",
-      "utcDate": "2026-05-17T17:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Club Atlético de Madrid",
-      "awayTeamApi": "Girona FC",
-      "homeTeamNorm": "club atlético de madrid",
-      "awayTeamNorm": "girona"
+      "utcDate": "2026-05-23T19:00:00Z",
+      "date": "2026-05-23",
+      "homeTeamApi": "Real Betis Balompié",
+      "awayTeamApi": "Levante UD",
+      "homeTeamNorm": "real betis balompié",
+      "awayTeamNorm": "levante ud"
     },
     {
       "league": "SP1",
       "competitionCode": "PD",
       "competitionName": "Primera Division",
-      "matchId": 544573,
+      "matchId": 544583,
       "status": "TIMED",
-      "utcDate": "2026-05-17T17:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "FC Barcelona",
-      "awayTeamApi": "Real Betis Balompié",
-      "homeTeamNorm": "fc barcelona",
-      "awayTeamNorm": "real betis balompié"
+      "utcDate": "2026-05-23T19:00:00Z",
+      "date": "2026-05-23",
+      "homeTeamApi": "RC Celta de Vigo",
+      "awayTeamApi": "Sevilla FC",
+      "homeTeamNorm": "rc celta de vigo",
+      "awayTeamNorm": "sevilla"
     },
     {
       "league": "SP1",
       "competitionCode": "PD",
       "competitionName": "Primera Division",
-      "matchId": 544574,
+      "matchId": 544584,
       "status": "TIMED",
-      "utcDate": "2026-05-17T17:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Elche CF",
-      "awayTeamApi": "Getafe CF",
-      "homeTeamNorm": "elche",
-      "awayTeamNorm": "getafe"
+      "utcDate": "2026-05-23T19:00:00Z",
+      "date": "2026-05-23",
+      "homeTeamApi": "RCD Espanyol de Barcelona",
+      "awayTeamApi": "Real Sociedad de Fútbol",
+      "homeTeamNorm": "rcd espanyol de barcelona",
+      "awayTeamNorm": "real sociedad de fútbol"
     },
     {
       "league": "SP1",
       "competitionCode": "PD",
       "competitionName": "Primera Division",
-      "matchId": 544575,
+      "matchId": 544585,
       "status": "TIMED",
-      "utcDate": "2026-05-17T17:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Levante UD",
-      "awayTeamApi": "RCD Mallorca",
-      "homeTeamNorm": "levante ud",
-      "awayTeamNorm": "rcd mallorca"
+      "utcDate": "2026-05-23T19:00:00Z",
+      "date": "2026-05-23",
+      "homeTeamApi": "Getafe CF",
+      "awayTeamApi": "CA Osasuna",
+      "homeTeamNorm": "getafe",
+      "awayTeamNorm": "ca osasuna"
     },
     {
       "league": "SP1",
       "competitionCode": "PD",
       "competitionName": "Primera Division",
-      "matchId": 544576,
+      "matchId": 544586,
       "status": "TIMED",
-      "utcDate": "2026-05-17T17:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Rayo Vallecano de Madrid",
-      "awayTeamApi": "Villarreal CF",
-      "homeTeamNorm": "rayo vallecano de madrid",
-      "awayTeamNorm": "villarreal"
+      "utcDate": "2026-05-23T19:00:00Z",
+      "date": "2026-05-23",
+      "homeTeamApi": "RCD Mallorca",
+      "awayTeamApi": "Real Oviedo",
+      "homeTeamNorm": "rcd mallorca",
+      "awayTeamNorm": "real oviedo"
     },
     {
       "league": "SP1",
       "competitionCode": "PD",
       "competitionName": "Primera Division",
-      "matchId": 544577,
+      "matchId": 544587,
       "status": "TIMED",
-      "utcDate": "2026-05-17T17:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Real Sociedad de Fútbol",
-      "awayTeamApi": "Valencia CF",
-      "homeTeamNorm": "real sociedad de fútbol",
-      "awayTeamNorm": "valencia"
+      "utcDate": "2026-05-23T19:00:00Z",
+      "date": "2026-05-23",
+      "homeTeamApi": "Real Madrid CF",
+      "awayTeamApi": "Athletic Club",
+      "homeTeamNorm": "real madrid",
+      "awayTeamNorm": "athletic club"
     },
     {
       "league": "SP1",
       "competitionCode": "PD",
       "competitionName": "Primera Division",
-      "matchId": 544578,
+      "matchId": 544589,
       "status": "TIMED",
-      "utcDate": "2026-05-17T17:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Real Oviedo",
-      "awayTeamApi": "Deportivo Alavés",
-      "homeTeamNorm": "real oviedo",
-      "awayTeamNorm": "deportivo alavés"
+      "utcDate": "2026-05-23T19:00:00Z",
+      "date": "2026-05-23",
+      "homeTeamApi": "Valencia CF",
+      "awayTeamApi": "FC Barcelona",
+      "homeTeamNorm": "valencia",
+      "awayTeamNorm": "fc barcelona"
     },
     {
       "league": "SP1",
       "competitionCode": "PD",
       "competitionName": "Primera Division",
-      "matchId": 544579,
+      "matchId": 544590,
       "status": "TIMED",
-      "utcDate": "2026-05-17T17:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "CA Osasuna",
-      "awayTeamApi": "RCD Espanyol de Barcelona",
-      "homeTeamNorm": "ca osasuna",
-      "awayTeamNorm": "rcd espanyol de barcelona"
+      "utcDate": "2026-05-23T19:00:00Z",
+      "date": "2026-05-23",
+      "homeTeamApi": "Girona FC",
+      "awayTeamApi": "Elche CF",
+      "homeTeamNorm": "girona",
+      "awayTeamNorm": "elche"
     },
     {
       "league": "SP1",
       "competitionCode": "PD",
       "competitionName": "Primera Division",
-      "matchId": 544580,
+      "matchId": 544588,
       "status": "TIMED",
-      "utcDate": "2026-05-17T17:00:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Sevilla FC",
-      "awayTeamApi": "Real Madrid CF",
-      "homeTeamNorm": "sevilla",
-      "awayTeamNorm": "real madrid"
-    },
-    {
-      "league": "N1",
-      "competitionCode": "DED",
-      "competitionName": "Eredivisie",
-      "matchId": 537738,
-      "status": "TIMED",
-      "utcDate": "2026-05-17T12:30:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "AZ",
-      "awayTeamApi": "NAC Breda",
-      "homeTeamNorm": "az",
-      "awayTeamNorm": "nac breda"
-    },
-    {
-      "league": "N1",
-      "competitionCode": "DED",
-      "competitionName": "Eredivisie",
-      "matchId": 537739,
-      "status": "TIMED",
-      "utcDate": "2026-05-17T12:30:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "FC Utrecht",
-      "awayTeamApi": "Fortuna Sittard",
-      "homeTeamNorm": "fc utrecht",
-      "awayTeamNorm": "fortuna sittard"
-    },
-    {
-      "league": "N1",
-      "competitionCode": "DED",
-      "competitionName": "Eredivisie",
-      "matchId": 537740,
-      "status": "TIMED",
-      "utcDate": "2026-05-17T12:30:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "FC Volendam",
-      "awayTeamApi": "Telstar 1963",
-      "homeTeamNorm": "fc volendam",
-      "awayTeamNorm": "telstar 1963"
-    },
-    {
-      "league": "N1",
-      "competitionCode": "DED",
-      "competitionName": "Eredivisie",
-      "matchId": 537741,
-      "status": "TIMED",
-      "utcDate": "2026-05-17T12:30:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Heracles Almelo",
-      "awayTeamApi": "FC Groningen",
-      "homeTeamNorm": "heracles almelo",
-      "awayTeamNorm": "fc groningen"
-    },
-    {
-      "league": "N1",
-      "competitionCode": "DED",
-      "competitionName": "Eredivisie",
-      "matchId": 537742,
-      "status": "TIMED",
-      "utcDate": "2026-05-17T12:30:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "NEC",
-      "awayTeamApi": "Go Ahead Eagles",
-      "homeTeamNorm": "nec",
-      "awayTeamNorm": "go ahead eagles"
-    },
-    {
-      "league": "N1",
-      "competitionCode": "DED",
-      "competitionName": "Eredivisie",
-      "matchId": 537743,
-      "status": "TIMED",
-      "utcDate": "2026-05-17T12:30:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "PEC Zwolle",
-      "awayTeamApi": "Feyenoord Rotterdam",
-      "homeTeamNorm": "pec zwolle",
-      "awayTeamNorm": "feyenoord rotterdam"
-    },
-    {
-      "league": "N1",
-      "competitionCode": "DED",
-      "competitionName": "Eredivisie",
-      "matchId": 537744,
-      "status": "TIMED",
-      "utcDate": "2026-05-17T12:30:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "PSV",
-      "awayTeamApi": "FC Twente '65",
-      "homeTeamNorm": "psv",
-      "awayTeamNorm": "fc twente 65"
-    },
-    {
-      "league": "N1",
-      "competitionCode": "DED",
-      "competitionName": "Eredivisie",
-      "matchId": 537745,
-      "status": "TIMED",
-      "utcDate": "2026-05-17T12:30:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "SC Heerenveen",
-      "awayTeamApi": "AFC Ajax",
-      "homeTeamNorm": "sc heerenveen",
-      "awayTeamNorm": "afc ajax"
-    },
-    {
-      "league": "N1",
-      "competitionCode": "DED",
-      "competitionName": "Eredivisie",
-      "matchId": 537746,
-      "status": "TIMED",
-      "utcDate": "2026-05-17T12:30:00Z",
-      "date": "2026-05-17",
-      "homeTeamApi": "Sparta Rotterdam",
-      "awayTeamApi": "SBV Excelsior",
-      "homeTeamNorm": "sparta rotterdam",
-      "awayTeamNorm": "sbv excelsior"
+      "utcDate": "2026-05-24T19:00:00Z",
+      "date": "2026-05-24",
+      "homeTeamApi": "Villarreal CF",
+      "awayTeamApi": "Club Atlético de Madrid",
+      "homeTeamNorm": "villarreal",
+      "awayTeamNorm": "club atlético de madrid"
     }
   ],
   "matchOfWeekByLeague": {
     "E0": {
       "league": "E0",
-      "homeTeam": "Newcastle",
-      "awayTeam": "West Ham",
-      "homeTeamApi": "Newcastle United FC",
-      "awayTeamApi": "West Ham United FC",
-      "fixtureUtcDate": "2026-05-17T16:30:00Z",
-      "fixtureDate": "2026-05-17",
+      "homeTeam": "Brighton",
+      "awayTeam": "Man United",
+      "homeTeamApi": "Brighton & Hove Albion FC",
+      "awayTeamApi": "Manchester United FC",
+      "fixtureUtcDate": "2026-05-24T15:00:00Z",
+      "fixtureDate": "2026-05-24",
       "competitionName": "Premier League",
-      "score": 39.28359947198092,
-      "confidenceScore": 88,
-      "topEdge": 0.2538430420711974,
-      "formDelta": 0.19999999999999996,
+      "score": 39.27223215806506,
+      "confidenceScore": 85,
+      "topEdge": 0.2246156957928802,
+      "formDelta": 0.3999999999999999,
       "topMarkets": [
         {
-          "market": "Cantos total Over 10.5",
-          "avg_edge": 0.2538430420711974,
-          "avg_hit": 0.6875
-        },
-        {
-          "market": "Cantos equipa Over 4.5",
-          "avg_edge": 0.2354368932038835,
-          "avg_hit": 0.75
-        },
-        {
-          "market": "Cantos equipa Over 5.5",
-          "avg_edge": 0.21025485436893204,
-          "avg_hit": 0.59375
-        }
-      ],
-      "source": "football-data.org"
-    },
-    "F1": {
-      "league": "F1",
-      "homeTeam": "Lyon",
-      "awayTeam": "Lens",
-      "homeTeamApi": "Olympique Lyonnais",
-      "awayTeamApi": "Racing Club de Lens",
-      "fixtureUtcDate": "2026-05-17T19:00:00Z",
-      "fixtureDate": "2026-05-17",
-      "competitionName": "Ligue 1",
-      "score": 35.171050903384725,
-      "confidenceScore": 68,
-      "topEdge": 0.21169169475942384,
-      "formDelta": -0.9999999999999999,
-      "topMarkets": [
-        {
-          "market": "Vitória (1X2)",
-          "avg_edge": 0.21169169475942384,
-          "avg_hit": 0.5961538461538461
-        },
-        {
-          "market": "Equipa ganha cantos",
-          "avg_edge": 0.18441618142813365,
-          "avg_hit": 0.6346153846153846
+          "market": "Ambas marcam (BTTS)",
+          "avg_edge": 0.2246156957928802,
+          "avg_hit": 0.78125
         },
         {
           "market": "Casa marca (>=1)",
-          "avg_edge": 0.15395560614684117,
-          "avg_hit": 0.8571428571428572
+          "avg_edge": 0.1355177993527507,
+          "avg_hit": 0.875
+        },
+        {
+          "market": "Over 2.5 golos",
+          "avg_edge": 0.09101941747572814,
+          "avg_hit": 0.625
         }
       ],
       "source": "football-data.org"
     },
     "I1": {
       "league": "I1",
-      "homeTeam": "Sassuolo",
-      "awayTeam": "Lecce",
-      "homeTeamApi": "US Sassuolo Calcio",
-      "awayTeamApi": "US Lecce",
-      "fixtureUtcDate": "2026-05-17T00:00:00Z",
-      "fixtureDate": "2026-05-17",
+      "homeTeam": "Napoli",
+      "awayTeam": "Udinese",
+      "homeTeamApi": "SSC Napoli",
+      "awayTeamApi": "Udinese Calcio",
+      "fixtureUtcDate": "2026-05-24T13:00:00Z",
+      "fixtureDate": "2026-05-24",
       "competitionName": "Serie A",
-      "score": 37.79572014714205,
-      "confidenceScore": 77,
-      "topEdge": 0.31780913978494624,
-      "formDelta": 0.7999999999999999,
-      "topMarkets": [
-        {
-          "market": "Cantos total Over 9.5",
-          "avg_edge": 0.31780913978494624,
-          "avg_hit": 0.7145833333333333
-        },
-        {
-          "market": "Cantos total Over 8.5",
-          "avg_edge": 0.19845430107526885,
-          "avg_hit": 0.7145833333333333
-        },
-        {
-          "market": "Cantos total Over 10.5",
-          "avg_edge": 0.17029569892473115,
-          "avg_hit": 0.45416666666666666
-        }
-      ],
-      "source": "football-data.org"
-    },
-    "P1": {
-      "league": "P1",
-      "homeTeam": "Estoril",
-      "awayTeam": "Benfica",
-      "homeTeamApi": "GD Estoril Praia",
-      "awayTeamApi": "Sport Lisboa e Benfica",
-      "fixtureUtcDate": "2026-05-17T00:00:00Z",
-      "fixtureDate": "2026-05-17",
-      "competitionName": "Primeira Liga",
-      "score": 35.64586466165413,
-      "confidenceScore": 74,
-      "topEdge": 0.2014285714285714,
-      "formDelta": -0.8000000000000003,
+      "score": 36.904187889077534,
+      "confidenceScore": 66,
+      "topEdge": 0.19731182795698915,
+      "formDelta": 1.6,
       "topMarkets": [
         {
           "market": "Vitória (1X2)",
-          "avg_edge": 0.2014285714285714,
-          "avg_hit": 0.5714285714285714
-        },
-        {
-          "market": "Ambas marcam (BTTS)",
-          "avg_edge": 0.13914285714285704,
-          "avg_hit": 0.6071428571428572
-        },
-        {
-          "market": "Casa marca (>=1)",
-          "avg_edge": 0.11942857142857141,
-          "avg_hit": 0.8214285714285714
-        }
-      ],
-      "source": "football-data.org"
-    },
-    "D1": {
-      "league": "D1",
-      "homeTeam": "Ein Frankfurt",
-      "awayTeam": "Stuttgart",
-      "homeTeamApi": "Eintracht Frankfurt",
-      "awayTeamApi": "VfB Stuttgart",
-      "fixtureUtcDate": "2026-05-16T13:30:00Z",
-      "fixtureDate": "2026-05-16",
-      "competitionName": "Bundesliga",
-      "score": 36.94189640768588,
-      "confidenceScore": 76,
-      "topEdge": 0.1884920634920635,
-      "formDelta": -0.6000000000000001,
-      "topMarkets": [
-        {
-          "market": "Casa marca (>=1)",
-          "avg_edge": 0.1884920634920635,
-          "avg_hit": 0.9642857142857143
+          "avg_edge": 0.19731182795698915,
+          "avg_hit": 0.5666666666666667
         },
         {
           "market": "Equipa ganha cantos",
-          "avg_edge": 0.16865079365079366,
-          "avg_hit": 0.6071428571428572
+          "avg_edge": 0.1768817204301075,
+          "avg_hit": 0.6333333333333333
         },
         {
-          "market": "Over 2.5 golos",
-          "avg_edge": 0.16269841269841268,
-          "avg_hit": 0.7857142857142857
+          "market": "Ambas marcam (BTTS)",
+          "avg_edge": 0.1688172043010752,
+          "avg_hit": 0.6333333333333333
         }
       ],
       "source": "football-data.org"
     },
     "SP1": {
       "league": "SP1",
-      "homeTeam": "Barcelona",
-      "awayTeam": "Betis",
-      "homeTeamApi": "FC Barcelona",
-      "awayTeamApi": "Real Betis Balompié",
-      "fixtureUtcDate": "2026-05-17T17:00:00Z",
-      "fixtureDate": "2026-05-17",
+      "homeTeam": "Valencia",
+      "awayTeam": "Barcelona",
+      "homeTeamApi": "Valencia CF",
+      "awayTeamApi": "FC Barcelona",
+      "fixtureUtcDate": "2026-05-23T19:00:00Z",
+      "fixtureDate": "2026-05-23",
       "competitionName": "Primera Division",
-      "score": 41.088596491228074,
-      "confidenceScore": 55,
-      "topEdge": 0.25833333333333336,
-      "formDelta": 2.4,
+      "score": 43.7219298245614,
+      "confidenceScore": 71,
+      "topEdge": 0.3483333333333334,
+      "formDelta": -1.2,
       "topMarkets": [
         {
-          "market": "Vitória (1X2)",
-          "avg_edge": 0.25833333333333336,
-          "avg_hit": 0.6333333333333333
-        },
-        {
-          "market": "Cantos total Over 8.5",
-          "avg_edge": 0.23666666666666666,
+          "market": "Cantos equipa Over 4.5",
+          "avg_edge": 0.3483333333333334,
           "avg_hit": 0.8333333333333334
         },
         {
-          "market": "Cantos total Over 9.5",
-          "avg_edge": 0.19666666666666666,
-          "avg_hit": 0.6666666666666667
-        }
-      ],
-      "source": "football-data.org"
-    },
-    "N1": {
-      "league": "N1",
-      "homeTeam": "Heerenveen",
-      "awayTeam": "Ajax",
-      "homeTeamApi": "SC Heerenveen",
-      "awayTeamApi": "AFC Ajax",
-      "fixtureUtcDate": "2026-05-17T12:30:00Z",
-      "fixtureDate": "2026-05-17",
-      "competitionName": "Eredivisie",
-      "score": 41.70919252153372,
-      "confidenceScore": 66,
-      "topEdge": 0.2359332238642584,
-      "formDelta": 1.4000000000000001,
-      "topMarkets": [
-        {
-          "market": "Ambas marcam (BTTS)",
-          "avg_edge": 0.2359332238642584,
-          "avg_hit": 0.8642857142857143
+          "market": "Cantos equipa Over 5.5",
+          "avg_edge": 0.30999999999999994,
+          "avg_hit": 0.6666666666666666
         },
         {
-          "market": "Over 3.5 golos",
-          "avg_edge": 0.17162014230979744,
-          "avg_hit": 0.5547619047619048
-        },
-        {
-          "market": "Over 1.5 golos",
-          "avg_edge": 0.10604816639299391,
-          "avg_hit": 0.9642857142857143
+          "market": "Equipa ganha cantos",
+          "avg_edge": 0.2683333333333332,
+          "avg_hit": 0.7333333333333333
         }
       ],
       "source": "football-data.org"
@@ -569500,11 +568930,11 @@
   },
   "teamContextMeta": {
     "provider": "api-football",
-    "generatedAt": "2026-05-11T16:49:12.131410+00:00",
+    "generatedAt": "2026-05-18T11:10:25.419238+00:00",
     "season": 2025,
     "keyConfigured": true,
-    "fixturesInputCount": 64,
-    "teamsSearched": 128,
+    "fixturesInputCount": 30,
+    "teamsSearched": 60,
     "teamsResolved": 0,
     "fatigueBuilt": 0,
     "leagueTeamMapSizes": {}
@@ -569534,8 +568964,8 @@
   ],
   "teamContextByLeague": {
     "E0": {
-      "Aston Villa FC": {
-        "team": "Aston Villa FC",
+      "Sunderland AFC": {
+        "team": "Sunderland AFC",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -569544,8 +568974,18 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "Liverpool FC": {
-        "team": "Liverpool FC",
+      "Chelsea FC": {
+        "team": "Chelsea FC",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "Brighton & Hove Albion FC": {
+        "team": "Brighton & Hove Albion FC",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -569564,26 +569004,6 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "Nottingham Forest FC": {
-        "team": "Nottingham Forest FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Brentford FC": {
-        "team": "Brentford FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
       "Crystal Palace FC": {
         "team": "Crystal Palace FC",
         "unavailableCount": 0,
@@ -569594,8 +569014,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "Everton FC": {
-        "team": "Everton FC",
+      "Arsenal FC": {
+        "team": "Arsenal FC",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -569604,28 +569024,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "Sunderland AFC": {
-        "team": "Sunderland AFC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Leeds United FC": {
-        "team": "Leeds United FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Brighton & Hove Albion FC": {
-        "team": "Brighton & Hove Albion FC",
+      "Burnley FC": {
+        "team": "Burnley FC",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -569664,6 +569064,86 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
+      "Liverpool FC": {
+        "team": "Liverpool FC",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "Brentford FC": {
+        "team": "Brentford FC",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "Manchester City FC": {
+        "team": "Manchester City FC",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "Aston Villa FC": {
+        "team": "Aston Villa FC",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "Nottingham Forest FC": {
+        "team": "Nottingham Forest FC",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "AFC Bournemouth": {
+        "team": "AFC Bournemouth",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "Tottenham Hotspur FC": {
+        "team": "Tottenham Hotspur FC",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "Everton FC": {
+        "team": "Everton FC",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
       "West Ham United FC": {
         "team": "West Ham United FC",
         "unavailableCount": 0,
@@ -569674,200 +569154,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "Arsenal FC": {
-        "team": "Arsenal FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Burnley FC": {
-        "team": "Burnley FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      }
-    },
-    "F1": {
-      "FC Lorient": {
-        "team": "FC Lorient",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Le Havre AC": {
-        "team": "Le Havre AC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "FC Nantes": {
-        "team": "FC Nantes",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Toulouse FC": {
-        "team": "Toulouse FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Paris FC": {
-        "team": "Paris FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Paris Saint-Germain FC": {
-        "team": "Paris Saint-Germain FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "OGC Nice": {
-        "team": "OGC Nice",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "FC Metz": {
-        "team": "FC Metz",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Olympique Lyonnais": {
-        "team": "Olympique Lyonnais",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Racing Club de Lens": {
-        "team": "Racing Club de Lens",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Olympique de Marseille": {
-        "team": "Olympique de Marseille",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Stade Rennais FC 1901": {
-        "team": "Stade Rennais FC 1901",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Lille OSC": {
-        "team": "Lille OSC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "AJ Auxerre": {
-        "team": "AJ Auxerre",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "RC Strasbourg Alsace": {
-        "team": "RC Strasbourg Alsace",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "AS Monaco FC": {
-        "team": "AS Monaco FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Stade Brestois 29": {
-        "team": "Stade Brestois 29",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Angers SCO": {
-        "team": "Angers SCO",
+      "Leeds United FC": {
+        "team": "Leeds United FC",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -569878,6 +569166,96 @@
       }
     },
     "I1": {
+      "ACF Fiorentina": {
+        "team": "ACF Fiorentina",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "Atalanta BC": {
+        "team": "Atalanta BC",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "AC Milan": {
+        "team": "AC Milan",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "Cagliari Calcio": {
+        "team": "Cagliari Calcio",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "Bologna FC 1909": {
+        "team": "Bologna FC 1909",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "FC Internazionale Milano": {
+        "team": "FC Internazionale Milano",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "Torino FC": {
+        "team": "Torino FC",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "Juventus FC": {
+        "team": "Juventus FC",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "Hellas Verona FC": {
+        "team": "Hellas Verona FC",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
       "AS Roma": {
         "team": "AS Roma",
         "unavailableCount": 0,
@@ -569898,68 +569276,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "Atalanta BC": {
-        "team": "Atalanta BC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Bologna FC 1909": {
-        "team": "Bologna FC 1909",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Cagliari Calcio": {
-        "team": "Cagliari Calcio",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Torino FC": {
-        "team": "Torino FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Genoa CFC": {
-        "team": "Genoa CFC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "AC Milan": {
-        "team": "AC Milan",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Como 1907": {
-        "team": "Como 1907",
+      "AC Pisa 1909": {
+        "team": "AC Pisa 1909",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -569978,66 +569296,6 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "FC Internazionale Milano": {
-        "team": "FC Internazionale Milano",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Hellas Verona FC": {
-        "team": "Hellas Verona FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Juventus FC": {
-        "team": "Juventus FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "ACF Fiorentina": {
-        "team": "ACF Fiorentina",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "AC Pisa 1909": {
-        "team": "AC Pisa 1909",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "SSC Napoli": {
-        "team": "SSC Napoli",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
       "US Sassuolo Calcio": {
         "team": "US Sassuolo Calcio",
         "unavailableCount": 0,
@@ -570048,8 +569306,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "US Lecce": {
-        "team": "US Lecce",
+      "SSC Napoli": {
+        "team": "SSC Napoli",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -570077,11 +569335,9 @@
         "probableFormation": null,
         "formationFixtureDate": null,
         "fatigue": {}
-      }
-    },
-    "P1": {
-      "Moreirense FC": {
-        "team": "Moreirense FC",
+      },
+      "Como 1907": {
+        "team": "Como 1907",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -570090,8 +569346,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "AVS": {
-        "team": "AVS",
+      "US Lecce": {
+        "team": "US Lecce",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -570100,340 +569356,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "FC Famalicão": {
-        "team": "FC Famalicão",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "FC Alverca": {
-        "team": "FC Alverca",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Sporting Clube de Portugal": {
-        "team": "Sporting Clube de Portugal",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Gil Vicente FC": {
-        "team": "Gil Vicente FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "FC Porto": {
-        "team": "FC Porto",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "CD Santa Clara": {
-        "team": "CD Santa Clara",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "GD Estoril Praia": {
-        "team": "GD Estoril Praia",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Sport Lisboa e Benfica": {
-        "team": "Sport Lisboa e Benfica",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "CD Nacional": {
-        "team": "CD Nacional",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Vitória SC": {
-        "team": "Vitória SC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Casa Pia AC": {
-        "team": "Casa Pia AC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Rio Ave FC": {
-        "team": "Rio Ave FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "FC Arouca": {
-        "team": "FC Arouca",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "CD Tondela": {
-        "team": "CD Tondela",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Sporting Clube de Braga": {
-        "team": "Sporting Clube de Braga",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "CF Estrela da Amadora": {
-        "team": "CF Estrela da Amadora",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      }
-    },
-    "D1": {
-      "SV Werder Bremen": {
-        "team": "SV Werder Bremen",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Borussia Dortmund": {
-        "team": "Borussia Dortmund",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "1. FC Heidenheim 1846": {
-        "team": "1. FC Heidenheim 1846",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "1. FSV Mainz 05": {
-        "team": "1. FSV Mainz 05",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "SC Freiburg": {
-        "team": "SC Freiburg",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "RB Leipzig": {
-        "team": "RB Leipzig",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Eintracht Frankfurt": {
-        "team": "Eintracht Frankfurt",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "VfB Stuttgart": {
-        "team": "VfB Stuttgart",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "FC St. Pauli 1910": {
-        "team": "FC St. Pauli 1910",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "VfL Wolfsburg": {
-        "team": "VfL Wolfsburg",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "1. FC Union Berlin": {
-        "team": "1. FC Union Berlin",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "FC Augsburg": {
-        "team": "FC Augsburg",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Borussia Mönchengladbach": {
-        "team": "Borussia Mönchengladbach",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "TSG 1899 Hoffenheim": {
-        "team": "TSG 1899 Hoffenheim",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "FC Bayern München": {
-        "team": "FC Bayern München",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "1. FC Köln": {
-        "team": "1. FC Köln",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Bayer 04 Leverkusen": {
-        "team": "Bayer 04 Leverkusen",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Hamburger SV": {
-        "team": "Hamburger SV",
+      "Genoa CFC": {
+        "team": "Genoa CFC",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -570444,98 +569368,8 @@
       }
     },
     "SP1": {
-      "Athletic Club": {
-        "team": "Athletic Club",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "RC Celta de Vigo": {
-        "team": "RC Celta de Vigo",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Club Atlético de Madrid": {
-        "team": "Club Atlético de Madrid",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Girona FC": {
-        "team": "Girona FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "FC Barcelona": {
-        "team": "FC Barcelona",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Real Betis Balompié": {
-        "team": "Real Betis Balompié",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Elche CF": {
-        "team": "Elche CF",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Getafe CF": {
-        "team": "Getafe CF",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Levante UD": {
-        "team": "Levante UD",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "RCD Mallorca": {
-        "team": "RCD Mallorca",
+      "Deportivo Alavés": {
+        "team": "Deportivo Alavés",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -570554,8 +569388,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "Villarreal CF": {
-        "team": "Villarreal CF",
+      "Real Betis Balompié": {
+        "team": "Real Betis Balompié",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -570564,8 +569398,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "Real Sociedad de Fútbol": {
-        "team": "Real Sociedad de Fútbol",
+      "Levante UD": {
+        "team": "Levante UD",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -570574,48 +569408,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "Valencia CF": {
-        "team": "Valencia CF",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Real Oviedo": {
-        "team": "Real Oviedo",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Deportivo Alavés": {
-        "team": "Deportivo Alavés",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "CA Osasuna": {
-        "team": "CA Osasuna",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "RCD Espanyol de Barcelona": {
-        "team": "RCD Espanyol de Barcelona",
+      "RC Celta de Vigo": {
+        "team": "RC Celta de Vigo",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -570634,6 +569428,66 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
+      "RCD Espanyol de Barcelona": {
+        "team": "RCD Espanyol de Barcelona",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "Real Sociedad de Fútbol": {
+        "team": "Real Sociedad de Fútbol",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "Getafe CF": {
+        "team": "Getafe CF",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "CA Osasuna": {
+        "team": "CA Osasuna",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "RCD Mallorca": {
+        "team": "RCD Mallorca",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "Real Oviedo": {
+        "team": "Real Oviedo",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
       "Real Madrid CF": {
         "team": "Real Madrid CF",
         "unavailableCount": 0,
@@ -570643,11 +569497,9 @@
         "probableFormation": null,
         "formationFixtureDate": null,
         "fatigue": {}
-      }
-    },
-    "N1": {
-      "AZ": {
-        "team": "AZ",
+      },
+      "Athletic Club": {
+        "team": "Athletic Club",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -570656,8 +569508,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "NAC Breda": {
-        "team": "NAC Breda",
+      "Valencia CF": {
+        "team": "Valencia CF",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -570666,8 +569518,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "FC Utrecht": {
-        "team": "FC Utrecht",
+      "FC Barcelona": {
+        "team": "FC Barcelona",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -570676,8 +569528,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "Fortuna Sittard": {
-        "team": "Fortuna Sittard",
+      "Girona FC": {
+        "team": "Girona FC",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -570686,8 +569538,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "FC Volendam": {
-        "team": "FC Volendam",
+      "Elche CF": {
+        "team": "Elche CF",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -570696,8 +569548,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "Telstar 1963": {
-        "team": "Telstar 1963",
+      "Villarreal CF": {
+        "team": "Villarreal CF",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -570706,118 +569558,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "Heracles Almelo": {
-        "team": "Heracles Almelo",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "FC Groningen": {
-        "team": "FC Groningen",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "NEC": {
-        "team": "NEC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Go Ahead Eagles": {
-        "team": "Go Ahead Eagles",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "PEC Zwolle": {
-        "team": "PEC Zwolle",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Feyenoord Rotterdam": {
-        "team": "Feyenoord Rotterdam",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "PSV": {
-        "team": "PSV",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "FC Twente '65": {
-        "team": "FC Twente '65",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "SC Heerenveen": {
-        "team": "SC Heerenveen",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "AFC Ajax": {
-        "team": "AFC Ajax",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "Sparta Rotterdam": {
-        "team": "Sparta Rotterdam",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "SBV Excelsior": {
-        "team": "SBV Excelsior",
+      "Club Atlético de Madrid": {
+        "team": "Club Atlético de Madrid",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -570830,8 +569572,8 @@
   },
   "teamContextByLeagueNorm": {
     "E0": {
-      "aston villa": {
-        "team": "Aston Villa FC",
+      "sunderland": {
+        "team": "Sunderland AFC",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -570840,8 +569582,18 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "liverpool": {
-        "team": "Liverpool FC",
+      "chelsea": {
+        "team": "Chelsea FC",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "brighton hove albion": {
+        "team": "Brighton & Hove Albion FC",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -570860,26 +569612,6 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "nottingham forest": {
-        "team": "Nottingham Forest FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "brentford": {
-        "team": "Brentford FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
       "crystal palace": {
         "team": "Crystal Palace FC",
         "unavailableCount": 0,
@@ -570890,8 +569622,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "everton": {
-        "team": "Everton FC",
+      "arsenal": {
+        "team": "Arsenal FC",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -570900,28 +569632,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "sunderland": {
-        "team": "Sunderland AFC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "leeds united": {
-        "team": "Leeds United FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "brighton hove albion": {
-        "team": "Brighton & Hove Albion FC",
+      "burnley": {
+        "team": "Burnley FC",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -570960,6 +569672,86 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
+      "liverpool": {
+        "team": "Liverpool FC",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "brentford": {
+        "team": "Brentford FC",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "manchester city": {
+        "team": "Manchester City FC",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "aston villa": {
+        "team": "Aston Villa FC",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "nottingham forest": {
+        "team": "Nottingham Forest FC",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "afc bournemouth": {
+        "team": "AFC Bournemouth",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "tottenham hotspur": {
+        "team": "Tottenham Hotspur FC",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "everton": {
+        "team": "Everton FC",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
       "west ham united": {
         "team": "West Ham United FC",
         "unavailableCount": 0,
@@ -570970,200 +569762,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "arsenal": {
-        "team": "Arsenal FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "burnley": {
-        "team": "Burnley FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      }
-    },
-    "F1": {
-      "fc lorient": {
-        "team": "FC Lorient",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "le havre": {
-        "team": "Le Havre AC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "fc nantes": {
-        "team": "FC Nantes",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "toulouse": {
-        "team": "Toulouse FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "paris": {
-        "team": "Paris FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "paris saint germain": {
-        "team": "Paris Saint-Germain FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "ogc nice": {
-        "team": "OGC Nice",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "fc metz": {
-        "team": "FC Metz",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "olympique lyonnais": {
-        "team": "Olympique Lyonnais",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "racing lens": {
-        "team": "Racing Club de Lens",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "olympique marseille": {
-        "team": "Olympique de Marseille",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "stade rennais 1901": {
-        "team": "Stade Rennais FC 1901",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "lille osc": {
-        "team": "Lille OSC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "aj auxerre": {
-        "team": "AJ Auxerre",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "strasbourg alsace": {
-        "team": "RC Strasbourg Alsace",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "monaco": {
-        "team": "AS Monaco FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "stade brestois 29": {
-        "team": "Stade Brestois 29",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "angerso": {
-        "team": "Angers SCO",
+      "leeds united": {
+        "team": "Leeds United FC",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -571174,6 +569774,96 @@
       }
     },
     "I1": {
+      "acf fiorentina": {
+        "team": "ACF Fiorentina",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "atalanta bc": {
+        "team": "Atalanta BC",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "ac milan": {
+        "team": "AC Milan",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "cagliari": {
+        "team": "Cagliari Calcio",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "bologna 1909": {
+        "team": "Bologna FC 1909",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "fc internazionale milano": {
+        "team": "FC Internazionale Milano",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "torino": {
+        "team": "Torino FC",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "juventus": {
+        "team": "Juventus FC",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "hellas verona": {
+        "team": "Hellas Verona FC",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
       "roma": {
         "team": "AS Roma",
         "unavailableCount": 0,
@@ -571194,68 +569884,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "atalanta bc": {
-        "team": "Atalanta BC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "bologna 1909": {
-        "team": "Bologna FC 1909",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "cagliari": {
-        "team": "Cagliari Calcio",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "torino": {
-        "team": "Torino FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "genoac": {
-        "team": "Genoa CFC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "ac milan": {
-        "team": "AC Milan",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "como 1907": {
-        "team": "Como 1907",
+      "ac pisa 1909": {
+        "team": "AC Pisa 1909",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -571274,66 +569904,6 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "fc internazionale milano": {
-        "team": "FC Internazionale Milano",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "hellas verona": {
-        "team": "Hellas Verona FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "juventus": {
-        "team": "Juventus FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "acf fiorentina": {
-        "team": "ACF Fiorentina",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "ac pisa 1909": {
-        "team": "AC Pisa 1909",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "napoli": {
-        "team": "SSC Napoli",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
       "sassuolo": {
         "team": "US Sassuolo Calcio",
         "unavailableCount": 0,
@@ -571344,8 +569914,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "lecce": {
-        "team": "US Lecce",
+      "napoli": {
+        "team": "SSC Napoli",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -571373,11 +569943,9 @@
         "probableFormation": null,
         "formationFixtureDate": null,
         "fatigue": {}
-      }
-    },
-    "P1": {
-      "moreirense": {
-        "team": "Moreirense FC",
+      },
+      "como 1907": {
+        "team": "Como 1907",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -571386,8 +569954,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "avs": {
-        "team": "AVS",
+      "lecce": {
+        "team": "US Lecce",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -571396,340 +569964,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "fc famalicao": {
-        "team": "FC Famalicão",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "fc alverca": {
-        "team": "FC Alverca",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "sporting clube portugal": {
-        "team": "Sporting Clube de Portugal",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "gil vicente": {
-        "team": "Gil Vicente FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "fc porto": {
-        "team": "FC Porto",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "santa clara": {
-        "team": "CD Santa Clara",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "estoril praia": {
-        "team": "GD Estoril Praia",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "sport lisboa e benfica": {
-        "team": "Sport Lisboa e Benfica",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "nacional": {
-        "team": "CD Nacional",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "vitoria": {
-        "team": "Vitória SC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "casa pia": {
-        "team": "Casa Pia AC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "rio ave": {
-        "team": "Rio Ave FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "fc arouca": {
-        "team": "FC Arouca",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "tondela": {
-        "team": "CD Tondela",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "sporting clube braga": {
-        "team": "Sporting Clube de Braga",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "cf estrela amadora": {
-        "team": "CF Estrela da Amadora",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      }
-    },
-    "D1": {
-      "werder bremen": {
-        "team": "SV Werder Bremen",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "borussia dortmund": {
-        "team": "Borussia Dortmund",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "1 heidenheim 1846": {
-        "team": "1. FC Heidenheim 1846",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "1 fsv mainz 05": {
-        "team": "1. FSV Mainz 05",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "sc freiburg": {
-        "team": "SC Freiburg",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "rb leipzig": {
-        "team": "RB Leipzig",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "eintracht frankfurt": {
-        "team": "Eintracht Frankfurt",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "vfb stuttgart": {
-        "team": "VfB Stuttgart",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "fc st pauli 1910": {
-        "team": "FC St. Pauli 1910",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "wolfsburg": {
-        "team": "VfL Wolfsburg",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "1 union berlin": {
-        "team": "1. FC Union Berlin",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "fc augsburg": {
-        "team": "FC Augsburg",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "borussia monchengladbach": {
-        "team": "Borussia Mönchengladbach",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "1899 hoffenheim": {
-        "team": "TSG 1899 Hoffenheim",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "fc bayern munchen": {
-        "team": "FC Bayern München",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "1 koln": {
-        "team": "1. FC Köln",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "bayer 04 leverkusen": {
-        "team": "Bayer 04 Leverkusen",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "hamburger": {
-        "team": "Hamburger SV",
+      "genoac": {
+        "team": "Genoa CFC",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -571740,98 +569976,8 @@
       }
     },
     "SP1": {
-      "athletic": {
-        "team": "Athletic Club",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "celta vigo": {
-        "team": "RC Celta de Vigo",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "atletico madrid": {
-        "team": "Club Atlético de Madrid",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "girona": {
-        "team": "Girona FC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "fc barcelona": {
-        "team": "FC Barcelona",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "real betis balompie": {
-        "team": "Real Betis Balompié",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "elche": {
-        "team": "Elche CF",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "getafe": {
-        "team": "Getafe CF",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "levante ud": {
-        "team": "Levante UD",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "rcd mallorca": {
-        "team": "RCD Mallorca",
+      "deportivo alaves": {
+        "team": "Deportivo Alavés",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -571850,8 +569996,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "villarreal": {
-        "team": "Villarreal CF",
+      "real betis balompie": {
+        "team": "Real Betis Balompié",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -571860,8 +570006,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "real sociedad futbol": {
-        "team": "Real Sociedad de Fútbol",
+      "levante ud": {
+        "team": "Levante UD",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -571870,48 +570016,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "valencia": {
-        "team": "Valencia CF",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "real oviedo": {
-        "team": "Real Oviedo",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "deportivo alaves": {
-        "team": "Deportivo Alavés",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "ca osasuna": {
-        "team": "CA Osasuna",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "rcd espanyol barcelona": {
-        "team": "RCD Espanyol de Barcelona",
+      "celta vigo": {
+        "team": "RC Celta de Vigo",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -571930,6 +570036,66 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
+      "rcd espanyol barcelona": {
+        "team": "RCD Espanyol de Barcelona",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "real sociedad futbol": {
+        "team": "Real Sociedad de Fútbol",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "getafe": {
+        "team": "Getafe CF",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "ca osasuna": {
+        "team": "CA Osasuna",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "rcd mallorca": {
+        "team": "RCD Mallorca",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
+      "real oviedo": {
+        "team": "Real Oviedo",
+        "unavailableCount": 0,
+        "injuryCount": 0,
+        "suspensionCount": 0,
+        "keyAbsences": [],
+        "probableFormation": null,
+        "formationFixtureDate": null,
+        "fatigue": {}
+      },
       "real madrid": {
         "team": "Real Madrid CF",
         "unavailableCount": 0,
@@ -571939,11 +570105,9 @@
         "probableFormation": null,
         "formationFixtureDate": null,
         "fatigue": {}
-      }
-    },
-    "N1": {
-      "az": {
-        "team": "AZ",
+      },
+      "athletic": {
+        "team": "Athletic Club",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -571952,8 +570116,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "nac breda": {
-        "team": "NAC Breda",
+      "valencia": {
+        "team": "Valencia CF",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -571962,8 +570126,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "fc utrecht": {
-        "team": "FC Utrecht",
+      "fc barcelona": {
+        "team": "FC Barcelona",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -571972,8 +570136,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "fortuna sittard": {
-        "team": "Fortuna Sittard",
+      "girona": {
+        "team": "Girona FC",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -571982,8 +570146,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "fc volendam": {
-        "team": "FC Volendam",
+      "elche": {
+        "team": "Elche CF",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -571992,8 +570156,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "telstar 1963": {
-        "team": "Telstar 1963",
+      "villarreal": {
+        "team": "Villarreal CF",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -572002,118 +570166,8 @@
         "formationFixtureDate": null,
         "fatigue": {}
       },
-      "heracles almelo": {
-        "team": "Heracles Almelo",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "fc groningen": {
-        "team": "FC Groningen",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "nec": {
-        "team": "NEC",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "go ahead eagles": {
-        "team": "Go Ahead Eagles",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "pec zwolle": {
-        "team": "PEC Zwolle",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "feyenoord rotterdam": {
-        "team": "Feyenoord Rotterdam",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "psv": {
-        "team": "PSV",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "fc twente 65": {
-        "team": "FC Twente '65",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "sc heerenveen": {
-        "team": "SC Heerenveen",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "afc ajax": {
-        "team": "AFC Ajax",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "sparta rotterdam": {
-        "team": "Sparta Rotterdam",
-        "unavailableCount": 0,
-        "injuryCount": 0,
-        "suspensionCount": 0,
-        "keyAbsences": [],
-        "probableFormation": null,
-        "formationFixtureDate": null,
-        "fatigue": {}
-      },
-      "sbv excelsior": {
-        "team": "SBV Excelsior",
+      "atletico madrid": {
+        "team": "Club Atlético de Madrid",
         "unavailableCount": 0,
         "injuryCount": 0,
         "suspensionCount": 0,
@@ -572158,6 +570212,12 @@
     }
   },
   "changelog": [
+    {
+      "date": "2026-05-18",
+      "title": "Atualização automática semanal",
+      "summary": "Dados e métricas recalculados a partir dos CSV mais recentes.",
+      "generatedAt": "2026-05-18T11:10:54.931450+00:00"
+    },
     {
       "date": "2026-05-11",
       "title": "Atualização automática semanal",
