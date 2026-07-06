@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-06-29T12:03:19.194485+00:00",
+    "generatedAt": "2026-07-06T11:41:29.306534+00:00",
     "sourceFiles": [
       "D1.csv",
       "E0.csv",
@@ -568433,17 +568433,17 @@
   },
   "upcomingFixturesMeta": {
     "provider": "football-data.org",
-    "generatedAt": "2026-06-29T12:02:57.683571+00:00",
-    "windowDateFrom": "2026-07-03",
-    "windowDateTo": "2026-07-06",
+    "generatedAt": "2026-07-06T11:40:55.927599+00:00",
+    "windowDateFrom": "2026-07-10",
+    "windowDateTo": "2026-07-13",
     "tokenConfigured": true
   },
   "upcomingFixtures": [],
   "matchOfWeekByLeague": {},
   "teamContextMeta": {
     "provider": "api-football",
-    "generatedAt": "2026-06-29T12:03:03.296143+00:00",
-    "season": 2025,
+    "generatedAt": "2026-07-06T11:41:02.347819+00:00",
+    "season": 2026,
     "keyConfigured": true,
     "fixturesInputCount": 0,
     "teamsSearched": 0,
@@ -568510,6 +568510,12 @@
     }
   },
   "changelog": [
+    {
+      "date": "2026-07-06",
+      "title": "Atualização automática semanal",
+      "summary": "Dados e métricas recalculados a partir dos CSV mais recentes.",
+      "generatedAt": "2026-07-06T11:41:08.106337+00:00"
+    },
     {
       "date": "2026-06-29",
       "title": "Atualização automática semanal",

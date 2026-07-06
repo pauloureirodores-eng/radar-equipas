@@ -1,9 +1,9 @@
 {
   "meta": {
     "provider": "football-data.org",
-    "generatedAt": "2026-06-29T12:02:57.683571+00:00",
-    "windowDateFrom": "2026-07-03",
-    "windowDateTo": "2026-07-06",
+    "generatedAt": "2026-07-06T11:40:55.927599+00:00",
+    "windowDateFrom": "2026-07-10",
+    "windowDateTo": "2026-07-13",
     "tokenConfigured": true
   },
   "fixtures": [],
