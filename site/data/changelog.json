@@ -1,5 +1,11 @@
 [
   {
+    "date": "2026-08-17",
+    "title": "Atualização automática semanal",
+    "summary": "Dados e métricas recalculados a partir dos CSV mais recentes.",
+    "generatedAt": "2026-08-17T07:56:43.525345+00:00"
+  },
+  {
     "date": "2026-08-10",
     "title": "Atualização automática semanal",
     "summary": "Dados e métricas recalculados a partir dos CSV mais recentes.",
@@ -88,11 +94,5 @@
     "title": "Atualização automática semanal",
     "summary": "Dados e métricas recalculados a partir dos CSV mais recentes.",
     "generatedAt": "2026-05-04T12:16:05.021543+00:00"
-  },
-  {
-    "date": "2026-04-27",
-    "title": "Atualização automática semanal",
-    "summary": "Dados e métricas recalculados a partir dos CSV mais recentes.",
-    "generatedAt": "2026-04-27T12:13:08.630791+00:00"
   }
 ]
